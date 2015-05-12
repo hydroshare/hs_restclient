@@ -22,11 +22,16 @@ To connect to a development HydroShare server:
     >>> resource_list = hs.getResourceList()
 
 """
+import datetime
 
 import requests
 
+from .util import is_sequence
+
 
 class HydroShareException(Exception): pass
+
+class HydroShareArgumentException(HydroShareException): pass
 
 class HydroShareAuthException(HydroShareException): pass
 
@@ -67,9 +72,22 @@ class HydroShare(object):
             self.url_base = self._URL_PROTO_WITHOUT_PORT.format(scheme=self.scheme,
                                                                 hostname=self.hostname)
 
-    def getResourceList(self):
+    def getResourceList(self, creator=None, owner=None, user=None, group=None, from_date=None, to_date=None,
+                        types=None):
         """
         Query the GET /hsapi/resourceList/ REST end point of the HydroShare server.
+
+        :param creator: Filter results by the HydroShare user name of resource creators
+        :param owner: Filter results by the HydroShare user name of resource owners
+        :param user: Filter results by the HydroShare user name of resource users (i.e. owner, editor, viewer, public
+        resource)
+        :param group: Filter results by the HydroShare group name associated with resources
+        :param from_date: Filter results to those created after from_date.  Must be datetime.date.
+        :param to_date: Filter results to those created before to_date.  Must be datetime.date.  Because dates have
+        no time information, you must specify date+1 day to get results for date (e.g. use 2015-05-06 to get
+        resources created up to and including 2015-05-05)
+        :param types: Filter results to particular HydroShare resource types.  Must be a sequence type
+        (e.g. list, tuple, etc.), but not a string.
 
         :return: A generator that can be used to iterate over dict objects, each dict representing
         the JSON representation of the resource returned by the REST end point.  For example:
@@ -94,8 +112,48 @@ class HydroShare(object):
           u'resource_type': u'RasterResource',
           u'science_metadata_url': u'http://www.hydroshare.org/hsapi/scimeta/hr3hy35y5ht4y54hhthrtg43w/',
           u'public': True}
+
+
+          Filtering (have):
+
+          /hsapi/resourceList/?from_date=2015-05-03&to_date=2015-05-06
+          /hsapi/resourceList/?user=admin
+          /hsapi/resourceList/?owner=admin
+          /hsapi/resourceList/?creator=admin
+          /hsapi/resourceList/?group=groupname
+          /hsapi/resourceList/?types=GenericResource&types=RasterResource
+
+          Filtering (need):
+
+          /hsapi/resourceList/?sharedWith=user
+
+        :raise: HydroShareArgumentException if any filter parameters are invalid.
         """
         url = "{url_base}/resourceList/".format(url_base=self.url_base)
+
+        params = {}
+        if creator:
+            params['creator'] = creator
+        if owner:
+            params['owner'] = owner
+        if user:
+            params['user'] = user
+        if group:
+            params['group'] = group
+        if from_date:
+            if type(from_date) is datetime.date:
+                params['from_date'] = from_date.strftime('%Y-%m-%d')
+            else:
+                raise HydroShareArgumentException("from_date must of type {0}".format(datetime.date))
+        if to_date:
+            if type(to_date) is datetime.date:
+                params['to_date'] = to_date.strftime('%Y-%m-%d')
+            else:
+                raise HydroShareArgumentException("to_date must of type {0}".format(datetime.date))
+        if types:
+            if not is_sequence(types):
+                raise HydroShareArgumentException("types must be a sequence type, but not a string")
+            params['types'] = types
 
         resources = None
         num_resources = 0
@@ -109,10 +167,11 @@ class HydroShare(object):
                 raise HydroShareAuthException("Unsupported authentication type: {0}".format(str(type(self.auth))))
 
         # Get first (only?) page of results
-        r = requests.get(url, auth=auth)
+        r = requests.get(url, auth=auth, params=params)
         if r.status_code != 200:
-            raise HydroShareHTTPException("Received status {status_code} when retrieving {url}".format(status_code=r.status_code,
-                                                                                                       url=url))
+            raise HydroShareHTTPException("Received status {status_code} when retrieving {url} with params {params}".format(status_code=r.status_code,
+                                                                                                                            url=url,
+                                                                                                                            params=params))
         res = r.json()
         tot_resources = res['count']
         resources = res['results']
@@ -123,10 +182,11 @@ class HydroShare(object):
 
         # Get remaining pages (if any exist)
         while res['next'] and num_resources < tot_resources:
-            r = requests.get(res['next'], auth=auth)
+            r = requests.get(res['next'], auth=auth, params=params)
             if r.status_code != 200:
-                raise HydroShareHTTPException("Received status {status_code} when retrieving {url}".format(status_code=r.status_code,
-                                                                                                           url=res['next']))
+                raise HydroShareHTTPException("Received status {status_code} when retrieving {url} with params {params}".format(status_code=r.status_code,
+                                                                                                                                url=res['next'],
+                                                                                                                                params=params))
             res = r.json()
             resources = res['results']
             for r in resources:
