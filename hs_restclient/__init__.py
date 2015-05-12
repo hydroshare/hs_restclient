@@ -69,7 +69,7 @@ class HydroShare(object):
 
     def getResourceList(self):
         """
-        Query the GET /hsapi/resource/ REST end point on the HydroShare server.
+        Query the GET /hsapi/resourceList/ REST end point of the HydroShare server.
 
         :return: A generator that can be used to iterate over dict objects, each dict representing
         the JSON representation of the resource returned by the REST end point.  For example:
@@ -84,7 +84,7 @@ class HydroShare(object):
           u'resource_title': u'My sample DEM',
           u'resource_type': u'RasterResource',
           u'science_metadata_url': u'http://www.hydroshare.org/hsapi/scimeta/e62a438bec384087b6c00ddcd1b6475a/',
-          u'sharing_status': u'Public'}
+          u'public': True}
          {u'bag_url': u'http://www.hydroshare.org/static/media/bags/hr3hy35y5ht4y54hhthrtg43w.zip',
           u'creator': u'B Miles',
           u'date_created': u'01-02-2015',
@@ -93,9 +93,9 @@ class HydroShare(object):
           u'resource_title': u'Other raster',
           u'resource_type': u'RasterResource',
           u'science_metadata_url': u'http://www.hydroshare.org/hsapi/scimeta/hr3hy35y5ht4y54hhthrtg43w/',
-          u'sharing_status': u'Public'}
+          u'public': True}
         """
-        url = "{url_base}/resource/".format(url_base=self.url_base)
+        url = "{url_base}/resourceList/".format(url_base=self.url_base)
 
         resources = None
         num_resources = 0
