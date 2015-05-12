@@ -71,10 +71,12 @@ class HydroShare(object):
         """
         Query the GET /hsapi/resource/ REST end point on the HydroShare server.
 
-        :return: A list of dict objects, each dict representing the JSON representation of the resource returned
-        by the REST end point.  For example:
+        :return: A generator that can be used to iterate over dict objects, each dict representing
+        the JSON representation of the resource returned by the REST end point.  For example:
 
-        [{u'bag_url': u'http://www.hydroshare.org/static/media/bags/e62a438bec384087b6c00ddcd1b6475a.zip',
+        >>> for resource in hs.getResourceList():
+        >>>>    print resource
+         {u'bag_url': u'http://www.hydroshare.org/static/media/bags/e62a438bec384087b6c00ddcd1b6475a.zip',
           u'creator': u'B Miles',
           u'date_created': u'05-05-2015',
           u'date_last_updated': u'05-05-2015',
@@ -82,11 +84,20 @@ class HydroShare(object):
           u'resource_title': u'My sample DEM',
           u'resource_type': u'RasterResource',
           u'science_metadata_url': u'http://www.hydroshare.org/hsapi/scimeta/e62a438bec384087b6c00ddcd1b6475a/',
-          u'sharing_status': u'Public'}]
+          u'sharing_status': u'Public'}
+         {u'bag_url': u'http://www.hydroshare.org/static/media/bags/hr3hy35y5ht4y54hhthrtg43w.zip',
+          u'creator': u'B Miles',
+          u'date_created': u'01-02-2015',
+          u'date_last_updated': u'05-13-2015',
+          u'resource_id': u'hr3hy35y5ht4y54hhthrtg43w',
+          u'resource_title': u'Other raster',
+          u'resource_type': u'RasterResource',
+          u'science_metadata_url': u'http://www.hydroshare.org/hsapi/scimeta/hr3hy35y5ht4y54hhthrtg43w/',
+          u'sharing_status': u'Public'}
         """
         url = "{url_base}/resource/".format(url_base=self.url_base)
 
-        resources = []
+        resources = None
         num_resources = 0
 
         auth = None
@@ -104,8 +115,11 @@ class HydroShare(object):
                                                                                                        url=url))
         res = r.json()
         tot_resources = res['count']
-        resources += res['results']
+        resources = res['results']
         num_resources += len(res['results'])
+
+        for r in resources:
+            yield r
 
         # Get remaining pages (if any exist)
         while res['next'] and num_resources < tot_resources:
@@ -114,13 +128,13 @@ class HydroShare(object):
                 raise HydroShareHTTPException("Received status {status_code} when retrieving {url}".format(status_code=r.status_code,
                                                                                                            url=res['next']))
             res = r.json()
-            resources += res['results']
+            resources = res['results']
+            for r in resources:
+                yield r
             num_resources += len(res['results'])
 
         if num_resources != tot_resources:
             raise HydroShareException("Expected {tot} resources but found {num}".format(tot_resources, num_resources))
-
-        return resources
 
 
     # def getResource(self, pid):
