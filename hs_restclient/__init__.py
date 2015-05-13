@@ -55,7 +55,14 @@ class HydroShare(object):
 
         """
         self.hostname = hostname
-        self.auth = auth
+
+        self.auth = None
+        if auth:
+            if isinstance(auth, HydroShareAuthBasic):
+                # HTTP basic authentication
+                self.auth = (auth.username, auth.password)
+            else:
+                raise HydroShareAuthException("Unsupported authentication type: {0}".format(str(type(auth))))
 
         if use_https:
             self.scheme = 'https'
@@ -158,16 +165,8 @@ class HydroShare(object):
         resources = None
         num_resources = 0
 
-        auth = None
-        if self.auth:
-            if isinstance(self.auth, HydroShareAuthBasic):
-                # HTTP basic authentication
-                auth = (self.auth.username, self.auth.password)
-            else:
-                raise HydroShareAuthException("Unsupported authentication type: {0}".format(str(type(self.auth))))
-
         # Get first (only?) page of results
-        r = requests.get(url, auth=auth, params=params)
+        r = requests.get(url, auth=self.auth, params=params)
         if r.status_code != 200:
             raise HydroShareHTTPException("Received status {status_code} when retrieving {url} with params {params}".format(status_code=r.status_code,
                                                                                                                             url=url,
@@ -182,7 +181,7 @@ class HydroShare(object):
 
         # Get remaining pages (if any exist)
         while res['next'] and num_resources < tot_resources:
-            r = requests.get(res['next'], auth=auth, params=params)
+            r = requests.get(res['next'], auth=self.auth, params=params)
             if r.status_code != 200:
                 raise HydroShareHTTPException("Received status {status_code} when retrieving {url} with params {params}".format(status_code=r.status_code,
                                                                                                                                 url=res['next'],
