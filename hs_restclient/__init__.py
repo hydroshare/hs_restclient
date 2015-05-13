@@ -29,13 +29,39 @@ import requests
 from .util import is_sequence
 
 
-class HydroShareException(Exception): pass
+class HydroShareException(Exception):
+    def __init__(self, args):
+        super(HydroShareException, self).__init__(args)
 
 class HydroShareArgumentException(HydroShareException): pass
 
 class HydroShareAuthException(HydroShareException): pass
 
-class HydroShareHTTPException(HydroShareException): pass
+class HydroShareHTTPException(HydroShareException):
+    """ Exception used to communicate HTTP errors from HydroShare server
+
+        Arguments in tuple passed to constructor must be: (url, status_code, params).
+        url and status_code are of type string, while the optional params argument
+        should be a dict.
+    """
+    def __init__(self, args):
+        super(HydroShareHTTPException, self).__init__(args)
+        self.url = args[0]
+        self.status_code = args[1]
+        if len(args) >= 3:
+            self.params = args[2]
+        else:
+            self.params = None
+
+    def __str__(self):
+        return "Received status {status_code} when retrieving {url} with params {params}".format(status_code=self.status_code,
+                                                                                                 url=self.url,
+                                                                                                 params=self.params)
+
+    def __unicode__(self):
+        return "Received status {status_code} when retrieving {url} with params {params}".format(status_code=self.status_code,
+                                                                                                 url=self.url,
+                                                                                                 params=self.params)
 
 class HydroShare(object):
 
@@ -96,8 +122,8 @@ class HydroShare(object):
         :param types: Filter results to particular HydroShare resource types.  Must be a sequence type
         (e.g. list, tuple, etc.), but not a string.
 
-        :return: A generator that can be used to iterate over dict objects, each dict representing
-        the JSON representation of the resource returned by the REST end point.  For example:
+        :return: A generator that can be used to fetch dict objects, each dict representing
+        the JSON object representation of the resource returned by the REST end point.  For example:
 
         >>> for resource in hs.getResourceList():
         >>>>    print resource
@@ -167,9 +193,7 @@ class HydroShare(object):
         # Get first (only?) page of results
         r = requests.get(url, auth=self.auth, params=params)
         if r.status_code != 200:
-            raise HydroShareHTTPException("Received status {status_code} when retrieving {url} with params {params}".format(status_code=r.status_code,
-                                                                                                                            url=url,
-                                                                                                                            params=params))
+            raise HydroShareHTTPException((url, r.status_code, params))
         res = r.json()
         tot_resources = res['count']
         resources = res['results']
@@ -182,9 +206,7 @@ class HydroShare(object):
         while res['next'] and num_resources < tot_resources:
             r = requests.get(res['next'], auth=self.auth, params=params)
             if r.status_code != 200:
-                raise HydroShareHTTPException("Received status {status_code} when retrieving {url} with params {params}".format(status_code=r.status_code,
-                                                                                                                                url=res['next'],
-                                                                                                                                params=params))
+                raise HydroShareHTTPException((url, r.status_code, params))
             res = r.json()
             resources = res['results']
             for r in resources:
@@ -195,20 +217,19 @@ class HydroShare(object):
             raise HydroShareException("Expected {tot} resources but found {num}".format(tot_resources, num_resources))
 
 
-    # def getResource(self, pid):
-    #     url = "{url_base}/resource/{pid}/".format(url_base=self.url_base,
-    #                                                 pid=pid)
-    #     headers = {'Accept': 'application/zip'}
-    #     if self.auth:
-    #         if isinstance(self.auth, HydroShareAuthBasic):
-    #             # HTTP basic authentication
-    #             r = requests.get(url, headers=headers,
-    #                              auth=(self.auth.username, self.auth.password))
-    #         else:
-    #             raise HydroShareAuthException("Unsupported authentication type: {0}".format(str(type(self.auth))))
-    #     else:
-    #         r = requests.get(url, headers=headers)
+    def getResource(self, pid, destination):
+        url = "{url_base}/resource/{pid}/".format(url_base=self.url_base,
+                                                  pid=pid)
+        # Get system metadata for resource
+        r = requests.get(url, auth=self.auth)
+        if r.status_code != 200:
+            raise HydroShareHTTPException((url, r.status_code))
 
+    def _getResourceAndStoreOnFilesystem(self, url, destination):
+        pass
+
+    def _getResourceAsStream(self, url):
+        pass
 
 
 class AbstractHydroShareAuth(object): pass
