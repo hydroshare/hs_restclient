@@ -162,7 +162,6 @@ class HydroShare(object):
                 raise HydroShareArgumentException("types must be a sequence type, but not a string")
             params['types'] = types
 
-        resources = None
         num_resources = 0
 
         # Get first (only?) page of results
