@@ -6,36 +6,53 @@ To get a listing of public resources:
 
     >>> from hs_restclient import HydroShare
     >>> hs = HydroShare()
-    >>> resource_list = hs.getResourceList()
+    >>> for resource in hs.getResourceList():
+    >>>     print(resource)
 
 To authenticate, and then get a list of resources you have access to:
 
     >>> from hs_restclient import HydroShare, HydroShareAuthBasic
     >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
     >>> hs = HydroShare(auth=auth)
-    >>> my_resource_list = hs.getResourceList()
+    >>> for resource in hs.getResourceList():
+    >>>     print(resource)
 
 To connect to a development HydroShare server:
 
     >>> from hs_restclient import HydroShare
     >>> hs = HydroShare(hostname='mydev.mydomain.net', port=8000)
-    >>> resource_list = hs.getResourceList()
+    >>> for resource in hs.getResourceList():
+    >>>     print(resource)
 
 """
+import os
 import datetime
+import zipfile
+import tempfile
+import shutil
 
 import requests
 
 from .util import is_sequence
 
 
+STREAM_CHUNK_SIZE = 100 * 1024
+
+
 class HydroShareException(Exception):
     def __init__(self, args):
         super(HydroShareException, self).__init__(args)
 
-class HydroShareArgumentException(HydroShareException): pass
 
-class HydroShareAuthException(HydroShareException): pass
+class HydroShareArgumentException(HydroShareException):
+    def __init__(self, args):
+        super(HydroShareArgumentException, self).__init__(args)
+
+
+class HydroShareAuthException(HydroShareException):
+    def __init__(self, args):
+        super(HydroShareAuthException, self).__init__(args)
+
 
 class HydroShareHTTPException(HydroShareException):
     """ Exception used to communicate HTTP errors from HydroShare server
@@ -121,6 +138,9 @@ class HydroShare(object):
         resources created up to and including 2015-05-05)
         :param types: Filter results to particular HydroShare resource types.  Must be a sequence type
         (e.g. list, tuple, etc.), but not a string.
+
+        :raise HydroShareHTTPException to signal an HTTP error
+        :raise HydroShareArgumentException for any invalid arguments
 
         :return: A generator that can be used to fetch dict objects, each dict representing
         the JSON object representation of the resource returned by the REST end point.  For example:
@@ -216,20 +236,97 @@ class HydroShare(object):
         if num_resources != tot_resources:
             raise HydroShareException("Expected {tot} resources but found {num}".format(tot_resources, num_resources))
 
+    def getResource(self, pid):
+        """ Get system metadata for a resource
 
-    def getResource(self, pid, destination):
+        :param pid: The HydroShare ID of the resource
+
+        :raise HydroShareHTTPException to signal an HTTP error
+
+        :return: A dict representing the JSON object representation of the resource returned by the REST end point.
+        For example:
+
+        {u'bag_url': u'http://www.hydroshare.org/static/media/bags/hr3hy35y5ht4y54hhthrtg43w.zip',
+          u'creator': u'B Miles',
+          u'date_created': u'01-02-2015',
+          u'date_last_updated': u'05-13-2015',
+          u'resource_id': u'hr3hy35y5ht4y54hhthrtg43w',
+          u'resource_title': u'Other raster',
+          u'resource_type': u'RasterResource',
+          u'science_metadata_url': u'http://www.hydroshare.org/hsapi/scimeta/hr3hy35y5ht4y54hhthrtg43w/',
+          u'public': True}
+
+        """
         url = "{url_base}/resource/{pid}/".format(url_base=self.url_base,
                                                   pid=pid)
-        # Get system metadata for resource
         r = requests.get(url, auth=self.auth)
         if r.status_code != 200:
             raise HydroShareHTTPException((url, r.status_code))
 
-    def _getResourceAndStoreOnFilesystem(self, url, destination):
-        pass
+        resource = r.json()
+        assert(resource['resource_id'] == pid)
 
-    def _getResourceAsStream(self, url):
-        pass
+        return resource
+
+    def getResourceBag(self, pid, destination=None, unzip=False):
+        """ Get a resource in BagIt format
+
+        :param pid: The HydroShare ID of the resource
+        :param destination: String representing the directory to save bag to. Bag will be saved to file named
+        $(PID).zip in destination; existing file of the same name will be overwritten. If None, a stream to the zipped
+        bag will be returned instead.
+        :param unzip: True if the bag should be unzipped when saved to destination. Bag contents to be saved to
+        directory named $(PID) residing in destination. Only applies when destination is not None.
+
+        :raise HydroShareHTTPException to signal an HTTP error
+        :raise
+
+        :return: None if the bag was saved directly to disk.  Or a generator representing a buffered stream of the
+        bytes comprising the bag returned by the REST end point.
+        """
+        resource = self.getResource(pid)
+        bag_url = resource['bag_url']
+
+        if destination:
+            self._getBagAndStoreOnFilesystem(bag_url, pid, destination, unzip)
+            return None
+        else:
+            return self._getBagStream(bag_url)
+
+    def _getBagAndStoreOnFilesystem(self, bag_url, pid, destination, unzip=False):
+        if not os.path.isdir(destination):
+            raise HydroShareArgumentException("{0} is not a directory".format(destination))
+        if not os.access(destination, os.W_OK):
+            raise HydroShareArgumentException("Do not have write permissions to directory {0}".format(destination))
+
+        r = requests.get(bag_url, auth=self.auth, stream=True)
+        if r.status_code != 200:
+            raise HydroShareHTTPException((bag_url, r.status_code))
+
+        filename = "{pid}.zip".format(pid=pid)
+        tempdir = None
+        if unzip:
+            tempdir = tempfile.mkdtemp()
+            filepath = os.path.join(tempdir, filename)
+        else:
+            filepath = os.path.join(destination, filename)
+
+        # Download bag (maybe temporarily)
+        with open(filepath, 'wb') as fd:
+            for chunk in r.iter_content(STREAM_CHUNK_SIZE):
+                fd.write(chunk)
+
+        if unzip:
+            dirname = os.path.join(destination, pid)
+            zfile = zipfile.ZipFile(filepath)
+            zfile.extractall(dirname)
+            shutil.rmtree(tempdir)
+
+    def _getBagStream(self, bag_url):
+        r = requests.get(bag_url, auth=self.auth, stream=True)
+        if r.status_code != 200:
+            raise HydroShareHTTPException((bag_url, r.status_code))
+        return r.iter_content(STREAM_CHUNK_SIZE)
 
 
 class AbstractHydroShareAuth(object): pass
