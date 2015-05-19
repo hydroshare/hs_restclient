@@ -64,21 +64,21 @@ class HydroShareHTTPException(HydroShareException):
     def __init__(self, args):
         super(HydroShareHTTPException, self).__init__(args)
         self.url = args[0]
-        self.status_code = args[1]
+        self.method = args[1]
+        self.status_code = args[2]
         if len(args) >= 3:
-            self.params = args[2]
+            self.params = args[3]
         else:
             self.params = None
 
     def __str__(self):
-        return "Received status {status_code} when retrieving {url} with params {params}".format(status_code=self.status_code,
-                                                                                                 url=self.url,
-                                                                                                 params=self.params)
+        return "Received status {status_code} when accessing {url} with method {method} and params {params}".format(status_code=self.status_code,
+                                                                                                                    url=self.url,
+                                                                                                                    method=self.method,
+                                                                                                                    params=self.params)
 
     def __unicode__(self):
-        return "Received status {status_code} when retrieving {url} with params {params}".format(status_code=self.status_code,
-                                                                                                 url=self.url,
-                                                                                                 params=self.params)
+        return self.__str__()
 
 class HydroShare(object):
 
@@ -215,7 +215,7 @@ class HydroShare(object):
         # Get first (only?) page of results
         r = requests.get(url, auth=self.auth, params=params)
         if r.status_code != 200:
-            raise HydroShareHTTPException((url, r.status_code, params))
+            raise HydroShareHTTPException((url, 'GET', r.status_code, params))
         res = r.json()
         tot_resources = res['count']
         resources = res['results']
@@ -228,7 +228,7 @@ class HydroShare(object):
         while res['next'] and num_resources < tot_resources:
             r = requests.get(res['next'], auth=self.auth, params=params)
             if r.status_code != 200:
-                raise HydroShareHTTPException((url, r.status_code, params))
+                raise HydroShareHTTPException((url, 'GET', r.status_code, params))
             res = r.json()
             resources = res['results']
             for r in resources:
@@ -263,7 +263,7 @@ class HydroShare(object):
                                                   pid=pid)
         r = requests.get(url, auth=self.auth)
         if r.status_code != 200:
-            raise HydroShareHTTPException((url, r.status_code))
+            raise HydroShareHTTPException((url, 'GET', r.status_code))
 
         resource = r.json()
         assert(resource['resource_id'] == pid)
@@ -303,7 +303,7 @@ class HydroShare(object):
 
         r = requests.get(bag_url, auth=self.auth, stream=True)
         if r.status_code != 200:
-            raise HydroShareHTTPException((bag_url, r.status_code))
+            raise HydroShareHTTPException((bag_url, 'GET', r.status_code))
 
         filename = "{pid}.zip".format(pid=pid)
         tempdir = None
@@ -327,7 +327,7 @@ class HydroShare(object):
     def _getBagStream(self, bag_url):
         r = requests.get(bag_url, auth=self.auth, stream=True)
         if r.status_code != 200:
-            raise HydroShareHTTPException((bag_url, r.status_code))
+            raise HydroShareHTTPException((bag_url, 'GET', r.status_code))
         return r.iter_content(STREAM_CHUNK_SIZE)
 
     def getResourceTypes(self):
@@ -341,12 +341,102 @@ class HydroShare(object):
 
         r = requests.get(url, auth=self.auth)
         if r.status_code != 200:
-            raise HydroShareHTTPException((url, r.status_code))
+            raise HydroShareHTTPException((url, 'GET', r.status_code))
 
         resource_types = r.json()
         return set([t['resource_type'] for t in resource_types['results']])
 
-    # def createResource(self, title, resource_file=None,):
+    def createResource(self, resource_type, title, resource_file=None, resource_filename=None,
+                       abstract=None, keywords=None,
+                       edit_users=None, view_users=None, edit_groups=None, view_groups=None):
+        """ Create a new resource.
+
+        :param resource_type: string representing the a HydroShare resource type recognized by this
+        server.
+        :param title: string representing the title of the new resource
+        :param resource_file: a read-only binary file-like object (i.e. opened with the flag 'rb') or a string
+        representing path to file to be uploaded as part of the new resource
+        :param resource_filename: string representing the filename of the resource file.  Must be specified
+        if resource_file is a file-like object.  If resource_file is a string representing a valid file path,
+        and resource_filename is not specified, resource_filename will be equal to os.path.basename(resource_file).
+        is a string
+        :param abstract: string representing abstract of resource
+        :param keywords: list of strings representing keywords to associate with the resource
+        :param edit_users: list of HydroShare usernames who will be given edit permissions
+        :param view_users: list of HydroShare usernames who will be given view permissions
+        :param edit_groups: list of HydroShare group names that will be given edit permissions
+        :param view_groups: list of HydroShare group names that will be given view permissions
+
+        :return: string representing ID of newly created resource.
+
+        :raise HydroShareArgumentException if any parameters are invalid.
+
+        """
+        url = "{url_base}/resource/".format(url_base=self.url_base)
+
+        close_fd = False
+
+        if not resource_type in self.resource_types:
+            raise HydroShareArgumentException("Resource type {0} is not among known resources: {1}".format(resource_type,
+                                                                                                           ", ".join([r for r in self.resource_types])))
+        files = None
+        if resource_file:
+            if type(resource_file) is str:
+                if not os.path.isfile(resource_file) or not os.access(resource_file, os.R_OK):
+                    raise HydroShareArgumentException("{0} is not a file or is not readable".format(resource_file))
+                fd = open(resource_file, 'rb')
+                close_fd = True
+                if not resource_filename:
+                    fname = os.path.basename(resource_file)
+            else:
+                if not resource_filename:
+                    raise HydroShareArgumentException("resource_filename must be specified when resource_file " +
+                                                      "is a file-like object")
+                # Assume it is a file-like object
+                fd = resource_file
+                fname = resource_filename
+            files = {'file': (fname, fd)}
+
+        # Prepare request
+        params = {'resource_type': resource_type, 'title': title}
+        if abstract:
+            params['abstract'] = abstract
+        if keywords:
+            params['keywords'] = keywords
+        if edit_users:
+            params['edit_users'] = edit_users
+        if view_users:
+            params['view_users'] = view_users
+        if edit_groups:
+            params['edit_groups'] = edit_groups
+        if view_groups:
+            params['view_groups'] = view_groups
+
+        # Make request
+        r = requests.post(url, auth=self.auth,
+                          data=params, files=files)
+        if close_fd:
+            fd.close()
+
+        if r.status_code != 201:
+            raise HydroShareHTTPException((url, 'POST', r.status_code, params))
+
+        response = r.json()
+
+        new_resource_id = response['resource_id']
+
+        if response['resource_type'] != resource_type:
+            raise HydroShareException("New resource {resource_id} was created, " + \
+                                      "but the new resource type is {new_type}, " + \
+                                      "while the expected type is {exp_type}.".format(resource_id=new_resource_id,
+                                                                                      new_type=response['resource_type'],
+                                                                                      exp_type=resource_type))
+
+        return new_resource_id
+
+
+
+
 
 class AbstractHydroShareAuth(object): pass
 
