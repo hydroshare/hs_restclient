@@ -402,7 +402,10 @@ class HydroShare(object):
         if abstract:
             params['abstract'] = abstract
         if keywords:
-            params['keywords'] = keywords
+            # Put keywords in a format that django-rest's serializer will understand
+            for (i, kw) in enumerate(keywords):
+                key = "keywords[{index}]".format(index=i)
+                params[key] = kw
         if edit_users:
             params['edit_users'] = edit_users
         if view_users:
