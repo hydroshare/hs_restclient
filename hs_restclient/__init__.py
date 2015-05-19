@@ -422,15 +422,13 @@ class HydroShare(object):
             raise HydroShareHTTPException((url, 'POST', r.status_code, params))
 
         response = r.json()
-
         new_resource_id = response['resource_id']
 
         if response['resource_type'] != resource_type:
-            raise HydroShareException("New resource {resource_id} was created, " + \
-                                      "but the new resource type is {new_type}, " + \
-                                      "while the expected type is {exp_type}.".format(resource_id=new_resource_id,
-                                                                                      new_type=response['resource_type'],
-                                                                                      exp_type=resource_type))
+            msg = "New resource {resource_id} was created, but the new resource type is {new_type}, " + \
+                  "while the expected type is {exp_type}."
+            msg = msg.format(resource_id=new_resource_id, new_type=response['resource_type'], exp_type=resource_type)
+            raise HydroShareException(msg)
 
         return new_resource_id
 
