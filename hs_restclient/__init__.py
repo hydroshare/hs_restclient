@@ -328,6 +328,23 @@ class HydroShare(object):
             raise HydroShareHTTPException((bag_url, r.status_code))
         return r.iter_content(STREAM_CHUNK_SIZE)
 
+    def getResourceTypes(self):
+        """ Get the list of resource types supported by the HydroShare server
+
+        :return: A list of strings representing the HydroShare resource types
+
+        :raise HydroShareHTTPException to signal an HTTP error
+        """
+        url = "{url_base}/resourceTypes/".format(url_base=self.url_base)
+
+        r = requests.get(url, auth=self.auth)
+        if r.status_code != 200:
+            raise HydroShareHTTPException((url, r.status_code))
+
+        resource_types = r.json()
+        return [t['resource_type'] for t in resource_types['results']]
+
+    # def createResource(self, title, resource_file=None,):
 
 class AbstractHydroShareAuth(object): pass
 
