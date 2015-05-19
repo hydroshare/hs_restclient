@@ -122,6 +122,8 @@ class HydroShare(object):
             self.url_base = self._URL_PROTO_WITHOUT_PORT.format(scheme=self.scheme,
                                                                 hostname=self.hostname)
 
+        self.resource_types = self.getResourceTypes()
+
     def getResourceList(self, creator=None, owner=None, user=None, group=None, from_date=None, to_date=None,
                         types=None):
         """
@@ -331,7 +333,7 @@ class HydroShare(object):
     def getResourceTypes(self):
         """ Get the list of resource types supported by the HydroShare server
 
-        :return: A list of strings representing the HydroShare resource types
+        :return: A set of strings representing the HydroShare resource types
 
         :raise HydroShareHTTPException to signal an HTTP error
         """
@@ -342,7 +344,7 @@ class HydroShare(object):
             raise HydroShareHTTPException((url, r.status_code))
 
         resource_types = r.json()
-        return [t['resource_type'] for t in resource_types['results']]
+        return set([t['resource_type'] for t in resource_types['results']])
 
     # def createResource(self, title, resource_file=None,):
 
