@@ -459,7 +459,21 @@ class HydroShare(object):
 
         return new_resource_id
 
+    def setAccessRules(self, pid, public=False):
+        """
+        Set access rules for a resource.  Current only allows for setting the public or private setting.
 
+        :param pid: The HydroShare ID of the resource
+        :param public: True if the resource should be made public.
+        """
+        url = "{url_base}/resource/accessRules/{pid}/".format(url_base=self.url_base,
+                                                              pid=pid)
+        params = {'public': public}
+
+        r = self._request('PUT', url, data=params)
+
+        if r.status_code != 204:
+            raise HydroShareHTTPException((url, 'PUT', r.status_code, params))
 
 
 
