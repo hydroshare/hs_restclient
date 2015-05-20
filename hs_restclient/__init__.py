@@ -50,9 +50,31 @@ class HydroShareArgumentException(HydroShareException):
         super(HydroShareArgumentException, self).__init__(args)
 
 
-class HydroShareAuthException(HydroShareException):
+class HydroShareNotAuthorized(HydroShareException):
     def __init__(self, args):
-        super(HydroShareAuthException, self).__init__(args)
+        super(HydroShareNotAuthorized, self).__init__(args)
+        self.method = args[0]
+        self.url = args[1]
+
+    def __str__(self):
+        msg = "Not authorized to perform {method} on {url}."
+        return msg.format(method=self.method, url=self.url)
+
+    def __unicode__(self):
+        return self.__str__()
+
+
+class HydroShareNotFound(HydroShareException):
+    def __init__(self, args):
+        super(HydroShareNotFound, self).__init__(args)
+        self.pid = args[0]
+
+    def __str__(self):
+        msg = "Resource '{pid}' was not found."
+        return msg.format(pid=self.pid)
+
+    def __unicode__(self):
+        return self.__str__()
 
 
 class HydroShareHTTPException(HydroShareException):
@@ -100,6 +122,7 @@ class HydroShare(object):
         :param port: Integer representing the TCP port on which to connect
         to the HydroShare server
 
+        :raise HydroShareException if auth is not a known authentication type.
         """
         self.hostname = hostname
 
@@ -110,7 +133,7 @@ class HydroShare(object):
                 # HTTP basic authentication
                 self.auth = (auth.username, auth.password)
             else:
-                raise HydroShareAuthException("Unsupported authentication type: {0}".format(str(type(auth))))
+                raise HydroShareException("Unsupported authentication type: {0}".format(str(type(auth))))
 
         if use_https:
             self.scheme = 'https'
@@ -288,7 +311,12 @@ class HydroShare(object):
                                                  pid=pid)
         r = self._request('GET', url)
         if r.status_code != 200:
-            raise HydroShareHTTPException((url, 'GET', r.status_code))
+            if r.status_code == 403:
+                raise HydroShareNotAuthorized(('GET', url))
+            elif r.status_code == 404:
+                raise HydroShareNotFound((pid,))
+            else:
+                raise HydroShareHTTPException((url, 'GET', r.status_code))
 
         resource = r.json()
         assert(resource['resource_id'] == pid)
@@ -318,7 +346,7 @@ class HydroShare(object):
             self._getBagAndStoreOnFilesystem(url, pid, destination, unzip)
             return None
         else:
-            return self._getBagStream(url)
+            return self._getBagStream(url, pid)
 
     def _getBagAndStoreOnFilesystem(self, bag_url, pid, destination, unzip=False):
         if not os.path.isdir(destination):
@@ -328,7 +356,12 @@ class HydroShare(object):
 
         r = self._request('GET', bag_url, stream=True)
         if r.status_code != 200:
-            raise HydroShareHTTPException((bag_url, 'GET', r.status_code))
+            if r.status_code == 403:
+                raise HydroShareNotAuthorized(('GET', bag_url))
+            elif r.status_code == 404:
+                raise HydroShareNotFound((pid,))
+            else:
+                raise HydroShareHTTPException((bag_url, 'GET', r.status_code))
 
         filename = "{pid}.zip".format(pid=pid)
         tempdir = None
@@ -349,10 +382,15 @@ class HydroShare(object):
             zfile.extractall(dirname)
             shutil.rmtree(tempdir)
 
-    def _getBagStream(self, bag_url):
+    def _getBagStream(self, bag_url, pid):
         r = self._request('GET', bag_url, stream=True)
         if r.status_code != 200:
-            raise HydroShareHTTPException((bag_url, 'GET', r.status_code))
+            if r.status_code == 403:
+                raise HydroShareNotAuthorized(('GET', bag_url))
+            elif r.status_code == 404:
+                raise HydroShareNotFound((pid,))
+            else:
+                raise HydroShareHTTPException((bag_url, 'GET', r.status_code))
         return r.iter_content(STREAM_CHUNK_SIZE)
 
     def getResourceTypes(self):
@@ -446,7 +484,10 @@ class HydroShare(object):
             fd.close()
 
         if r.status_code != 201:
-            raise HydroShareHTTPException((url, 'POST', r.status_code, params))
+            if r.status_code == 403:
+                raise HydroShareNotAuthorized(('POST', url))
+            else:
+                raise HydroShareHTTPException((url, 'POST', r.status_code, params))
 
         response = r.json()
         new_resource_id = response['resource_id']
@@ -470,7 +511,12 @@ class HydroShare(object):
 
         r = self._request('DELETE', url)
         if r.status_code != 200:
-            raise HydroShareHTTPException((url, 'DELETE', r.status_code))
+            if r.status_code == 403:
+                raise HydroShareNotAuthorized(('DELETE', url))
+            elif r.status_code == 404:
+                raise HydroShareNotFound((pid,))
+            else:
+                raise HydroShareHTTPException((url, 'DELETE', r.status_code))
 
         resource = r.json()
         assert(resource['resource_id'] == pid)
@@ -489,7 +535,12 @@ class HydroShare(object):
 
         r = self._request('PUT', url, data=params)
         if r.status_code != 200:
-            raise HydroShareHTTPException((url, 'PUT', r.status_code, params))
+            if r.status_code == 403:
+                raise HydroShareNotAuthorized(('PUT', url))
+            elif r.status_code == 404:
+                raise HydroShareNotFound((pid,))
+            else:
+                raise HydroShareHTTPException((url, 'PUT', r.status_code, params))
 
         resource = r.json()
         assert(resource['resource_id'] == pid)
