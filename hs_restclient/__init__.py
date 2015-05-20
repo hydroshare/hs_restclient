@@ -103,6 +103,7 @@ class HydroShare(object):
         """
         self.hostname = hostname
 
+        self.session = None
         self.auth = None
         if auth:
             if isinstance(auth, HydroShareAuthBasic):
@@ -126,7 +127,27 @@ class HydroShare(object):
             self.url_base = self._URL_PROTO_WITHOUT_PORT.format(scheme=self.scheme,
                                                                 hostname=self.hostname)
 
+        self._initializeSession()
         self.resource_types = self.getResourceTypes()
+
+    def _initializeSession(self):
+        if self.session:
+            self.session.close()
+        self.session = requests.Session()
+        self.session.auth = self.auth
+
+    def _request(self, method, url, params=None, data=None, files=None, stream=False):
+        r = None
+        try:
+            r = self.session.request(method, url, params=params, data=data, files=files, stream=stream)
+        except requests.ConnectionError:
+            # We might have gotten a connection error because the server we were talking to went down.
+            #  Re-initialize the session and try again
+            print('Received connection error retrying...')
+            self._initializeSession()
+            r = self.session.request(method, url, params=params, data=data, files=files, stream=stream)
+
+        return r
 
     def getResourceList(self, creator=None, owner=None, user=None, group=None, from_date=None, to_date=None,
                         types=None):
@@ -217,7 +238,7 @@ class HydroShare(object):
         num_resources = 0
 
         # Get first (only?) page of results
-        r = requests.get(url, auth=self.auth, params=params)
+        r = self._request('GET', url, params=params)
         if r.status_code != 200:
             raise HydroShareHTTPException((url, 'GET', r.status_code, params))
         res = r.json()
@@ -230,7 +251,7 @@ class HydroShare(object):
 
         # Get remaining pages (if any exist)
         while res['next'] and num_resources < tot_resources:
-            r = requests.get(res['next'], auth=self.auth, params=params)
+            r = self._request('GET', res['next'], params=params)
             if r.status_code != 200:
                 raise HydroShareHTTPException((url, 'GET', r.status_code, params))
             res = r.json()
@@ -265,7 +286,7 @@ class HydroShare(object):
         """
         url = "{url_base}/resource/{pid}/".format(url_base=self.url_base,
                                                   pid=pid)
-        r = requests.get(url, auth=self.auth)
+        r = self._request('GET', url)
         if r.status_code != 200:
             raise HydroShareHTTPException((url, 'GET', r.status_code))
 
@@ -305,7 +326,7 @@ class HydroShare(object):
         if not os.access(destination, os.W_OK):
             raise HydroShareArgumentException("Do not have write permissions to directory {0}".format(destination))
 
-        r = requests.get(bag_url, auth=self.auth, stream=True)
+        r = self._request('GET', bag_url, stream=True)
         if r.status_code != 200:
             raise HydroShareHTTPException((bag_url, 'GET', r.status_code))
 
@@ -329,7 +350,7 @@ class HydroShare(object):
             shutil.rmtree(tempdir)
 
     def _getBagStream(self, bag_url):
-        r = requests.get(bag_url, auth=self.auth, stream=True)
+        r = self._request('GET', bag_url, stream=True)
         if r.status_code != 200:
             raise HydroShareHTTPException((bag_url, 'GET', r.status_code))
         return r.iter_content(STREAM_CHUNK_SIZE)
@@ -343,7 +364,7 @@ class HydroShare(object):
         """
         url = "{url_base}/resourceTypes/".format(url_base=self.url_base)
 
-        r = requests.get(url, auth=self.auth)
+        r = self._request('GET', url)
         if r.status_code != 200:
             raise HydroShareHTTPException((url, 'GET', r.status_code))
 
@@ -419,9 +440,8 @@ class HydroShare(object):
         if view_groups:
             params['view_groups'] = view_groups
 
-        # Make request
-        r = requests.post(url, auth=self.auth,
-                          data=params, files=files)
+        r = self._request('POST', url, data=params, files=files)
+
         if close_fd:
             fd.close()
 
