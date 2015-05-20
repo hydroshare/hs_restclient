@@ -459,6 +459,23 @@ class HydroShare(object):
 
         return new_resource_id
 
+    def deleteResource(self, pid):
+        """
+        Delete a resource.
+
+        :param pid: The HydroShare ID of the resource
+        """
+        url = "{url_base}/resource/{pid}/".format(url_base=self.url_base,
+                                                  pid=pid)
+
+        r = self._request('DELETE', url)
+        if r.status_code != 200:
+            raise HydroShareHTTPException((url, 'DELETE', r.status_code))
+
+        resource = r.json()
+        assert(resource['resource_id'] == pid)
+        return resource['resource_id']
+
     def setAccessRules(self, pid, public=False):
         """
         Set access rules for a resource.  Current only allows for setting the public or private setting.
@@ -476,6 +493,7 @@ class HydroShare(object):
 
         resource = r.json()
         assert(resource['resource_id'] == pid)
+        return resource['resource_id']
 
 
 class AbstractHydroShareAuth(object): pass
