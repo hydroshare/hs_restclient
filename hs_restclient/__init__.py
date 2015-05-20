@@ -295,7 +295,7 @@ class HydroShare(object):
 
         return resource
 
-    def getResourceBag(self, pid, destination=None, unzip=False):
+    def getResource(self, pid, destination=None, unzip=False):
         """ Get a resource in BagIt format
 
         :param pid: The HydroShare ID of the resource
@@ -311,14 +311,14 @@ class HydroShare(object):
         :return: None if the bag was saved directly to disk.  Or a generator representing a buffered stream of the
         bytes comprising the bag returned by the REST end point.
         """
-        resource = self.getResource(pid)
-        bag_url = resource['bag_url']
+        url = "{url_base}/resource/{pid}/".format(url_base=self.url_base,
+                                                  pid=pid)
 
         if destination:
-            self._getBagAndStoreOnFilesystem(bag_url, pid, destination, unzip)
+            self._getBagAndStoreOnFilesystem(url, pid, destination, unzip)
             return None
         else:
-            return self._getBagStream(bag_url)
+            return self._getBagStream(url)
 
     def _getBagAndStoreOnFilesystem(self, bag_url, pid, destination, unzip=False):
         if not os.path.isdir(destination):
