@@ -30,6 +30,7 @@ import datetime
 import zipfile
 import tempfile
 import shutil
+import httplib
 
 import requests
 
@@ -66,16 +67,19 @@ class HydroShareHTTPException(HydroShareException):
         self.url = args[0]
         self.method = args[1]
         self.status_code = args[2]
-        if len(args) >= 3:
+        if len(args) >= 4:
             self.params = args[3]
         else:
             self.params = None
 
     def __str__(self):
-        return "Received status {status_code} when accessing {url} with method {method} and params {params}".format(status_code=self.status_code,
-                                                                                                                    url=self.url,
-                                                                                                                    method=self.method,
-                                                                                                                    params=self.params)
+        msg = "Received status {status_code} {status_msg} when accessing {url} " + \
+              "with method {method} and params {params}."
+        return msg.format(status_code=self.status_code,
+                          status_msg=httplib.responses[self.status_code],
+                          url=self.url,
+                          method=self.method,
+                          params=self.params)
 
     def __unicode__(self):
         return self.__str__()
