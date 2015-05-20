@@ -263,7 +263,7 @@ class HydroShare(object):
         if num_resources != tot_resources:
             raise HydroShareException("Expected {tot} resources but found {num}".format(tot_resources, num_resources))
 
-    def getResource(self, pid):
+    def getSystemMetadata(self, pid):
         """ Get system metadata for a resource
 
         :param pid: The HydroShare ID of the resource
@@ -284,8 +284,8 @@ class HydroShare(object):
           u'public': True}
 
         """
-        url = "{url_base}/resource/{pid}/".format(url_base=self.url_base,
-                                                  pid=pid)
+        url = "{url_base}/sysmeta/{pid}/".format(url_base=self.url_base,
+                                                 pid=pid)
         r = self._request('GET', url)
         if r.status_code != 200:
             raise HydroShareHTTPException((url, 'GET', r.status_code))
