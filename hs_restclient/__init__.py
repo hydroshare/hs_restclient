@@ -471,10 +471,11 @@ class HydroShare(object):
         params = {'public': public}
 
         r = self._request('PUT', url, data=params)
-
-        if r.status_code != 204:
+        if r.status_code != 200:
             raise HydroShareHTTPException((url, 'PUT', r.status_code, params))
 
+        resource = r.json()
+        assert(resource['resource_id'] == pid)
 
 
 class AbstractHydroShareAuth(object): pass
