@@ -133,7 +133,7 @@ class HydroShare(object):
                 # HTTP basic authentication
                 self.auth = (auth.username, auth.password)
             else:
-                raise HydroShareException("Unsupported authentication type: {0}".format(str(type(auth))))
+                raise HydroShareException("Unsupported authentication type '{0}'.".format(str(type(auth))))
 
         if use_https:
             self.scheme = 'https'
@@ -142,7 +142,7 @@ class HydroShare(object):
         if port:
             self.port = int(port)
             if self.port < 0 or self.port > 65535:
-                raise HydroShareException("Port number {0} is illegal".format(self.port))
+                raise HydroShareException("Port number {0} is illegal.".format(self.port))
             self.url_base = self._URL_PROTO_WITH_PORT.format(scheme=self.scheme,
                                                              hostname=self.hostname,
                                                              port=self.port)
@@ -166,7 +166,6 @@ class HydroShare(object):
         except requests.ConnectionError:
             # We might have gotten a connection error because the server we were talking to went down.
             #  Re-initialize the session and try again
-            print('Received connection error retrying...')
             self._initializeSession()
             r = self.session.request(method, url, params=params, data=data, files=files, stream=stream)
 
@@ -247,15 +246,15 @@ class HydroShare(object):
             if type(from_date) is datetime.date:
                 params['from_date'] = from_date.strftime('%Y-%m-%d')
             else:
-                raise HydroShareArgumentException("from_date must of type {0}".format(datetime.date))
+                raise HydroShareArgumentException("from_date must of type '{0}'.".format(datetime.date))
         if to_date:
             if type(to_date) is datetime.date:
                 params['to_date'] = to_date.strftime('%Y-%m-%d')
             else:
-                raise HydroShareArgumentException("to_date must of type {0}".format(datetime.date))
+                raise HydroShareArgumentException("to_date must of type '{0}'.".format(datetime.date))
         if types:
             if not is_sequence(types):
-                raise HydroShareArgumentException("types must be a sequence type, but not a string")
+                raise HydroShareArgumentException("Types must be a sequence type, but not a string.")
             params['types'] = types
 
         num_resources = 0
@@ -284,7 +283,7 @@ class HydroShare(object):
             num_resources += len(res['results'])
 
         if num_resources != tot_resources:
-            raise HydroShareException("Expected {tot} resources but found {num}".format(tot_resources, num_resources))
+            raise HydroShareException("Expected {tot} resources but found {num}.".format(tot_resources, num_resources))
 
     def getSystemMetadata(self, pid):
         """ Get system metadata for a resource
@@ -350,9 +349,9 @@ class HydroShare(object):
 
     def _getBagAndStoreOnFilesystem(self, bag_url, pid, destination, unzip=False):
         if not os.path.isdir(destination):
-            raise HydroShareArgumentException("{0} is not a directory".format(destination))
+            raise HydroShareArgumentException("{0} is not a directory.".format(destination))
         if not os.access(destination, os.W_OK):
-            raise HydroShareArgumentException("Do not have write permissions to directory {0}".format(destination))
+            raise HydroShareArgumentException("You do not have write permissions to directory '{0}'.".format(destination))
 
         r = self._request('GET', bag_url, stream=True)
         if r.status_code != 200:
@@ -446,7 +445,7 @@ class HydroShare(object):
         if resource_file:
             if type(resource_file) is str:
                 if not os.path.isfile(resource_file) or not os.access(resource_file, os.R_OK):
-                    raise HydroShareArgumentException("{0} is not a file or is not readable".format(resource_file))
+                    raise HydroShareArgumentException("{0} is not a file or is not readable.".format(resource_file))
                 fd = open(resource_file, 'rb')
                 close_fd = True
                 if not resource_filename:
@@ -454,7 +453,7 @@ class HydroShare(object):
             else:
                 if not resource_filename:
                     raise HydroShareArgumentException("resource_filename must be specified when resource_file " +
-                                                      "is a file-like object")
+                                                      "is a file-like object.")
                 # Assume it is a file-like object
                 fd = resource_file
                 fname = resource_filename
