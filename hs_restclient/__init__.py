@@ -115,6 +115,7 @@ class HydroShareHTTPException(HydroShareException):
     def __unicode__(self):
         return self.__str__()
 
+
 class HydroShare(object):
 
     _URL_PROTO_WITHOUT_PORT = "{scheme}://{hostname}/hsapi"
@@ -160,7 +161,14 @@ class HydroShare(object):
                                                                 hostname=self.hostname)
 
         self._initializeSession()
-        self.resource_types = self.getResourceTypes()
+        self._resource_types = None
+
+    @property
+    def resource_types(self):
+        if self._resource_types is None:
+            self._resource_types = self.getResourceTypes()
+        return self._resource_types
+
 
     def _initializeSession(self):
         if self.session:
@@ -432,7 +440,7 @@ class HydroShare(object):
             raise HydroShareHTTPException((url, 'GET', r.status_code))
 
         resource_types = r.json()
-        return set([t['resource_type'] for t in resource_types['results']])
+        return set([t['resource_type'] for t in resource_types])
 
     def createResource(self, resource_type, title, resource_file=None, resource_filename=None,
                        abstract=None, keywords=None,
