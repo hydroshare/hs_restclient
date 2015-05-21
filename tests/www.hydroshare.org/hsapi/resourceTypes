@@ -1,0 +1,1 @@
+[{"resource_type": "GenericResource"},{"resource_type": "RasterResource"},{"resource_type": "RefTimeSeries"},{"resource_type": "TimeSeriesResource"},{"resource_type": "NetcdfResource"},{"resource_type": "ModelProgramResource"},{"resource_type": "ModelInstanceResource"},{"resource_type": "ToolResource"},{"resource_type": "SWATModelInstanceResource"}]
