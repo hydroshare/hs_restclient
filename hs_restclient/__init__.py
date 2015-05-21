@@ -641,6 +641,37 @@ class HydroShare(object):
                     fd.write(chunk)
             return filepath
 
+    def deleteResourceFile(self, pid, filename):
+        """
+        Delete a resource file
+
+        :param pid: The HydroShare ID of the resource
+        :param filename: String representing the name of the resource file to delete
+
+        :return: Dictionary containing 'resource_id' the ID of the resource from which the file was deleted, and
+         'file_name' the filename of the file deleted.
+
+        :raise HydroShareNotAuthorized if user is not authorized to perform action.
+        :raise HydroShareNotFound if the resource or resource file was not found.
+        :raise HydroShareHTTPException if an unexpected HTTP response code is encountered.
+        """
+        url = "{url_base}/resource/{pid}/files/{filename}".format(url_base=self.url_base,
+                                                                  pid=pid,
+                                                                  filename=filename)
+
+        r = self._request('DELETE', url)
+        if r.status_code != 200:
+            if r.status_code == 403:
+                raise HydroShareNotAuthorized(('DELETE', url))
+            elif r.status_code == 404:
+                raise HydroShareNotFound((pid, filename))
+            else:
+                raise HydroShareHTTPException((url, 'DELETE', r.status_code))
+
+        response = r.json()
+        assert(response['resource_id'] == pid)
+        return response
+
 
 class AbstractHydroShareAuth(object): pass
 
