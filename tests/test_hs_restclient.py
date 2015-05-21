@@ -59,5 +59,13 @@ class TestGetResourceList(unittest.TestCase):
             self.assertEquals(r['resource_title'], self.resource_titles[i])
             self.assertEquals(r['resource_id'], self.resource_ids[i])
 
+    @with_httmock(mocks.hydroshare.resourceListFilter_get)
+    def test_get_resource_list_filter(self):
+        hs = HydroShare()
+        res_list = hs.getResourceList(creator='bmiles')
+        for (i, r) in enumerate(res_list):
+            self.assertEquals(r['creator'], 'bmiles')
+
+
 if __name__ == '__main__':
     unittest.main()

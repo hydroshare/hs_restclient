@@ -59,3 +59,17 @@ def resourceList_get(url, request):
         # 404.
         return response(404, {}, HEADERS, None, 5, request)
     return response(200, content, HEADERS, None, 5, request)
+
+@urlmatch(netloc=NETLOC, method=GET)
+def resourceListFilter_get(url, request):
+    if url.query == 'creator=bmiles':
+        file_path = url.netloc + url.path + 'resourceList-bmiles'
+    else:
+        file_path = '';
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(200, content, HEADERS, None, 5, request)
