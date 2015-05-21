@@ -68,10 +68,19 @@ class HydroShareNotFound(HydroShareException):
     def __init__(self, args):
         super(HydroShareNotFound, self).__init__(args)
         self.pid = args[0]
+        if len(args) >= 2:
+            self.filename = args[1]
+        else:
+            self.filename = None
 
     def __str__(self):
-        msg = "Resource '{pid}' was not found."
-        return msg.format(pid=self.pid)
+        if self.filename:
+            msg = "File '{filename}' was not found in resource '{pid}'."
+            msg = msg.format(filename=self.filename, pid=self.pid)
+        else:
+            msg = "Resource '{pid}' was not found."
+            msg = msg.format(pid=self.pid)
+        return msg
 
     def __unicode__(self):
         return self.__str__()
@@ -170,6 +179,23 @@ class HydroShare(object):
             r = self.session.request(method, url, params=params, data=data, files=files, stream=stream)
 
         return r
+
+    def _prepareFileForUpload(self, resource_file, resource_filename=None):
+        if type(resource_file) is str:
+            if not os.path.isfile(resource_file) or not os.access(resource_file, os.R_OK):
+                raise HydroShareArgumentException("{0} is not a file or is not readable.".format(resource_file))
+            fd = open(resource_file, 'rb')
+            close_fd = True
+            if not resource_filename:
+                fname = os.path.basename(resource_file)
+        else:
+            if not resource_filename:
+                raise HydroShareArgumentException("resource_filename must be specified when resource_file " +
+                                                  "is a file-like object.")
+            # Assume it is a file-like object
+            fd = resource_file
+            fname = resource_filename
+        return ({'file': (fname, fd)}, close_fd)
 
     def getResourceList(self, creator=None, owner=None, user=None, group=None, from_date=None, to_date=None,
                         types=None):
@@ -432,6 +458,8 @@ class HydroShare(object):
         :return: string representing ID of newly created resource.
 
         :raise HydroShareArgumentException if any parameters are invalid.
+        :raise HydroShareNotAuthorized if user is not authorized to perform action.
+        :raise HydroShareHTTPException if an unexpected HTTP response code is encountered.
 
         """
         url = "{url_base}/resource/".format(url_base=self.url_base)
@@ -443,21 +471,7 @@ class HydroShare(object):
                                                                                                            ", ".join([r for r in self.resource_types])))
         files = None
         if resource_file:
-            if type(resource_file) is str:
-                if not os.path.isfile(resource_file) or not os.access(resource_file, os.R_OK):
-                    raise HydroShareArgumentException("{0} is not a file or is not readable.".format(resource_file))
-                fd = open(resource_file, 'rb')
-                close_fd = True
-                if not resource_filename:
-                    fname = os.path.basename(resource_file)
-            else:
-                if not resource_filename:
-                    raise HydroShareArgumentException("resource_filename must be specified when resource_file " +
-                                                      "is a file-like object.")
-                # Assume it is a file-like object
-                fd = resource_file
-                fname = resource_filename
-            files = {'file': (fname, fd)}
+            (files, close_fd) = self._prepareFileForUpload(resource_file, resource_filename)
 
         # Prepare request
         params = {'resource_type': resource_type, 'title': title}
@@ -480,6 +494,7 @@ class HydroShare(object):
         r = self._request('POST', url, data=params, files=files)
 
         if close_fd:
+            fd = files['file'][1]
             fd.close()
 
         if r.status_code != 201:
@@ -544,6 +559,87 @@ class HydroShare(object):
         resource = r.json()
         assert(resource['resource_id'] == pid)
         return resource['resource_id']
+
+    def addResourceFile(self, pid, resource_file):
+        """ Add a new file to an existing resource
+
+        :param pid: The HydroShare ID of the resource
+        :param resource_file: a read-only binary file-like object (i.e. opened with the flag 'rb') or a string
+        representing path to file to be uploaded as part of the new resource
+
+        :return: Dictionary containing 'resource_id' the ID of the resource to which the file was added, and
+         'file_name' the filename of the file added.
+
+        :raise HydroShareNotAuthorized if user is not authorized to perform action.
+        :raise HydroShareNotFound if the resource was not found.
+        :raise HydroShareHTTPException if an unexpected HTTP response code is encountered.
+        """
+        url = "{url_base}/resource/{pid}/files/".format(url_base=self.url_base,
+                                                        pid=pid)
+
+        (files, close_fd) = self._prepareFileForUpload(resource_file)
+
+        r = self._request('POST', url, files=files)
+
+        if close_fd:
+            fd = files['file'][1]
+            fd.close()
+
+        if r.status_code != 201:
+            if r.status_code == 403:
+                raise HydroShareNotAuthorized(('POST', url))
+            elif r.status_code == 404:
+                raise HydroShareNotFound((pid,))
+            else:
+                raise HydroShareHTTPException((url, 'POST', r.status_code))
+
+        response = r.json()
+        assert(response['resource_id'] == pid)
+
+        return response
+
+    def getResourceFile(self, pid, filename, destination=None):
+        """ Get a file within a resource.
+
+        :param pid: The HydroShare ID of the resource
+        :param filename: String representing the name of the resource file to get.
+        :param destination: String representing the directory to save the resource file to. If None, a stream
+        to the resource file will be returned instead.
+        :return: The path of the downloaded file (if destination was specified), or a stream to the resource
+        file.
+
+        :raise HydroShareArgumentException if any parameters are invalid.
+        :raise HydroShareNotAuthorized if user is not authorized to perform action.
+        :raise HydroShareNotFound if the resource was not found.
+        :raise HydroShareHTTPException if an unexpected HTTP response code is encountered.
+        """
+        url = "{url_base}/resource/{pid}/files/{filename}".format(url_base=self.url_base,
+                                                                  pid=pid,
+                                                                  filename=filename)
+
+        if destination:
+            if not os.path.isdir(destination):
+                raise HydroShareArgumentException("{0} is not a directory.".format(destination))
+            if not os.access(destination, os.W_OK):
+                raise HydroShareArgumentException("You do not have write permissions to directory '{0}'.".format(destination))
+
+        r = self._request('GET', url, stream=True)
+        if r.status_code != 200:
+            if r.status_code == 403:
+                raise HydroShareNotAuthorized(('GET', url))
+            elif r.status_code == 404:
+                raise HydroShareNotFound((pid, filename))
+            else:
+                raise HydroShareHTTPException((url, 'GET', r.status_code))
+
+        if destination is None:
+            return r.iter_content(STREAM_CHUNK_SIZE)
+        else:
+            filepath = os.path.join(destination, filename)
+            with open(filepath, 'wb') as fd:
+                for chunk in r.iter_content(STREAM_CHUNK_SIZE):
+                    fd.write(chunk)
+            return filepath
 
 
 class AbstractHydroShareAuth(object): pass
