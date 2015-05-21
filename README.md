@@ -2,9 +2,11 @@ Python-based client library for HydroShare REST API
 
 Questions? brian_miles@unc.edu
 
-# To run tests (Coming soon!!!)
-    python setup.py test
-
+# To run tests
+    
+    cd tests
+    python test_hs_restclient.py
+    
 # To use
 
 To get system metadata for public resources:
