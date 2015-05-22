@@ -1,8 +1,19 @@
 {
-    "count": 3,
-    "next": null,
+    "count": 6,
+    "next": "http://www.hydroshare.org/hsapi/resourceList/?page=2",
     "previous": null,
     "results": [
+        {
+            "resource_type": "GenericResource",
+            "resource_title": "Untitled resource 1",
+            "resource_id": "c165b6f8ec64405da004bfb8890c35ae",
+            "creator": "selimnairb",
+            "date_created": "05-18-2015",
+            "date_last_updated": "05-18-2015",
+            "public": false,
+            "bag_url": "http://www.hydroshare.org/static/media/bags/c165b6f8ec64405da004bfb8890c35ae.zip",
+            "science_metadata_url": "http://www.hydroshare.org/hsapi/scimeta/c165b6f8ec64405da004bfb8890c35ae/"
+        },
         {
             "resource_type": "GenericResource",
             "resource_title": "Untitled resource 2",
@@ -24,17 +35,6 @@
             "public": true,
             "bag_url": "http://www.hydroshare.org/static/media/bags/5a6e5a992b1046ae820fd3e79ee36107.zip",
             "science_metadata_url": "http://www.hydroshare.org/hsapi/scimeta/5a6e5a992b1046ae820fd3e79ee36107/"
-        },
-        {
-            "resource_type": "GenericResource",
-            "resource_title": "Create via REST API and Python client library 2",
-            "resource_id": "c817e936ac1147639787c0d4688d6319",
-            "creator": "selimnairb",
-            "date_created": "05-21-2015",
-            "date_last_updated": "05-21-2015",
-            "public": false,
-            "bag_url": "http://www.hydroshare.org/static/media/bags/c817e936ac1147639787c0d4688d6319.zip",
-            "science_metadata_url": "http://www.hydroshare.org/hsapi/scimeta/c817e936ac1147639787c0d4688d6319/"
         }
     ]
 }
