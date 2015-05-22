@@ -9,8 +9,11 @@ import sys
 sys.path.append('../')
 import unittest
 from datetime import date, datetime
+import tempfile
+import shutil
+import zipfile
 
-from httmock import with_httmock
+from httmock import with_httmock, HTTMock
 
 from hs_restclient import HydroShare
 import mocks.hydroshare
@@ -93,6 +96,42 @@ class TestGetResourceList(unittest.TestCase):
         res_list = hs.getResourceList(types=('RasterResource',))
         for (i, r) in enumerate(res_list):
             self.assertEquals(r['resource_type'], 'RasterResource')
+
+    #@with_httmock(mocks.hydroshare.createResourceCRUD)
+    def test_create_get_delete_resource(self):
+        hs = HydroShare()
+
+        abstract = 'Abstract for hello world resource'
+        title = 'Minimal hello world resource'
+        keywords = ('hello', 'world')
+        rtype = 'GenericResource'
+        fname = 'mocks/data/minimal_resource_file.txt'
+
+        with HTTMock(mocks.hydroshare.createResourceCRUD):
+            # Create
+            newres = hs.createResource(rtype, title, resource_file=fname, keywords=keywords, abstract=abstract)
+            self.assertIsNotNone(newres)
+            sysmeta = hs.getSystemMetadata(newres)
+            self.assertEqual(sysmeta['resource_id'], newres)
+            self.assertEqual(sysmeta['resource_type'], rtype)
+            self.assertFalse(sysmeta['public'])
+
+        with HTTMock(mocks.hydroshare.accessRules_put):
+            # Make resource public
+            hs.setAccessRules(newres, public=True)
+            sysmeta = hs.getSystemMetadata(newres)
+            self.assertTrue(sysmeta['public'])
+
+        with HTTMock(mocks.hydroshare.createResourceCRUD):
+            # Get
+            tmpdir = tempfile.mkdtemp()
+            hs.getResource(newres, destination=tmpdir)
+            # TODO: open the zipfile and compare the payload to fname
+            shutil.rmtree(tmpdir)
+
+            # Delete
+            delres = hs.deleteResource(newres)
+            self.assertEqual(delres, newres)
 
 if __name__ == '__main__':
     unittest.main()

@@ -12,6 +12,8 @@ from httmock import response, urlmatch
 NETLOC = r'www\.hydroshare\.org$'
 HEADERS = {'content-type': 'application/json'}
 GET = 'get'
+POST = 'post'
+PUT = 'put'
 
 
 class Resource:
@@ -98,6 +100,67 @@ def resourceListFilterType_get(url, request):
         file_path = url.netloc + url.path + 'resourceList-type'
     else:
         file_path = '';
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(200, content, HEADERS, None, 5, request)
+
+@urlmatch(netloc=NETLOC)
+def createResourceCRUD(url, request):
+    file_path = None
+    #import pdb; pdb.set_trace()
+    # This gets tricky.  HydroShare.createResource() can implicitly
+    # call HydroShare.getResourceTypes(), so we need to handle those requests too
+    if request.method == 'GET':
+        if url.path == '/hsapi/resourceTypes/':
+            file_path = url.netloc + url.path
+            # Remove trailing slash so that we can open the file
+            file_path = file_path.strip('/')
+            response_status = 200
+        if url.path == '/hsapi/sysmeta/0b047b77767e46c6b6f525a2f386b9fe/':
+            file_path = url.netloc + url.path
+            # Remove trailing slash so that we can open the file
+            file_path = file_path.strip('/')
+            response_status = 200
+        if url.path == '/hsapi/resource/0b047b77767e46c6b6f525a2f386b9fe/':
+            file_path = url.netloc + url.path
+            # Remove trailing slash so that we can open the file
+            file_path = file_path.strip('/') + '.zip'
+            response_status = 200
+    elif request.method == 'POST' and url.path == '/hsapi/resource/':
+        file_path = url.netloc + url.path + 'create-response'
+        response_status = 201
+    elif request.method == 'DELETE' and url.path == '/hsapi/resource/0b047b77767e46c6b6f525a2f386b9fe/':
+        file_path = url.netloc + url.path + 'delete-response'
+        response_status = 200
+    else:
+        file_path = ''
+
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(response_status, content, HEADERS, None, 5, request)
+
+@urlmatch(netloc=NETLOC)
+def accessRules_put(url, request):
+    if request.method == 'PUT':
+        if request.body == 'public=True':
+            file_path = url.netloc + url.path + 'makepublic-response'
+        else:
+            file_path = ''
+    elif request.method == 'GET':
+        if url.path == '/hsapi/sysmeta/0b047b77767e46c6b6f525a2f386b9fe/':
+            file_path = url.netloc + url.path
+            # Remove trailing slash so that we can open the file
+            file_path = file_path.strip('/') + '-public'
+    else:
+        file_path = ''
     try:
         content = Resource(file_path).get()
     except EnvironmentError:

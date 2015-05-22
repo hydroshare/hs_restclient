@@ -26,7 +26,7 @@
             "science_metadata_url": "http://www.hydroshare.org/hsapi/scimeta/408acb6b870d4297b8b036edcd9c3c58/"
         },
         {
-            "resource_type": "u'GenericResource",
+            "resource_type": "GenericResource",
             "resource_title": "Minimal hello world resource",
             "resource_id": "0b047b77767e46c6b6f525a2f386b9fe",
             "creator": "bmiles",
