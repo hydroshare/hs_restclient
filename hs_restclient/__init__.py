@@ -366,35 +366,27 @@ class HydroShare(object):
         :param unzip: True if the bag should be unzipped when saved to destination. Bag contents to be saved to
         directory named $(PID) residing in destination. Only applies when destination is not None.
 
+        :raise HydroShareArgumentException if any arguments are invalid.
+        :raise HydroShareNotAuthorized if the user is not authorized to access the
+        resource.
+        :raise HydroShareNotFound if the resource was not found.
         :raise HydroShareHTTPException to signal an HTTP error
-        :raise
 
         :return: None if the bag was saved directly to disk.  Or a generator representing a buffered stream of the
         bytes comprising the bag returned by the REST end point.
         """
-        url = "{url_base}/resource/{pid}/".format(url_base=self.url_base,
-                                                  pid=pid)
-
+        stream = self._getBagStream(pid)
         if destination:
-            self._getBagAndStoreOnFilesystem(url, pid, destination, unzip)
+            self._getBagAndStoreOnFilesystem(stream, pid, destination, unzip)
             return None
         else:
-            return self._getBagStream(url, pid)
+            return stream
 
-    def _getBagAndStoreOnFilesystem(self, bag_url, pid, destination, unzip=False):
+    def _getBagAndStoreOnFilesystem(self, stream, pid, destination, unzip=False):
         if not os.path.isdir(destination):
             raise HydroShareArgumentException("{0} is not a directory.".format(destination))
         if not os.access(destination, os.W_OK):
             raise HydroShareArgumentException("You do not have write permissions to directory '{0}'.".format(destination))
-
-        r = self._request('GET', bag_url, stream=True)
-        if r.status_code != 200:
-            if r.status_code == 403:
-                raise HydroShareNotAuthorized(('GET', bag_url))
-            elif r.status_code == 404:
-                raise HydroShareNotFound((pid,))
-            else:
-                raise HydroShareHTTPException((bag_url, 'GET', r.status_code))
 
         filename = "{pid}.zip".format(pid=pid)
         tempdir = None
@@ -406,7 +398,7 @@ class HydroShare(object):
 
         # Download bag (maybe temporarily)
         with open(filepath, 'wb') as fd:
-            for chunk in r.iter_content(STREAM_CHUNK_SIZE):
+            for chunk in stream:
                 fd.write(chunk)
 
         if unzip:
@@ -415,7 +407,9 @@ class HydroShare(object):
             zfile.extractall(dirname)
             shutil.rmtree(tempdir)
 
-    def _getBagStream(self, bag_url, pid):
+    def _getBagStream(self, pid):
+        bag_url = "{url_base}/resource/{pid}/".format(url_base=self.url_base,
+                                                      pid=pid)
         r = self._request('GET', bag_url, stream=True)
         if r.status_code != 200:
             if r.status_code == 403:
