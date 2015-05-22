@@ -87,5 +87,12 @@ class TestGetResourceList(unittest.TestCase):
             self.assertTrue(datetime.strptime(r['date_created'], '%m-%d-%Y').date() >= from_date)
             self.assertTrue(datetime.strptime(r['date_created'], '%m-%d-%Y').date() < to_date)
 
+    @with_httmock(mocks.hydroshare.resourceListFilterType_get)
+    def test_get_resource_list_filter_type(self):
+        hs = HydroShare()
+        res_list = hs.getResourceList(types=('RasterResource',))
+        for (i, r) in enumerate(res_list):
+            self.assertEquals(r['resource_type'], 'RasterResource')
+
 if __name__ == '__main__':
     unittest.main()
