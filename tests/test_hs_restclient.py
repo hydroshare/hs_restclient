@@ -84,7 +84,8 @@ class TestGetResourceList(unittest.TestCase):
         to_date = date(2015, 5, 22) # up to and including 5/21/2015
         res_list = hs.getResourceList(from_date=from_date, to_date=to_date)
         for (i, r) in enumerate(res_list):
-            pass
+            self.assertTrue(datetime.strptime(r['date_created'], '%m-%d-%Y').date() >= from_date)
+            self.assertTrue(datetime.strptime(r['date_created'], '%m-%d-%Y').date() < to_date)
 
 if __name__ == '__main__':
     unittest.main()
