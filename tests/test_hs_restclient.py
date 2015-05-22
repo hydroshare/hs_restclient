@@ -8,6 +8,7 @@
 import sys
 sys.path.append('../')
 import unittest
+from datetime import date, datetime
 
 from httmock import with_httmock
 
@@ -59,13 +60,31 @@ class TestGetResourceList(unittest.TestCase):
             self.assertEquals(r['resource_title'], self.resource_titles[i])
             self.assertEquals(r['resource_id'], self.resource_ids[i])
 
-    @with_httmock(mocks.hydroshare.resourceListFilter_get)
-    def test_get_resource_list_filter(self):
+    @with_httmock(mocks.hydroshare.resourceListFilterCreator_get)
+    def test_get_resource_list_filter_creator(self):
         hs = HydroShare()
         res_list = hs.getResourceList(creator='bmiles')
         for (i, r) in enumerate(res_list):
             self.assertEquals(r['creator'], 'bmiles')
 
+    @with_httmock(mocks.hydroshare.resourceListFilterDate_get)
+    def test_get_resource_list_filter_date(self):
+        hs = HydroShare()
+        from_date = date(2015, 5, 20)
+        res_list = hs.getResourceList(from_date=from_date)
+        for (i, r) in enumerate(res_list):
+            self.assertTrue(datetime.strptime(r['date_created'], '%m-%d-%Y').date() >= from_date)
+
+        to_date = date(2015, 5, 21) # up to and including 5/21/2015
+        res_list = hs.getResourceList(to_date=to_date)
+        for (i, r) in enumerate(res_list):
+            self.assertTrue(datetime.strptime(r['date_created'], '%m-%d-%Y').date() < to_date)
+
+        from_date = date(2015, 5, 19)
+        to_date = date(2015, 5, 22) # up to and including 5/21/2015
+        res_list = hs.getResourceList(from_date=from_date, to_date=to_date)
+        for (i, r) in enumerate(res_list):
+            pass
 
 if __name__ == '__main__':
     unittest.main()

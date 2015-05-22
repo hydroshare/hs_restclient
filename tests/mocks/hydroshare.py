@@ -61,9 +61,27 @@ def resourceList_get(url, request):
     return response(200, content, HEADERS, None, 5, request)
 
 @urlmatch(netloc=NETLOC, method=GET)
-def resourceListFilter_get(url, request):
+def resourceListFilterCreator_get(url, request):
     if url.query == 'creator=bmiles':
         file_path = url.netloc + url.path + 'resourceList-bmiles'
+    else:
+        file_path = '';
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(200, content, HEADERS, None, 5, request)
+
+@urlmatch(netloc=NETLOC, method=GET)
+def resourceListFilterDate_get(url, request):
+    if url.query == 'from_date=2015-05-20':
+        file_path = url.netloc + url.path + 'resourceList-from_date'
+    elif url.query == 'to_date=2015-05-21':
+        file_path = url.netloc + url.path + 'resourceList-to_date'
+    elif url.query == 'from_date=2015-05-19&to_date=2015-05-22':
+        file_path = url.netloc + url.path + 'resourceList-from_date-to_date'
     else:
         file_path = '';
     try:

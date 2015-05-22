@@ -1,0 +1,40 @@
+{
+    "count": 3,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "resource_type": "GenericResource",
+            "resource_title": "Untitled resource 2",
+            "resource_id": "1a63d6c24b9b4b42b9a97abfab94f9c6",
+            "creator": "bmiles",
+            "date_created": "05-19-2015",
+            "date_last_updated": "05-19-2015",
+            "public": false,
+            "bag_url": "http://www.hydroshare.org/static/media/bags/1a63d6c24b9b4b42b9a97abfab94f9c6.zip",
+            "science_metadata_url": "http://www.hydroshare.org/hsapi/scimeta/1a63d6c24b9b4b42b9a97abfab94f9c6/"
+        },
+        {
+            "resource_type": "RasterResource",
+            "resource_title": "Create via REST API and Python client library",
+            "resource_id": "5a6e5a992b1046ae820fd3e79ee36107",
+            "creator": "selimnairb",
+            "date_created": "05-20-2015",
+            "date_last_updated": "05-20-2015",
+            "public": true,
+            "bag_url": "http://www.hydroshare.org/static/media/bags/5a6e5a992b1046ae820fd3e79ee36107.zip",
+            "science_metadata_url": "http://www.hydroshare.org/hsapi/scimeta/5a6e5a992b1046ae820fd3e79ee36107/"
+        },
+        {
+            "resource_type": "GenericResource",
+            "resource_title": "Create via REST API and Python client library 2",
+            "resource_id": "c817e936ac1147639787c0d4688d6319",
+            "creator": "selimnairb",
+            "date_created": "05-21-2015",
+            "date_last_updated": "05-21-2015",
+            "public": false,
+            "bag_url": "http://mill24.cep.unc.edu:8000/static/media/bags/c817e936ac1147639787c0d4688d6319.zip",
+            "science_metadata_url": "http://mill24.cep.unc.edu:8000/hsapi/scimeta/c817e936ac1147639787c0d4688d6319/"
+        }
+    ]
+}
