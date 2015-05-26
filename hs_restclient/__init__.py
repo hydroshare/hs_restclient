@@ -2,29 +2,11 @@
 
 Client library for HydroShare REST API
 
-To get a listing of public resources:
-
-    >>> from hs_restclient import HydroShare
-    >>> hs = HydroShare()
-    >>> for resource in hs.getResourceList():
-    >>>     print(resource)
-
-To authenticate, and then get a list of resources you have access to:
-
-    >>> from hs_restclient import HydroShare, HydroShareAuthBasic
-    >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
-    >>> hs = HydroShare(auth=auth)
-    >>> for resource in hs.getResourceList():
-    >>>     print(resource)
-
-To connect to a development HydroShare server:
-
-    >>> from hs_restclient import HydroShare
-    >>> hs = HydroShare(hostname='mydev.mydomain.net', port=8000)
-    >>> for resource in hs.getResourceList():
-    >>>     print(resource)
-
 """
+
+__title__ = 'hs_restclient'
+__version__ = '1.0.0'
+
 import os
 import datetime
 import zipfile
@@ -117,13 +99,7 @@ class HydroShareHTTPException(HydroShareException):
 
 
 class HydroShare(object):
-
-    _URL_PROTO_WITHOUT_PORT = "{scheme}://{hostname}/hsapi"
-    _URL_PROTO_WITH_PORT = "{scheme}://{hostname}:{port}/hsapi"
-
-    def __init__(self, hostname='www.hydroshare.org', auth=None,
-                 use_https=False, port=None):
-        """
+    """
         Construct HydroShare object for querying HydroShare's REST API
 
         :param hostname: Hostname of the HydroShare server to query
@@ -132,8 +108,14 @@ class HydroShare(object):
         :param port: Integer representing the TCP port on which to connect
         to the HydroShare server
 
-        :raise HydroShareException if auth is not a known authentication type.
-        """
+        :raises HydroShareException if auth is not a known authentication type.
+    """
+
+    _URL_PROTO_WITHOUT_PORT = "{scheme}://{hostname}/hsapi"
+    _URL_PROTO_WITH_PORT = "{scheme}://{hostname}:{port}/hsapi"
+
+    def __init__(self, hostname='www.hydroshare.org', auth=None,
+                 use_https=False, port=None):
         self.hostname = hostname
 
         self.session = None
