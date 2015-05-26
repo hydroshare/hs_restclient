@@ -151,9 +151,8 @@ class TestGetResourceList(unittest.TestCase):
 
         # Get
         tmpdir = tempfile.mkdtemp()
-        hs.getResourceFile(res_id, fname, destination=tmpdir)
-        tmpfile = os.path.join(tmpdir, fname)
-        self.assertTrue(filecmp.cmp(tmpfile, fpath, shallow=False))
+        res_file = hs.getResourceFile(res_id, fname, destination=tmpdir)
+        self.assertTrue(filecmp.cmp(res_file, fpath, shallow=False))
         shutil.rmtree(tmpdir)
 
         # Delete
