@@ -68,8 +68,8 @@ To create a resource:
     title = 'My resource'
     keywords = ('my keyword 1', 'my keyword 2')
     rtype = 'GenericResource'
-    fname = '/path/to/a/file'
-    resource_id = hs.createResource(rtype, title, resource_file=fname, keywords=keywords, abstract=abstract)
+    fpath = '/path/to/a/file'
+    resource_id = hs.createResource(rtype, title, resource_file=fpath, keywords=keywords, abstract=abstract)
     
 To make a resource public:
 
@@ -84,3 +84,28 @@ To delete a resource:
     auth = HydroShareAuthBasic(username='myusername', password='mypassword')
     hs = HydroShare(auth=auth)
     hs.deleteResource('ID OF RESOURCE GOES HERE')
+
+To add a file to a resource:
+
+    from hs_restclient import HydroShare, HydroShareAuthBasic
+    auth = HydroShareAuthBasic(username='myusername', password='mypassword')
+    hs = HydroShare(auth=auth)
+    fpath = '/path/to/somefile.txt'
+    resource_id = hs.addResourceFile('ID OF RESOURCE GOES HERE', fpath)
+    
+To get a file in a resource:
+
+    from hs_restclient import HydroShare, HydroShareAuthBasic
+    auth = HydroShareAuthBasic(username='myusername', password='mypassword')
+    hs = HydroShare(auth=auth)
+    fname = 'somefile.txt'
+    fpath = hs.addResourceFile('ID OF RESOURCE GOES HERE', fname, destination='/directory/to/download/file/to')
+    
+To delete a file from a resource:
+
+    from hs_restclient import HydroShare, HydroShareAuthBasic
+    auth = HydroShareAuthBasic(username='myusername', password='mypassword')
+    hs = HydroShare(auth=auth)
+    fname = 'somefile.txt'
+    resource_id = hs.deleteResourceFile('ID OF RESOURCE GOES HERE', fname)
+
