@@ -111,7 +111,6 @@ def resourceListFilterType_get(url, request):
 @urlmatch(netloc=NETLOC)
 def createResourceCRUD(url, request):
     file_path = None
-    #import pdb; pdb.set_trace()
     # This gets tricky.  HydroShare.createResource() can implicitly
     # call HydroShare.getResourceTypes(), so we need to handle those requests too
     if request.method == 'GET':
@@ -135,6 +134,31 @@ def createResourceCRUD(url, request):
         response_status = 201
     elif request.method == 'DELETE' and url.path == '/hsapi/resource/0b047b77767e46c6b6f525a2f386b9fe/':
         file_path = url.netloc + url.path + 'delete-response'
+        response_status = 200
+    else:
+        file_path = ''
+
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(response_status, content, HEADERS, None, 5, request)
+
+@urlmatch(netloc=NETLOC)
+def resourceFileCRUD(url, request):
+    file_path = None
+    if request.method == 'GET':
+        if url.path == '/hsapi/resource/0b047b77767e46c6b6f525a2f386b9fe/files/another_resource_file.txt':
+            file_path = url.netloc + url.path
+            response_status = 200
+    elif request.method == 'POST' and url.path == '/hsapi/resource/0b047b77767e46c6b6f525a2f386b9fe/files/':
+            file_path = url.netloc + url.path + 'add-response'
+            response_status = 201
+    elif request.method == 'DELETE' and url.path == '/hsapi/resource/0b047b77767e46c6b6f525a2f386b9fe/files/another_resource_file.txt':
+        path = os.path.dirname(url.path)
+        file_path = url.netloc + path + '/' + 'delete-response'
         response_status = 200
     else:
         file_path = ''

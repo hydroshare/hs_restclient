@@ -4,7 +4,7 @@
 
         python test_hs_restclient.py
 """
-
+import os
 import sys
 sys.path.append('../')
 import unittest
@@ -97,7 +97,6 @@ class TestGetResourceList(unittest.TestCase):
         for (i, r) in enumerate(res_list):
             self.assertEquals(r['resource_type'], 'RasterResource')
 
-    #@with_httmock(mocks.hydroshare.createResourceCRUD)
     def test_create_get_delete_resource(self):
         hs = HydroShare()
 
@@ -132,6 +131,27 @@ class TestGetResourceList(unittest.TestCase):
             # Delete
             delres = hs.deleteResource(newres)
             self.assertEqual(delres, newres)
+
+    @with_httmock(mocks.hydroshare.resourceFileCRUD)
+    def test_create_get_delete_resource_file(self):
+        hs = HydroShare()
+        # Add
+        res_id = '0b047b77767e46c6b6f525a2f386b9fe'
+        fpath = 'mocks/data/another_resource_file.txt'
+        fname = os.path.basename(fpath)
+        resp = hs.addResourceFile(res_id, fpath)
+        self.assertEqual(resp, res_id)
+
+        # Get
+        tmpdir = tempfile.mkdtemp()
+        hs.getResourceFile(res_id, fname, destination=tmpdir)
+        # TODO: open the file and compare the payload to fname
+        shutil.rmtree(tmpdir)
+
+        # Delete
+        delres = hs.deleteResourceFile(res_id, fname)
+        self.assertEqual(delres, res_id)
+
 
 if __name__ == '__main__':
     unittest.main()
