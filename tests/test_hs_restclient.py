@@ -11,7 +11,9 @@ import unittest
 from datetime import date, datetime
 import tempfile
 import shutil
-import zipfile
+from zipfile import ZipFile
+import difflib
+import filecmp
 
 from httmock import with_httmock, HTTMock
 
@@ -125,7 +127,12 @@ class TestGetResourceList(unittest.TestCase):
             # Get
             tmpdir = tempfile.mkdtemp()
             hs.getResource(newres, destination=tmpdir)
-            # TODO: open the zipfile and compare the payload to fname
+            with ZipFile(os.path.join(tmpdir, '0b047b77767e46c6b6f525a2f386b9fe.zip'), 'r') as zfile:
+                contents = zfile.namelist()
+                self.assertEqual(contents[0], '2015.05.22.13.14.24/')
+                downloaded = zfile.open('2015.05.22.13.14.24/data/contents/minimal_resource_file.txt', 'r')
+                original = open('mocks/data/minimal_resource_file.txt', 'r')
+                self.assertEqual(downloaded.read(), original.read())
             shutil.rmtree(tmpdir)
 
             # Delete
@@ -145,7 +152,8 @@ class TestGetResourceList(unittest.TestCase):
         # Get
         tmpdir = tempfile.mkdtemp()
         hs.getResourceFile(res_id, fname, destination=tmpdir)
-        # TODO: open the file and compare the payload to fname
+        tmpfile = os.path.join(tmpdir, fname)
+        self.assertTrue(filecmp.cmp(tmpfile, fpath, shallow=False))
         shutil.rmtree(tmpdir)
 
         # Delete
