@@ -29,15 +29,15 @@ class TestGetResourceTypes(unittest.TestCase):
     @with_httmock(mocks.hydroshare.resourceTypes_get)
     def test_get_resource_types(self):
         hs = HydroShare()
-        res_type_proto = {u'GenericResource',
-                          u'ModelInstanceResource',
-                          u'ModelProgramResource',
-                          u'NetcdfResource',
-                          u'RasterResource',
-                          u'RefTimeSeries',
-                          u'SWATModelInstanceResource',
-                          u'TimeSeriesResource',
-                          u'ToolResource'}
+        res_type_proto = {'GenericResource',
+                          'ModelInstanceResource',
+                          'ModelProgramResource',
+                          'NetcdfResource',
+                          'RasterResource',
+                          'RefTimeSeries',
+                          'SWATModelInstanceResource',
+                          'TimeSeriesResource',
+                          'ToolResource'}
 
         res_types = hs.getResourceTypes()
         self.assertSetEqual(res_type_proto, res_types)

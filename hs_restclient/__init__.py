@@ -5,17 +5,17 @@ Client library for HydroShare REST API
 """
 
 __title__ = 'hs_restclient'
-__version__ = '1.0.0'
+__version__ = '1.0.0b1'
 
 import os
 import datetime
 import zipfile
 import tempfile
 import shutil
-import httplib
 
 import requests
 
+from .compat import http_responses
 from .util import is_sequence
 
 
@@ -89,7 +89,7 @@ class HydroShareHTTPException(HydroShareException):
         msg = "Received status {status_code} {status_msg} when accessing {url} " + \
               "with method {method} and params {params}."
         return msg.format(status_code=self.status_code,
-                          status_msg=httplib.responses[self.status_code],
+                          status_msg=http_responses[self.status_code],
                           url=self.url,
                           method=self.method,
                           params=self.params)
