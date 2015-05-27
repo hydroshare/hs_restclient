@@ -4,7 +4,8 @@ from setuptools import setup, find_packages
 from codecs import open
 from os import path
 
-import hs_restclient
+# the requirements of hs_restclient need to exist to import. So setup will often fail
+#import hs_restclient
 
 here = path.abspath(path.dirname(__file__))
 
@@ -13,12 +14,11 @@ with open(path.join(here, 'DESCRIPTION.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name=hs_restclient.__title__,
-
+    name='hs_restclient',
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version=hs_restclient.__version__,
+    version='1.0.0',
 
     description='HydroShare REST API client library',
     long_description=long_description,
