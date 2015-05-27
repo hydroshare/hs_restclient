@@ -133,6 +133,8 @@ class TestGetResourceList(unittest.TestCase):
                 downloaded = zfile.open('2015.05.22.13.14.24/data/contents/minimal_resource_file.txt', 'r')
                 original = open('mocks/data/minimal_resource_file.txt', 'r')
                 self.assertEqual(downloaded.read(), original.read())
+                downloaded.close()
+                original.close()
             shutil.rmtree(tmpdir)
 
             # Delete

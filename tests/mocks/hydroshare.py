@@ -28,7 +28,7 @@ class Resource:
         """ Perform a GET request on the resource.
         :rtype: str
         """
-        with open(self.path, 'r') as f:
+        with open(self.path, 'rb') as f:
             content = f.read()
         return content
 
