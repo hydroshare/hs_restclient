@@ -106,9 +106,9 @@ class HydroShare(object):
         :param auth: Concrete instance of AbstractHydroShareAuth (i.e. HydroShareAuthBasic)
         :param use_https: Boolean, if True, HTTPS will be used
         :param port: Integer representing the TCP port on which to connect
-        to the HydroShare server
+            to the HydroShare server
 
-        :raises HydroShareException if auth is not a known authentication type.
+        :raises: HydroShareException if auth is not a known authentication type.
     """
 
     _URL_PROTO_WITHOUT_PORT = "{scheme}://{hostname}/hsapi"
@@ -195,20 +195,20 @@ class HydroShare(object):
         :param creator: Filter results by the HydroShare user name of resource creators
         :param owner: Filter results by the HydroShare user name of resource owners
         :param user: Filter results by the HydroShare user name of resource users (i.e. owner, editor, viewer, public
-        resource)
+            resource)
         :param group: Filter results by the HydroShare group name associated with resources
         :param from_date: Filter results to those created after from_date.  Must be datetime.date.
         :param to_date: Filter results to those created before to_date.  Must be datetime.date.  Because dates have
-        no time information, you must specify date+1 day to get results for date (e.g. use 2015-05-06 to get
-        resources created up to and including 2015-05-05)
+            no time information, you must specify date+1 day to get results for date (e.g. use 2015-05-06 to get
+            resources created up to and including 2015-05-05)
         :param types: Filter results to particular HydroShare resource types.  Must be a sequence type
-        (e.g. list, tuple, etc.), but not a string.
+            (e.g. list, tuple, etc.), but not a string.
 
-        :raise HydroShareHTTPException to signal an HTTP error
-        :raise HydroShareArgumentException for any invalid arguments
+        :raises: HydroShareHTTPException to signal an HTTP error
+        :raises: HydroShareArgumentException for any invalid arguments
 
         :return: A generator that can be used to fetch dict objects, each dict representing
-        the JSON object representation of the resource returned by the REST end point.  For example:
+            the JSON object representation of the resource returned by the REST end point.  For example:
 
         >>> for resource in hs.getResourceList():
         >>>>    print resource
@@ -245,7 +245,7 @@ class HydroShare(object):
 
           /hsapi/resourceList/?sharedWith=user
 
-        :raise: HydroShareArgumentException if any filter parameters are invalid.
+        :raises:: HydroShareArgumentException if any filter parameters are invalid.
         """
         url = "{url_base}/resourceList/".format(url_base=self.url_base)
 
@@ -306,10 +306,11 @@ class HydroShare(object):
 
         :param pid: The HydroShare ID of the resource
 
-        :raise HydroShareHTTPException to signal an HTTP error
+        :raises: HydroShareHTTPException to signal an HTTP error
 
         :return: A dict representing the JSON object representation of the resource returned by the REST end point.
-        For example:
+
+        Example of data returned:
 
         {u'bag_url': u'http://www.hydroshare.org/static/media/bags/hr3hy35y5ht4y54hhthrtg43w.zip',
           u'creator': u'B Miles',
@@ -343,19 +344,19 @@ class HydroShare(object):
 
         :param pid: The HydroShare ID of the resource
         :param destination: String representing the directory to save bag to. Bag will be saved to file named
-        $(PID).zip in destination; existing file of the same name will be overwritten. If None, a stream to the zipped
-        bag will be returned instead.
+            $(PID).zip in destination; existing file of the same name will be overwritten. If None, a stream to the
+            zipped bag will be returned instead.
         :param unzip: True if the bag should be unzipped when saved to destination. Bag contents to be saved to
-        directory named $(PID) residing in destination. Only applies when destination is not None.
+            directory named $(PID) residing in destination. Only applies when destination is not None.
 
-        :raise HydroShareArgumentException if any arguments are invalid.
-        :raise HydroShareNotAuthorized if the user is not authorized to access the
-        resource.
-        :raise HydroShareNotFound if the resource was not found.
-        :raise HydroShareHTTPException to signal an HTTP error
+        :raises: HydroShareArgumentException if any arguments are invalid.
+        :raises: HydroShareNotAuthorized if the user is not authorized to access the
+            resource.
+        :raises: HydroShareNotFound if the resource was not found.
+        :raises: HydroShareHTTPException to signal an HTTP error
 
         :return: None if the bag was saved directly to disk.  Or a generator representing a buffered stream of the
-        bytes comprising the bag returned by the REST end point.
+            bytes comprising the bag returned by the REST end point.
         """
         stream = self._getBagStream(pid)
         if destination:
@@ -407,7 +408,7 @@ class HydroShare(object):
 
         :return: A set of strings representing the HydroShare resource types
 
-        :raise HydroShareHTTPException to signal an HTTP error
+        :raises: HydroShareHTTPException to signal an HTTP error
         """
         url = "{url_base}/resourceTypes/".format(url_base=self.url_base)
 
@@ -424,14 +425,14 @@ class HydroShare(object):
         """ Create a new resource.
 
         :param resource_type: string representing the a HydroShare resource type recognized by this
-        server.
+            server.
         :param title: string representing the title of the new resource
         :param resource_file: a read-only binary file-like object (i.e. opened with the flag 'rb') or a string
-        representing path to file to be uploaded as part of the new resource
+            representing path to file to be uploaded as part of the new resource
         :param resource_filename: string representing the filename of the resource file.  Must be specified
-        if resource_file is a file-like object.  If resource_file is a string representing a valid file path,
-        and resource_filename is not specified, resource_filename will be equal to os.path.basename(resource_file).
-        is a string
+            if resource_file is a file-like object.  If resource_file is a string representing a valid file path,
+            and resource_filename is not specified, resource_filename will be equal to os.path.basename(resource_file).
+            is a string
         :param abstract: string representing abstract of resource
         :param keywords: list of strings representing keywords to associate with the resource
         :param edit_users: list of HydroShare usernames who will be given edit permissions
@@ -441,9 +442,9 @@ class HydroShare(object):
 
         :return: string representing ID of newly created resource.
 
-        :raise HydroShareArgumentException if any parameters are invalid.
-        :raise HydroShareNotAuthorized if user is not authorized to perform action.
-        :raise HydroShareHTTPException if an unexpected HTTP response code is encountered.
+        :raises: HydroShareArgumentException if any parameters are invalid.
+        :raises: HydroShareNotAuthorized if user is not authorized to perform action.
+        :raises: HydroShareHTTPException if an unexpected HTTP response code is encountered.
 
         """
         url = "{url_base}/resource/".format(url_base=self.url_base)
@@ -549,14 +550,14 @@ class HydroShare(object):
 
         :param pid: The HydroShare ID of the resource
         :param resource_file: a read-only binary file-like object (i.e. opened with the flag 'rb') or a string
-        representing path to file to be uploaded as part of the new resource
+            representing path to file to be uploaded as part of the new resource
 
         :return: Dictionary containing 'resource_id' the ID of the resource to which the file was added, and
-         'file_name' the filename of the file added.
+                'file_name' the filename of the file added.
 
-        :raise HydroShareNotAuthorized if user is not authorized to perform action.
-        :raise HydroShareNotFound if the resource was not found.
-        :raise HydroShareHTTPException if an unexpected HTTP response code is encountered.
+        :raises: HydroShareNotAuthorized if user is not authorized to perform action.
+        :raises: HydroShareNotFound if the resource was not found.
+        :raises: HydroShareHTTPException if an unexpected HTTP response code is encountered.
         """
         url = "{url_base}/resource/{pid}/files/".format(url_base=self.url_base,
                                                         pid=pid)
@@ -588,14 +589,14 @@ class HydroShare(object):
         :param pid: The HydroShare ID of the resource
         :param filename: String representing the name of the resource file to get.
         :param destination: String representing the directory to save the resource file to. If None, a stream
-        to the resource file will be returned instead.
+            to the resource file will be returned instead.
         :return: The path of the downloaded file (if destination was specified), or a stream to the resource
-        file.
+            file.
 
-        :raise HydroShareArgumentException if any parameters are invalid.
-        :raise HydroShareNotAuthorized if user is not authorized to perform action.
-        :raise HydroShareNotFound if the resource was not found.
-        :raise HydroShareHTTPException if an unexpected HTTP response code is encountered.
+        :raises: HydroShareArgumentException if any parameters are invalid.
+        :raises: HydroShareNotAuthorized if user is not authorized to perform action.
+        :raises: HydroShareNotFound if the resource was not found.
+        :raises: HydroShareHTTPException if an unexpected HTTP response code is encountered.
         """
         url = "{url_base}/resource/{pid}/files/{filename}".format(url_base=self.url_base,
                                                                   pid=pid,
@@ -633,11 +634,11 @@ class HydroShare(object):
         :param filename: String representing the name of the resource file to delete
 
         :return: Dictionary containing 'resource_id' the ID of the resource from which the file was deleted, and
-         'file_name' the filename of the file deleted.
+            'file_name' the filename of the file deleted.
 
-        :raise HydroShareNotAuthorized if user is not authorized to perform action.
-        :raise HydroShareNotFound if the resource or resource file was not found.
-        :raise HydroShareHTTPException if an unexpected HTTP response code is encountered.
+        :raises: HydroShareNotAuthorized if user is not authorized to perform action.
+        :raises: HydroShareNotFound if the resource or resource file was not found.
+        :raises: HydroShareHTTPException if an unexpected HTTP response code is encountered.
         """
         url = "{url_base}/resource/{pid}/files/{filename}".format(url_base=self.url_base,
                                                                   pid=pid,
