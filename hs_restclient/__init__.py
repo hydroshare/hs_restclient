@@ -43,7 +43,7 @@ class HydroShareNotAuthorized(HydroShareException):
         return msg.format(method=self.method, url=self.url)
 
     def __unicode__(self):
-        return self.__str__()
+        return unicode(str(self))
 
 
 class HydroShareNotFound(HydroShareException):
@@ -65,7 +65,7 @@ class HydroShareNotFound(HydroShareException):
         return msg
 
     def __unicode__(self):
-        return self.__str__()
+        return unicode(str(self))
 
 
 class HydroShareHTTPException(HydroShareException):
@@ -95,7 +95,7 @@ class HydroShareHTTPException(HydroShareException):
                           params=self.params)
 
     def __unicode__(self):
-        return self.__str__()
+        return unicode(str(self))
 
 
 class HydroShare(object):
