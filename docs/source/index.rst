@@ -114,7 +114,7 @@ To get a file in a resource:
     >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
     >>> hs = HydroShare(auth=auth)
     >>> fname = 'somefile.txt'
-    >>> fpath = hs.addResourceFile('ID OF RESOURCE GOES HERE', fname, destination='/directory/to/download/file/to')
+    >>> fpath = hs.getResourceFile('ID OF RESOURCE GOES HERE', fname, destination='/directory/to/download/file/to')
 
 To delete a file from a resource:
 
