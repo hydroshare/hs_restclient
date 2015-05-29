@@ -271,7 +271,7 @@ class HydroShare(object):
         if types:
             if not is_sequence(types):
                 raise HydroShareArgumentException("Types must be a sequence type, but not a string.")
-            params['types'] = types
+            params['type'] = types
 
         num_resources = 0
 

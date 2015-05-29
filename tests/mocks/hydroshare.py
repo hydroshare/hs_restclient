@@ -96,7 +96,7 @@ def resourceListFilterDate_get(url, request):
 
 @urlmatch(netloc=NETLOC, method=GET)
 def resourceListFilterType_get(url, request):
-    if url.query == 'types=RasterResource':
+    if url.query == 'type=RasterResource':
         file_path = url.netloc + url.path + 'resourceList-type'
     else:
         file_path = '';
