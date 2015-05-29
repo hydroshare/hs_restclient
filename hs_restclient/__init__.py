@@ -16,7 +16,6 @@ import shutil
 import requests
 
 from .compat import http_responses
-from .util import is_sequence
 
 
 STREAM_CHUNK_SIZE = 100 * 1024
@@ -269,9 +268,7 @@ class HydroShare(object):
             else:
                 raise HydroShareArgumentException("to_date must of type '{0}'.".format(datetime.date))
         if types:
-            if not is_sequence(types):
-                raise HydroShareArgumentException("Types must be a sequence type, but not a string.")
-            params['types'] = types
+            params['type'] = types
 
         num_resources = 0
 
