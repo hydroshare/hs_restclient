@@ -244,7 +244,6 @@ class HydroShare(object):
 
           /hsapi/resourceList/?sharedWith=user
 
-        :raises:: HydroShareArgumentException if any filter parameters are invalid.
         """
         url = "{url_base}/resourceList/".format(url_base=self.url_base)
 
@@ -258,15 +257,9 @@ class HydroShare(object):
         if group:
             params['group'] = group
         if from_date:
-            if type(from_date) is datetime.date:
-                params['from_date'] = from_date.strftime('%Y-%m-%d')
-            else:
-                raise HydroShareArgumentException("from_date must of type '{0}'.".format(datetime.date))
+            params['from_date'] = from_date.strftime('%Y-%m-%d')
         if to_date:
-            if type(to_date) is datetime.date:
-                params['to_date'] = to_date.strftime('%Y-%m-%d')
-            else:
-                raise HydroShareArgumentException("to_date must of type '{0}'.".format(datetime.date))
+            params['to_date'] = to_date.strftime('%Y-%m-%d')
         if types:
             params['type'] = types
 
