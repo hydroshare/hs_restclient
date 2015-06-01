@@ -119,12 +119,12 @@ def createResourceCRUD(url, request):
             # Remove trailing slash so that we can open the file
             file_path = file_path.strip('/')
             response_status = 200
-        if url.path == '/hsapi/sysmeta/0b047b77767e46c6b6f525a2f386b9fe/':
+        if url.path == '/hsapi/sysmeta/511debf8858a4ea081f78d66870da76c/':
             file_path = url.netloc + url.path
             # Remove trailing slash so that we can open the file
             file_path = file_path.strip('/')
             response_status = 200
-        if url.path == '/hsapi/resource/0b047b77767e46c6b6f525a2f386b9fe/':
+        if url.path == '/hsapi/resource/511debf8858a4ea081f78d66870da76c/':
             file_path = url.netloc + url.path
             # Remove trailing slash so that we can open the file
             file_path = file_path.strip('/') + '.zip'
@@ -132,7 +132,7 @@ def createResourceCRUD(url, request):
     elif request.method == 'POST' and url.path == '/hsapi/resource/':
         file_path = url.netloc + url.path + 'create-response'
         response_status = 201
-    elif request.method == 'DELETE' and url.path == '/hsapi/resource/0b047b77767e46c6b6f525a2f386b9fe/':
+    elif request.method == 'DELETE' and url.path == '/hsapi/resource/511debf8858a4ea081f78d66870da76c/':
         file_path = url.netloc + url.path + 'delete-response'
         response_status = 200
     else:
@@ -150,13 +150,13 @@ def createResourceCRUD(url, request):
 def resourceFileCRUD(url, request):
     file_path = None
     if request.method == 'GET':
-        if url.path == '/hsapi/resource/0b047b77767e46c6b6f525a2f386b9fe/files/another_resource_file.txt':
+        if url.path == '/hsapi/resource/511debf8858a4ea081f78d66870da76c/files/another_resource_file.txt':
             file_path = url.netloc + url.path
             response_status = 200
-    elif request.method == 'POST' and url.path == '/hsapi/resource/0b047b77767e46c6b6f525a2f386b9fe/files/':
+    elif request.method == 'POST' and url.path == '/hsapi/resource/511debf8858a4ea081f78d66870da76c/files/':
             file_path = url.netloc + url.path + 'add-response'
             response_status = 201
-    elif request.method == 'DELETE' and url.path == '/hsapi/resource/0b047b77767e46c6b6f525a2f386b9fe/files/another_resource_file.txt':
+    elif request.method == 'DELETE' and url.path == '/hsapi/resource/511debf8858a4ea081f78d66870da76c/files/another_resource_file.txt':
         path = os.path.dirname(url.path)
         file_path = url.netloc + path + '/' + 'delete-response'
         response_status = 200
@@ -179,7 +179,7 @@ def accessRules_put(url, request):
         else:
             file_path = ''
     elif request.method == 'GET':
-        if url.path == '/hsapi/sysmeta/0b047b77767e46c6b6f525a2f386b9fe/':
+        if url.path == '/hsapi/sysmeta/511debf8858a4ea081f78d66870da76c/':
             file_path = url.netloc + url.path
             # Remove trailing slash so that we can open the file
             file_path = file_path.strip('/') + '-public'

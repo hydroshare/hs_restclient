@@ -127,10 +127,9 @@ class TestGetResourceList(unittest.TestCase):
             # Get
             tmpdir = tempfile.mkdtemp()
             hs.getResource(newres, destination=tmpdir)
-            with ZipFile(os.path.join(tmpdir, '0b047b77767e46c6b6f525a2f386b9fe.zip'), 'r') as zfile:
-                contents = zfile.namelist()
-                self.assertEqual(contents[0], '2015.05.22.13.14.24/')
-                downloaded = zfile.open('2015.05.22.13.14.24/data/contents/minimal_resource_file.txt', 'r')
+            with ZipFile(os.path.join(tmpdir, '511debf8858a4ea081f78d66870da76c.zip'), 'r') as zfile:
+                self.assertTrue('511debf8858a4ea081f78d66870da76c/data/contents/minimal_resource_file.txt' in zfile.namelist())
+                downloaded = zfile.open('511debf8858a4ea081f78d66870da76c/data/contents/minimal_resource_file.txt', 'r')
                 original = open('mocks/data/minimal_resource_file.txt', 'r')
                 self.assertEqual(downloaded.read(), original.read())
                 downloaded.close()
@@ -145,7 +144,7 @@ class TestGetResourceList(unittest.TestCase):
     def test_create_get_delete_resource_file(self):
         hs = HydroShare()
         # Add
-        res_id = '0b047b77767e46c6b6f525a2f386b9fe'
+        res_id = '511debf8858a4ea081f78d66870da76c'
         fpath = 'mocks/data/another_resource_file.txt'
         fname = os.path.basename(fpath)
         resp = hs.addResourceFile(res_id, fpath)
