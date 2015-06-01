@@ -369,10 +369,15 @@ class HydroShare(object):
                 fd.write(chunk)
 
         if unzip:
-            dirname = os.path.join(destination, pid)
-            zfile = zipfile.ZipFile(filepath)
-            zfile.extractall(dirname)
-            shutil.rmtree(tempdir)
+            try:
+                dirname = os.path.join(destination, pid)
+                zfile = zipfile.ZipFile(filepath)
+                zfile.extractall(dirname)
+            except Exception as e:
+                print("Received error {e} when unzipping BagIt archive to {dest}.".format(e=repr(e),
+                                                                                          dest=destination))
+            finally:
+                shutil.rmtree(tempdir)
 
     def _getBagStream(self, pid):
         bag_url = "{url_base}/resource/{pid}/".format(url_base=self.url_base,
