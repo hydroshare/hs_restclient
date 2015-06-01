@@ -344,12 +344,12 @@ class HydroShare(object):
         """
         stream = self._getBagStream(pid)
         if destination:
-            self._getBagAndStoreOnFilesystem(stream, pid, destination, unzip)
+            self._storeBagOnFilesystem(stream, pid, destination, unzip)
             return None
         else:
             return stream
 
-    def _getBagAndStoreOnFilesystem(self, stream, pid, destination, unzip=False):
+    def _storeBagOnFilesystem(self, stream, pid, destination, unzip=False):
         if not os.path.isdir(destination):
             raise HydroShareArgumentException("{0} is not a directory.".format(destination))
         if not os.access(destination, os.W_OK):
