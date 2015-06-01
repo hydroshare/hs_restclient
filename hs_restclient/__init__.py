@@ -8,7 +8,6 @@ __title__ = 'hs_restclient'
 __version__ = '1.0.0'
 
 import os
-import datetime
 import zipfile
 import tempfile
 import shutil
