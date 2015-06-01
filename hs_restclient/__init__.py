@@ -321,10 +321,7 @@ class HydroShare(object):
             else:
                 raise HydroShareHTTPException((url, 'GET', r.status_code))
 
-        resource = r.json()
-        assert(resource['resource_id'] == pid)
-
-        return resource
+        return r.json()
 
     def getResource(self, pid, destination=None, unzip=False):
         """ Get a resource in BagIt format
