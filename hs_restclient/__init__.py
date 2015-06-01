@@ -262,16 +262,12 @@ class HydroShare(object):
         if types:
             params['type'] = types
 
-        num_resources = 0
-
         # Get first (only?) page of results
         r = self._request('GET', url, params=params)
         if r.status_code != 200:
             raise HydroShareHTTPException((url, 'GET', r.status_code, params))
         res = r.json()
-        tot_resources = res['count']
         resources = res['results']
-        num_resources += len(res['results'])
 
         for r in resources:
             yield r
@@ -285,7 +281,6 @@ class HydroShare(object):
             resources = res['results']
             for r in resources:
                 yield r
-            num_resources += len(res['results'])
 
     def getSystemMetadata(self, pid):
         """ Get system metadata for a resource
