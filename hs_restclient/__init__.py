@@ -278,7 +278,7 @@ class HydroShare(object):
             yield r
 
         # Get remaining pages (if any exist)
-        while res['next'] and num_resources < tot_resources:
+        while res['next']:
             r = self._request('GET', res['next'], params=params)
             if r.status_code != 200:
                 raise HydroShareHTTPException((url, 'GET', r.status_code, params))
@@ -287,9 +287,6 @@ class HydroShare(object):
             for r in resources:
                 yield r
             num_resources += len(res['results'])
-
-        if num_resources != tot_resources:
-            raise HydroShareException("Expected {tot} resources but found {num}.".format(tot_resources, num_resources))
 
     def getSystemMetadata(self, pid):
         """ Get system metadata for a resource
