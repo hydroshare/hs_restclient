@@ -4,9 +4,6 @@ from setuptools import setup, find_packages
 from codecs import open
 from os import path
 
-# the requirements of hs_restclient need to exist to import. So setup will often fail
-#import hs_restclient
-
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the relevant file
