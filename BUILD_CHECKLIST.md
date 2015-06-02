@@ -7,7 +7,8 @@
 
 # Update version information
 
-The HydroShare REST Python client library uses [semantic versioning 2.0.0](http://semver.org).
+The HydroShare REST Python client library uses [semantic versioning 2.0.0](http://semver.org),
+and follows Python-specific conventions described in [PEP 0440](https://www.python.org/dev/peps/pep-0440/). 
 
 1. Update __version__ in hs_restclient.__init__.py
 
@@ -74,7 +75,7 @@ that cannot be re-used.  If this happens, change the version in setup.py to, for
 
 # Set version information to next release
 
-1. Update __version__ in hs_restclient.__init__.py, e.g. '1.0.1-dev'.
+1. Update __version__ in hs_restclient.__init__.py, e.g. '1.0.1.dev1'.
 
 2. Update version in setup.py to match that in hs_restclient.__init__.py
 
