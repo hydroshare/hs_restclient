@@ -12,14 +12,6 @@ hs_restclient.compat module
     :undoc-members:
     :show-inheritance:
 
-hs_restclient.util module
--------------------------
-
-.. automodule:: hs_restclient.util
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 
 Module contents
 ---------------
