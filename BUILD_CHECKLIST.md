@@ -1,4 +1,10 @@
 
+# Update development branch
+
+1. git checkout develop
+
+2. Merge any desired feature branches into develop (e.g. git merge FEATURE_BRANCH_NAME)
+
 # Update version information
 
 The HydroShare REST Python client library uses [semantic versioning 2.0.0](http://semver.org).
@@ -24,6 +30,40 @@ The HydroShare REST Python client library uses [semantic versioning 2.0.0](http:
 
 # Update release notes
 
-Add a brief summary of changes to RELEASE_NOTES.md
+Add a brief summary of changes to RELEASE_NOTES.md.
 
-# 
+# Merge develop into master
+
+1. git commit -am '1.0.0 release'
+
+2. git checkout master
+
+3. git merge develop
+
+# Create release tag, push master to GitHub
+
+1. git tag -a 1.0.0 -m 'Initial release'
+
+2. git push origin master --tags
+
+# Publish version to PyPi
+
+    python setup.py register sdist upload --no-user-cfg
+
+> Only do this once per release unless you know what you are doing!!!
+
+# Merge master back into develop
+
+1. git checkout develop
+
+2. git merge master
+
+# Set version information to next release
+
+1. Update __version__ in hs_restclient.__init__.py, e.g. '1.0.1-dev'.
+
+2. Update version in setup.py to match that in hs_restclient.__init__.py
+
+> This version number will be changed to a 'non-development' version when the 
+> next release is done.
+
