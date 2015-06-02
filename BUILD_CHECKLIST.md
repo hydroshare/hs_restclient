@@ -48,9 +48,23 @@ Add a brief summary of changes to RELEASE_NOTES.md.
 
 # Publish version to PyPi
 
-    python setup.py register sdist upload --no-user-cfg
+    sh publish.sh
 
-> Only do this once per release unless you know what you are doing!!!
+During the process of puYou will see something like the following:
+    
+    I can store your PyPI login so future submissions will be faster.
+    (the login will be stored in /Users/miles/.pypirc)
+    Save your login (y/N)?
+    
+Say yes to this (by typing 'y' and hitting enter; don't worry, the publish scrip).  
+will save a backup of an existing pypirc and will restore this backup after publishing
+has finished).  If you fail to save the HyroShare credentials to a pypirc,
+the actual upload of this version will fail and you will be left with an empty version 
+that cannot be re-used.  If this happens, change the version in setup.py to, for example,
+1.0.0.post1, and then re-publish.
+
+> Only run publish.sh once per release unless you know what you are doing!!!
+
 
 # Merge master back into develop
 
