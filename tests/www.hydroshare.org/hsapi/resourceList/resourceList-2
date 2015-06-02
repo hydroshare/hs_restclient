@@ -1,0 +1,29 @@
+{
+    "count": 5,
+    "next": null,
+    "previous": "http://www.hydroshare.org/hsapi/resourceList/",
+    "results": [
+        {
+            "resource_type": "GenericResource",
+            "resource_title": "Create via REST API and Python client library 2",
+            "resource_id": "c817e936ac1147639787c0d4688d6319",
+            "creator": "selimnairb",
+            "date_created": "05-21-2015",
+            "date_last_updated": "05-21-2015",
+            "public": false,
+            "bag_url": "http://mill24.cep.unc.edu:8000/static/media/bags/c817e936ac1147639787c0d4688d6319.zip",
+            "science_metadata_url": "http://mill24.cep.unc.edu:8000/hsapi/scimeta/c817e936ac1147639787c0d4688d6319/"
+        },
+        {
+            "resource_type": "RasterResource",
+            "resource_title": "Create via REST API and Python client library 3",
+            "resource_id": "408acb6b870d4297b8b036edcd9c3c58",
+            "creator": "bmiles",
+            "date_created": "05-22-2015",
+            "date_last_updated": "05-22-2015",
+            "public": true,
+            "bag_url": "http://mill24.cep.unc.edu:8000/static/media/bags/408acb6b870d4297b8b036edcd9c3c58.zip",
+            "science_metadata_url": "http://mill24.cep.unc.edu:8000/hsapi/scimeta/408acb6b870d4297b8b036edcd9c3c58/"
+        }
+    ]
+}

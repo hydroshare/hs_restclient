@@ -1,0 +1,11 @@
+{
+    "resource_type": "GenericResource",
+    "resource_title": "Minimal hello world resource",
+    "resource_id": "511debf8858a4ea081f78d66870da76c",
+    "creator": "admin",
+    "date_created": "06-01-2015",
+    "date_last_updated": "06-01-2015",
+    "public": true,
+    "bag_url": "http://www.hydroshare.org/static/media/bags/511debf8858a4ea081f78d66870da76c.zip",
+    "science_metadata_url": "http://www.hydroshare.org/hsapi/scimeta/511debf8858a4ea081f78d66870da76c/"
+}
