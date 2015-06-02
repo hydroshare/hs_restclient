@@ -6,6 +6,8 @@ Questions? brian_miles@unc.edu
 To run tests
 ------------
     
+To run unit tests::
+
     cd tests
     python test_hs_restclient.py
     
