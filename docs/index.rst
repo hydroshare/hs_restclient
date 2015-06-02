@@ -8,6 +8,8 @@ HydroShare REST API Python client library
 
 Release v\ |version|
 
+.. toctree::
+   :maxdepth: 2
 
 Installation
 ------------
