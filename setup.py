@@ -71,7 +71,7 @@ setup(
     # $ pip install -e .[dev,test]
     extras_require={
         'dev': ['check-manifest'],
-        'test': ['coverage'],
+        'test': ['httmock'],
     },
 
     # If there are data files included in your packages that need to be
