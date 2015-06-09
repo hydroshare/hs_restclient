@@ -176,6 +176,7 @@ class HydroShare(object):
         return r
 
     def _prepareFileForUpload(self, request_params, resource_file, resource_filename=None):
+        fname = None
         if isinstance(resource_file, basestring):
             if not os.path.isfile(resource_file) or not os.access(resource_file, os.R_OK):
                 raise HydroShareArgumentException("{0} is not a file or is not readable.".format(resource_file))
@@ -183,6 +184,8 @@ class HydroShare(object):
             close_fd = True
             if not resource_filename:
                 fname = os.path.basename(resource_file)
+            else:
+                fname = resource_filename
         else:
             if not resource_filename:
                 raise HydroShareArgumentException("resource_filename must be specified when resource_file " +
