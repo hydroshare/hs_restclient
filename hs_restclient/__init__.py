@@ -475,7 +475,7 @@ class HydroShare(object):
             params['view_groups'] = view_groups
 
         if resource_file:
-            close_fd = self._prepareFileForUpload(params, resource_file)
+            close_fd = self._prepareFileForUpload(params, resource_file, resource_filename)
 
         encoder = MultipartEncoder(params)
         if progress_callback is None:
