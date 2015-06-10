@@ -5,14 +5,17 @@ Client library for HydroShare REST API
 """
 
 __title__ = 'hs_restclient'
-__version__ = '1.0.0'
+__version__ = '1.1.0'
 
 import os
 import zipfile
 import tempfile
 import shutil
+import mimetypes
 
 import requests
+
+from requests_toolbelt import MultipartEncoder, MultipartEncoderMonitor
 
 from .compat import http_responses
 
@@ -96,6 +99,10 @@ class HydroShareHTTPException(HydroShareException):
         return unicode(str(self))
 
 
+def default_progress_callback(monitor):
+    pass
+
+
 class HydroShare(object):
     """
         Construct HydroShare object for querying HydroShare's REST API
@@ -156,19 +163,20 @@ class HydroShare(object):
         self.session = requests.Session()
         self.session.auth = self.auth
 
-    def _request(self, method, url, params=None, data=None, files=None, stream=False):
+    def _request(self, method, url, params=None, data=None, files=None, headers=None, stream=False):
         r = None
         try:
-            r = self.session.request(method, url, params=params, data=data, files=files, stream=stream)
+            r = self.session.request(method, url, params=params, data=data, files=files, headers=headers, stream=stream)
         except requests.ConnectionError:
             # We might have gotten a connection error because the server we were talking to went down.
             #  Re-initialize the session and try again
             self._initializeSession()
-            r = self.session.request(method, url, params=params, data=data, files=files, stream=stream)
+            r = self.session.request(method, url, params=params, data=data, files=files, headers=headers, stream=stream)
 
         return r
 
-    def _prepareFileForUpload(self, resource_file, resource_filename=None):
+    def _prepareFileForUpload(self, request_params, resource_file, resource_filename=None):
+        fname = None
         if isinstance(resource_file, basestring):
             if not os.path.isfile(resource_file) or not os.access(resource_file, os.R_OK):
                 raise HydroShareArgumentException("{0} is not a file or is not readable.".format(resource_file))
@@ -176,6 +184,8 @@ class HydroShare(object):
             close_fd = True
             if not resource_filename:
                 fname = os.path.basename(resource_file)
+            else:
+                fname = resource_filename
         else:
             if not resource_filename:
                 raise HydroShareArgumentException("resource_filename must be specified when resource_file " +
@@ -183,7 +193,14 @@ class HydroShare(object):
             # Assume it is a file-like object
             fd = resource_file
             fname = resource_filename
-        return ({'file': (fname, fd)}, close_fd)
+
+        mime_type = mimetypes.guess_type(fname)
+        if mime_type[0] is None:
+            mime_type = 'application/octet-stream'
+        else:
+            mime_type = mime_type[0]
+        request_params['file'] = (fname, fd, mime_type)
+        return close_fd
 
     def getResourceList(self, creator=None, owner=None, user=None, group=None, from_date=None, to_date=None,
                         types=None):
@@ -404,7 +421,8 @@ class HydroShare(object):
 
     def createResource(self, resource_type, title, resource_file=None, resource_filename=None,
                        abstract=None, keywords=None,
-                       edit_users=None, view_users=None, edit_groups=None, view_groups=None):
+                       edit_users=None, view_users=None, edit_groups=None, view_groups=None,
+                       progress_callback=None):
         """ Create a new resource.
 
         :param resource_type: string representing the a HydroShare resource type recognized by this
@@ -422,6 +440,9 @@ class HydroShare(object):
         :param view_users: list of HydroShare usernames who will be given view permissions
         :param edit_groups: list of HydroShare group names that will be given edit permissions
         :param view_groups: list of HydroShare group names that will be given view permissions
+        :param progress_callback: user-defined function to provide feedback to the user about the progress
+            of the upload of resource_file.  For more information, see:
+            http://toolbelt.readthedocs.org/en/latest/uploading-data.html#monitoring-your-streaming-multipart-upload
 
         :return: string representing ID of newly created resource.
 
@@ -437,9 +458,6 @@ class HydroShare(object):
         if not resource_type in self.resource_types:
             raise HydroShareArgumentException("Resource type {0} is not among known resources: {1}".format(resource_type,
                                                                                                            ", ".join([r for r in self.resource_types])))
-        files = None
-        if resource_file:
-            (files, close_fd) = self._prepareFileForUpload(resource_file, resource_filename)
 
         # Prepare request
         params = {'resource_type': resource_type, 'title': title}
@@ -459,10 +477,18 @@ class HydroShare(object):
         if view_groups:
             params['view_groups'] = view_groups
 
-        r = self._request('POST', url, data=params, files=files)
+        if resource_file:
+            close_fd = self._prepareFileForUpload(params, resource_file, resource_filename)
+
+        encoder = MultipartEncoder(params)
+        if progress_callback is None:
+            progress_callback = default_progress_callback
+        monitor = MultipartEncoderMonitor(encoder, progress_callback)
+
+        r = self._request('POST', url, data=monitor, headers={'Content-Type': monitor.content_type})
 
         if close_fd:
-            fd = files['file'][1]
+            fd = params['file'][1]
             fd.close()
 
         if r.status_code != 201:
@@ -522,12 +548,15 @@ class HydroShare(object):
         assert(resource['resource_id'] == pid)
         return resource['resource_id']
 
-    def addResourceFile(self, pid, resource_file):
+    def addResourceFile(self, pid, resource_file, progress_callback=None):
         """ Add a new file to an existing resource
 
         :param pid: The HydroShare ID of the resource
         :param resource_file: a read-only binary file-like object (i.e. opened with the flag 'rb') or a string
             representing path to file to be uploaded as part of the new resource
+        :param progress_callback: user-defined function to provide feedback to the user about the progress
+            of the upload of resource_file.  For more information, see:
+            http://toolbelt.readthedocs.org/en/latest/uploading-data.html#monitoring-your-streaming-multipart-upload
 
         :return: Dictionary containing 'resource_id' the ID of the resource to which the file was added, and
                 'file_name' the filename of the file added.
@@ -539,12 +568,18 @@ class HydroShare(object):
         url = "{url_base}/resource/{pid}/files/".format(url_base=self.url_base,
                                                         pid=pid)
 
-        (files, close_fd) = self._prepareFileForUpload(resource_file)
+        params = {}
+        close_fd = self._prepareFileForUpload(params, resource_file)
 
-        r = self._request('POST', url, files=files)
+        encoder = MultipartEncoder(params)
+        if progress_callback is None:
+            progress_callback = default_progress_callback
+        monitor = MultipartEncoderMonitor(encoder, progress_callback)
+
+        r = self._request('POST', url, data=monitor, headers={'Content-Type': monitor.content_type})
 
         if close_fd:
-            fd = files['file'][1]
+            fd = params['file'][1]
             fd.close()
 
         if r.status_code != 201:
