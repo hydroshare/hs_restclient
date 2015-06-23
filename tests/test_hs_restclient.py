@@ -20,6 +20,20 @@ from httmock import with_httmock, HTTMock
 from hs_restclient import HydroShare
 import mocks.hydroshare
 
+try:
+    unicode = unicode
+except NameError:
+    # 'unicode' is undefined, must be Python 3
+    str = str
+    unicode = str
+    bytes = bytes
+    basestring = (str,bytes)
+else:
+    # 'unicode' exists, must be Python 2
+    str = str
+    unicode = unicode
+    bytes = str
+    basestring = basestring
 
 class TestGetResourceTypes(unittest.TestCase):
 
@@ -64,6 +78,12 @@ class TestGetResourceList(unittest.TestCase):
         for (i, r) in enumerate(res_list):
             self.assertEquals(r['resource_title'], self.resource_titles[i])
             self.assertEquals(r['resource_id'], self.resource_ids[i])
+
+    @with_httmock(mocks.hydroshare.resourceList_get)
+    def test_get_resource_list_lenght(self):
+        hs = HydroShare()
+        res_list = hs.getResourceList()
+        self.assertEquals(res_list.lenght(), 4)
 
     @with_httmock(mocks.hydroshare.resourceListFilterCreator_get)
     def test_get_resource_list_filter_creator(self):
