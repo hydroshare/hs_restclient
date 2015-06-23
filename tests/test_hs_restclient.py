@@ -80,10 +80,10 @@ class TestGetResourceList(unittest.TestCase):
             self.assertEquals(r['resource_id'], self.resource_ids[i])
 
     @with_httmock(mocks.hydroshare.resourceList_get)
-    def test_get_resource_list_lenght(self):
+    def test_get_resource_list_length(self):
         hs = HydroShare()
         res_list = hs.getResourceList()
-        self.assertEquals(res_list.lenght(), 4)
+        self.assertEquals(len(list(res_list)), 5)
 
     @with_httmock(mocks.hydroshare.resourceListFilterCreator_get)
     def test_get_resource_list_filter_creator(self):

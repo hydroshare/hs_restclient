@@ -301,6 +301,7 @@ class HydroShare(object):
         if num_resources != tot_resources:
             raise HydroShareException("Expected {tot} resources but found {num}.".format(tot_resources, num_resources))
 
+
     def getSystemMetadata(self, pid):
         """ Get system metadata for a resource
 
