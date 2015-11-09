@@ -334,6 +334,105 @@ class HydroShare(object):
 
         return r.json()
 
+    def getScienceMetadata(self, pid):
+        """ Get science metadata for a resource
+
+        :param pid: The HydroShare ID of the resource
+
+        :raises: HydroShareHTTPException to signal an HTTP error
+
+        :return: A string representing the XML+RDF serialization of science metadata.
+
+        Example of data returned:
+
+        <rdf:RDF xmlns:dcterms="http://purl.org/dc/terms/" xmlns:hsterms="http://hydroshare.org/terms/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs1="http://www.w3.org/2001/01/rdf-schema#" xmlns:dc="http://purl.org/dc/elements/1.1/">
+          <rdf:Description rdf:about="http://www.hydroshare.org/resource/c96993478a59442ca9e1c167fe57bf3a">
+            <dc:title>Cedar Creek SWAT Model</dc:title>
+            <dc:type rdf:resource="http://www.hydroshare.org/terms/SWATModelInstanceResource"/>
+            <dc:description>
+              <rdf:Description>
+                <dcterms:abstract>This model is Created for Cedar Creek in Indiana. This SWAT Model instance is not calibrated and is developed primarily for simulating the hydrology of the Cedar Creek Watershed in Indiana.</dcterms:abstract>
+              </rdf:Description>
+            </dc:description>
+            <dc:creator>
+              <rdf:Description rdf:about="http://www.hydroshare.org/user/64/">
+                <hsterms:name>Venkatesh Merwade</hsterms:name>
+                <hsterms:creatorOrder>1</hsterms:creatorOrder>
+                <hsterms:organization>Purdue University</hsterms:organization>
+                <hsterms:email>vmerwade@purdue.edu</hsterms:email>
+              </rdf:Description>
+            </dc:creator>
+            <dc:coverage>
+              <dcterms:period>
+                <rdf:value>name=None; start=2005-01-01T00:00:00; end=2010-12-31T00:00:00; scheme=W3C-DTF</rdf:value>
+              </dcterms:period>
+            </dc:coverage>
+            <dc:date>
+              <dcterms:created>
+                <rdf:value>2015-09-23T14:30:15.967800+00:00</rdf:value>
+              </dcterms:created>
+            </dc:date>
+            <dc:date>
+              <dcterms:modified>
+                <rdf:value>2015-09-23T14:33:52.900865+00:00</rdf:value>
+              </dcterms:modified>
+            </dc:date>
+            <dc:format>application/zip</dc:format>
+            <dc:identifier>
+              <rdf:Description>
+                <hsterms:hydroShareIdentifier>http://www.hydroshare.org/resource/c96993478a59442ca9e1c167fe57bf3a</hsterms:hydroShareIdentifier>
+              </rdf:Description>
+            </dc:identifier>
+            <dc:language>eng</dc:language>
+            <dc:rights>
+              <rdf:Description>
+                <hsterms:rightsStatement>This resource is shared under the Creative Commons Attribution CC BY.</hsterms:rightsStatement>
+                <hsterms:URL rdf:resource="http://creativecommons.org/licenses/by/4.0/"/>
+              </rdf:Description>
+            </dc:rights>
+            <dc:subject>Hydrology</dc:subject>
+            <dc:subject>Cedar Creek</dc:subject>
+            <dc:subject>SWAT</dc:subject>
+            <hsterms:ModelOutput>
+              <rdf:Description>
+                <hsterms:IncludesModelOutput>Yes</hsterms:IncludesModelOutput>
+              </rdf:Description>
+            </hsterms:ModelOutput>
+            <hsterms:ExecutedBy>
+              <rdf:Description>
+                <hsterms:ModelProgramName>SWAT</hsterms:ModelProgramName>
+              </rdf:Description>
+            </hsterms:ExecutedBy>
+            <hsterms:ModelObjective>Hydrology</hsterms:ModelObjective>
+            <hsterms:SimulationType>Normal Simulation</hsterms:SimulationType>
+            <hsterms:ModelMethod>
+              <rdf:Description>
+                <hsterms:runoffCalculationMethod>SCS CN</hsterms:runoffCalculationMethod>
+                <hsterms:flowRoutingMethod>Variable Storage</hsterms:flowRoutingMethod>
+                <hsterms:PETEstimationMethod>Penman Monteith</hsterms:PETEstimationMethod>
+              </rdf:Description>
+            </hsterms:ModelMethod>
+          </rdf:Description>
+          <rdf:Description rdf:about="http://www.hydroshare.org/terms/SWATModelInstanceResource">
+            <rdfs1:label>SWAT Model Instance Resource</rdfs1:label>
+            <rdfs1:isDefinedBy>http://www.hydroshare.org/terms</rdfs1:isDefinedBy>
+          </rdf:Description>
+        </rdf:RDF>
+
+        """
+        url = "{url_base}/scimeta/{pid}/".format(url_base=self.url_base,
+                                                 pid=pid)
+        r = self._request('GET', url)
+        if r.status_code != 200:
+            if r.status_code == 403:
+                raise HydroShareNotAuthorized(('GET', url))
+            elif r.status_code == 404:
+                raise HydroShareNotFound((pid,))
+            else:
+                raise HydroShareHTTPException((url, 'GET', r.status_code))
+
+        return r.text
+
     def getResource(self, pid, destination=None, unzip=False):
         """ Get a resource in BagIt format
 
