@@ -126,11 +126,7 @@ class HydroShare(object):
         self.session = None
         self.auth = None
         if auth:
-            if isinstance(auth, HydroShareAuthBasic):
-                # HTTP basic authentication
-                self.auth = (auth.username, auth.password)
-            else:
-                raise HydroShareException("Unsupported authentication type '{0}'.".format(str(type(auth))))
+            self.auth = auth
 
         if use_https:
             self.scheme = 'https'
@@ -146,7 +142,6 @@ class HydroShare(object):
         else:
             self.url_base = self._URL_PROTO_WITHOUT_PORT.format(scheme=self.scheme,
                                                                 hostname=self.hostname)
-
         self._initializeSession()
         self._resource_types = None
 
@@ -156,12 +151,19 @@ class HydroShare(object):
             self._resource_types = self.getResourceTypes()
         return self._resource_types
 
-
     def _initializeSession(self):
         if self.session:
             self.session.close()
-        self.session = requests.Session()
-        self.session.auth = self.auth
+
+        if self.auth is None:
+            # No authentication
+            self.session = requests.Session()
+        elif isinstance(self.auth, HydroShareAuthBasic):
+            # HTTP basic authentication
+            self.session = requests.Session()
+            self.session.auth = (self.auth.username, self.auth.password)
+        else:
+            raise HydroShareException("Unsupported authentication type '{0}'.".format(str(type(self.auth))))
 
     def _request(self, method, url, params=None, data=None, files=None, headers=None, stream=False):
         r = None
