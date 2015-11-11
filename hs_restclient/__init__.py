@@ -5,7 +5,7 @@ Client library for HydroShare REST API
 """
 
 __title__ = 'hs_restclient'
-__version__ = '1.1.1.dev1'
+__version__ = '1.2.0.dev1'
 
 import os
 import zipfile
@@ -16,6 +16,8 @@ import mimetypes
 import requests
 
 from requests_toolbelt import MultipartEncoder, MultipartEncoderMonitor
+from requests_oauthlib import OAuth2Session
+from oauthlib.oauth2 import LegacyApplicationClient, TokenExpiredError
 
 from .compat import http_responses
 
@@ -99,6 +101,11 @@ class HydroShareHTTPException(HydroShareException):
         return unicode(str(self))
 
 
+class HydroShareAuthenticationException(HydroShareException):
+    def __init__(self, args):
+        super(HydroShareArgumentException, self).__init__(args)
+
+
 def default_progress_callback(monitor):
     pass
 
@@ -108,20 +115,23 @@ class HydroShare(object):
         Construct HydroShare object for querying HydroShare's REST API
 
         :param hostname: Hostname of the HydroShare server to query
-        :param auth: Concrete instance of AbstractHydroShareAuth (i.e. HydroShareAuthBasic)
-        :param use_https: Boolean, if True, HTTPS will be used
-        :param port: Integer representing the TCP port on which to connect
-            to the HydroShare server
+        :param port: Integer representing the TCP port on which to connect to the HydroShare server
+        :param use_https: Boolean, if True, HTTPS will be used (HTTP cannot be used when auth is specified)
+        :param verify: Boolean, if True, security certificates will be verified
+        :param auth: Concrete instance of AbstractHydroShareAuth (e.g. HydroShareAuthBasic)
 
-        :raises: HydroShareException if auth is not a known authentication type.
+        :raises: HydroShareAuthenticationException if auth is not a known authentication type.
+        :raises: HydroShareAuthenticationException if auth is specified by use_https is False.
+        :raises: HydroShareAuthenticationException if other authentication errors occur.
     """
 
     _URL_PROTO_WITHOUT_PORT = "{scheme}://{hostname}/hsapi"
     _URL_PROTO_WITH_PORT = "{scheme}://{hostname}:{port}/hsapi"
 
-    def __init__(self, hostname='www.hydroshare.org', auth=None,
-                 use_https=False, port=None):
+    def __init__(self, hostname='www.hydroshare.org', port=None, use_https=True, verify=True,
+                 auth=None):
         self.hostname = hostname
+        self.verify = verify
 
         self.session = None
         self.auth = None
@@ -132,6 +142,8 @@ class HydroShare(object):
             self.scheme = 'https'
         else:
             self.scheme = 'http'
+        self.use_https = use_https
+
         if port:
             self.port = int(port)
             if self.port < 0 or self.port > 65535:
@@ -160,20 +172,41 @@ class HydroShare(object):
             self.session = requests.Session()
         elif isinstance(self.auth, HydroShareAuthBasic):
             # HTTP basic authentication
+            if not self.use_https:
+                raise HydroShareAuthenticationException("HTTPS is required when using authentication.")
             self.session = requests.Session()
             self.session.auth = (self.auth.username, self.auth.password)
+        elif isinstance(self.auth, HydroShareAuthOAuth2):
+            # OAuth2 authentication
+            if not self.use_https:
+                raise HydroShareAuthenticationException("HTTPS is required when using authentication.")
+            if self.auth.token is None:
+                if self.auth.username is None or self.auth.password is None:
+                    msg = "Username and password are required when using OAuth2 without an external token"
+                    raise HydroShareAuthenticationException(msg)
+                self.session = OAuth2Session(client=LegacyApplicationClient(client_id=self.auth.client_id))
+                self.session.fetch_token(token_url=self.auth.token_url,
+                                         username=self.auth.username,
+                                         password=self.auth.password,
+                                         client_id=self.auth.client_id,
+                                         client_secret=self.auth.client_secret,
+                                         verify=self.verify)
+            else:
+                self.session = OAuth2Session(client_id=self.auth.client_id, token=self.auth.token)
         else:
-            raise HydroShareException("Unsupported authentication type '{0}'.".format(str(type(self.auth))))
+            raise HydroShareAuthenticationException("Unsupported authentication type '{0}'.".format(str(type(self.auth))))
 
     def _request(self, method, url, params=None, data=None, files=None, headers=None, stream=False):
         r = None
         try:
-            r = self.session.request(method, url, params=params, data=data, files=files, headers=headers, stream=stream)
+            r = self.session.request(method, url, params=params, data=data, files=files, headers=headers, stream=stream,
+                                     verify=self.verify)
         except requests.ConnectionError:
             # We might have gotten a connection error because the server we were talking to went down.
             #  Re-initialize the session and try again
             self._initializeSession()
-            r = self.session.request(method, url, params=params, data=data, files=files, headers=headers, stream=stream)
+            r = self.session.request(method, url, params=params, data=data, files=files, headers=headers, stream=stream,
+                                     verify=self.verify)
 
         return r
 
@@ -674,7 +707,36 @@ class HydroShare(object):
 
 class AbstractHydroShareAuth(object): pass
 
+
 class HydroShareAuthBasic(AbstractHydroShareAuth):
     def __init__(self, username, password):
         self.username = username
         self.password = password
+
+
+class HydroShareAuthOAuth2(AbstractHydroShareAuth):
+
+    _TOKEN_URL_PROTO_WITHOUT_PORT = "{scheme}://{hostname}/o/token/"
+    _TOKEN_URL_PROTO_WITH_PORT = "{scheme}://{hostname}:{port}/o/token/"
+
+    def __init__(self, client_id, client_secret,
+                 hostname, use_https=True, port=None,
+                 username=None, password=None,
+                 token=None):
+        if use_https:
+            scheme = 'https'
+        else:
+            scheme = 'http'
+
+        if port:
+            self.token_url = self._TOKEN_URL_PROTO_WITH_PORT.format(scheme=scheme,
+                                                                    hostname=hostname,
+                                                                    port=port)
+        else:
+            self.token_url = self._TOKEN_URL_PROTO_WITHOUT_PORT.format(scheme=scheme,
+                                                                       hostname=hostname)
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.username = username
+        self.password = password
+        self.token = token
