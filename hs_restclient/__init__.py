@@ -24,6 +24,8 @@ from .compat import http_responses
 
 STREAM_CHUNK_SIZE = 100 * 1024
 
+DEFAULT_HOSTNAME = 'www.hydroshare.org'
+
 
 class HydroShareException(Exception):
     def __init__(self, args):
@@ -128,7 +130,7 @@ class HydroShare(object):
     _URL_PROTO_WITHOUT_PORT = "{scheme}://{hostname}/hsapi"
     _URL_PROTO_WITH_PORT = "{scheme}://{hostname}:{port}/hsapi"
 
-    def __init__(self, hostname='www.hydroshare.org', port=None, use_https=True, verify=True,
+    def __init__(self, hostname=DEFAULT_HOSTNAME, port=None, use_https=True, verify=True,
                  auth=None):
         self.hostname = hostname
         self.verify = verify
@@ -720,7 +722,7 @@ class HydroShareAuthOAuth2(AbstractHydroShareAuth):
     _TOKEN_URL_PROTO_WITH_PORT = "{scheme}://{hostname}:{port}/o/token/"
 
     def __init__(self, client_id, client_secret,
-                 hostname, use_https=True, port=None,
+                 hostname=DEFAULT_HOSTNAME, use_https=True, port=None,
                  username=None, password=None,
                  token=None):
         if use_https:
