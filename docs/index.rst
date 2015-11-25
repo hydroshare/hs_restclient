@@ -89,18 +89,20 @@ access to:
     >>> #       "refresh_token": "<your_refresh_token>",
     >>> #       "scope": "read write groups"
     >>> #   }
-    >>> token = get_token()
     >>>
+    >>> token = get_token()
     >>> auth = HydroShareAuthOAuth2(client_id, client_secret,
     >>>                             token=token)
     >>> try:
-    >>>    hs = HydroShare(auth=auth)
+    >>>     hs = HydroShare(auth=auth)
     >>>     for resource in hs.getResourceList():
     >>>         print(resource)
     >>> except:
     >>>     token = get_token()
+    >>>     auth = HydroShareAuthOAuth2(client_id, client_secret,
+    >>>                                 token=token)
     >>>     hs = HydroShare(auth=auth)
-    >>>    for resource in hs.getResourceList():
+    >>>     for resource in hs.getResourceList():
     >>>         print(resource)
 
 Note that currently the client does not handle token renewal, hence the need to catch TokenExpiredError.
