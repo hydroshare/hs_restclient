@@ -27,6 +27,8 @@ STREAM_CHUNK_SIZE = 100 * 1024
 
 DEFAULT_HOSTNAME = 'www.hydroshare.org'
 
+EXPIRES_AT_ROUNDDOWN_SEC = 15
+
 
 class HydroShareException(Exception):
     def __init__(self, args):
@@ -746,5 +748,5 @@ class HydroShareAuthOAuth2(AbstractHydroShareAuth):
 
         if self.token:
             if not 'expires_at' in self.token:
-                self.token['expires_at'] = int(time.time()) + int(self.token['expires_in'])
+                self.token['expires_at'] = int(time.time()) + int(self.token['expires_in']) - EXPIRES_AT_ROUNDDOWN_SEC
 
