@@ -51,34 +51,42 @@ Add a brief summary of changes to RELEASE_NOTES.md.
 
     sh publish.sh
 
-During the process of puYou will see something like the following:
+During the process of publishing, you will first see:
+
+    We need to know who you are, so please choose either:
+     1. use your existing login,
+     2. register as a new user,
+     3. have the server generate a new password for you (and email it to you), or
+     4. quit
+    Your selection [default 1]: 
+
+Choose option "1".  When prompted for a username, enter "hydroshare".  Use
+the "hydroshare" PyPi password.
+
+Then you will see something like the following:
     
     I can store your PyPI login so future submissions will be faster.
     (the login will be stored in /Users/miles/.pypirc)
     Save your login (y/N)?
     
-Say yes to this (by typing 'y' and hitting enter; don't worry, the publish scrip).  
-will save a backup of an existing pypirc and will restore this backup after publishing
-has finished).  If you fail to save the HyroShare credentials to a pypirc,
+Say yes to this (by typing 'y' and hitting enter; don't worry, the publish script  
+will save a backup of any existing .pypirc and will restore this backup after publishing
+has finished).  If you fail to save the HyroShare credentials to a .pypirc,
 the actual upload of this version will fail and you will be left with an empty version 
 that cannot be re-used.  If this happens, change the version in setup.py to, for example,
 1.0.0.post1, and then re-publish.
 
 > Only run publish.sh once per release unless you know what you are doing!!!
 
-
-# Merge master back into develop
+# Set version information to next release
 
 1. git checkout develop
 
-2. git merge master
+2. Update __version__ in hs_restclient.__init__.py, e.g. '1.0.1.dev1'.
 
-# Set version information to next release
-
-1. Update __version__ in hs_restclient.__init__.py, e.g. '1.0.1.dev1'.
-
-2. Update version in setup.py to match that in hs_restclient.__init__.py
+3. Update version in setup.py to match that in hs_restclient.__init__.py
 
 > This version number will be changed to a 'non-development' version when the 
 > next release is done.
 
+4. git commit -a -m '1.0.1.dev1' && git push origin develop
