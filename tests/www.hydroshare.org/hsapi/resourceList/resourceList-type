@@ -11,6 +11,10 @@
             "date_created": "05-20-2015",
             "date_last_updated": "05-20-2015",
             "public": true,
+            "discoverable": true,
+            "shareable": true,
+            "immutable": false,
+            "published": false,
             "bag_url": "http://www.hydroshare.org/static/media/bags/5a6e5a992b1046ae820fd3e79ee36107.zip",
             "science_metadata_url": "http://www.hydroshare.org/hsapi/scimeta/5a6e5a992b1046ae820fd3e79ee36107/"
         },
@@ -22,6 +26,10 @@
             "date_created": "05-22-2015",
             "date_last_updated": "05-22-2015",
             "public": true,
+            "discoverable": true,
+            "shareable": true,
+            "immutable": false,
+            "published": false,
             "bag_url": "http://www.hydroshare.org/static/media/bags/408acb6b870d4297b8b036edcd9c3c58.zip",
             "science_metadata_url": "http://www.hydroshare.org/hsapi/scimeta/408acb6b870d4297b8b036edcd9c3c58/"
         }
