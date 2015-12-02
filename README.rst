@@ -77,6 +77,7 @@ access to::
     #       "refresh_token": "<your_refresh_token>",
     #       "scope": "read write groups"
     #   }
+    # get_token() is a stand in for how you get a new token on your system.
     token = get_token()
 
     auth = HydroShareAuthOAuth2(client_id, client_secret,
@@ -86,6 +87,7 @@ access to::
         for resource in hs.getResourceList():
             print(resource)
     except:
+        # get_token() is a stand in for how you get a new token on your system.
         token = get_token()
         hs = HydroShare(auth=auth)
         for resource in hs.getResourceList():

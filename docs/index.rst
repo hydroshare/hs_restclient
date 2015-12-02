@@ -90,6 +90,7 @@ access to:
     >>> #       "scope": "read write groups"
     >>> #   }
     >>>
+    >>> # get_token() is a stand in for how you get a new token on your system.
     >>> token = get_token()
     >>> auth = HydroShareAuthOAuth2(client_id, client_secret,
     >>>                             token=token)
@@ -98,6 +99,7 @@ access to:
     >>>     for resource in hs.getResourceList():
     >>>         print(resource)
     >>> except:
+    >>>     # get_token() is a stand in for how you get a new token on your system.
     >>>     token = get_token()
     >>>     auth = HydroShareAuthOAuth2(client_id, client_secret,
     >>>                                 token=token)
