@@ -5,7 +5,7 @@ Client library for HydroShare REST API
 """
 
 __title__ = 'hs_restclient'
-__version__ = '1.2.0.dev1'
+__version__ = '1.2.0'
 
 import os
 import time
