@@ -8,6 +8,7 @@ __title__ = 'hs_restclient'
 __version__ = '1.2.0.dev1'
 
 import os
+import time
 import zipfile
 import tempfile
 import shutil
@@ -742,3 +743,8 @@ class HydroShareAuthOAuth2(AbstractHydroShareAuth):
         self.username = username
         self.password = password
         self.token = token
+
+        if self.token:
+            if not 'expires_at' in self.token:
+                self.token['expires_at'] = int(time.time()) + int(self.token['expires_in'])
+
