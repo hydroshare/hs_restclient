@@ -161,5 +161,18 @@ class TestGetResourceList(unittest.TestCase):
         self.assertEqual(delres, res_id)
 
 
+class TestGetUserInfo(unittest.TestCase):
+
+    @with_httmock(mocks.hydroshare.userInfo_get)
+    def test_get_user_info(self):
+        hs = HydroShare()
+        user_info = hs.getUserInfo()
+
+        self.assertEquals(user_info['username'], 'username')
+        self.assertEquals(user_info['first_name'], 'First')
+        self.assertEquals(user_info['last_name'], 'Last')
+        self.assertEquals(user_info['email'], 'user@domain.com')
+
+
 if __name__ == '__main__':
     unittest.main()

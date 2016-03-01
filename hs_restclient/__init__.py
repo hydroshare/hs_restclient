@@ -709,6 +709,29 @@ class HydroShare(object):
         assert(response['resource_id'] == pid)
         return response['resource_id']
 
+    def getUserInfo(self):
+        """
+        Query the GET /hsapi/userInfo/ REST end point of the HydroShare server.
+
+        :raises: HydroShareHTTPException to signal an HTTP error
+
+        :return: A JSON object representing user info, for example:
+
+        {
+            "username": "username",
+            "first_name": "First",
+            "last_name": "Last",
+            "email": "user@domain.com"
+        }
+        """
+        url = "{url_base}/userInfo/".format(url_base=self.url_base)
+
+        r = self._request('GET', url)
+        if r.status_code != 200:
+            raise HydroShareHTTPException((url, 'GET', r.status_code))
+
+        return r.json()
+
 
 class AbstractHydroShareAuth(object): pass
 
