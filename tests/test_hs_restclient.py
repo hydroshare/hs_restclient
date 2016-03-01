@@ -174,5 +174,14 @@ class TestGetUserInfo(unittest.TestCase):
         self.assertEquals(user_info['email'], 'user@domain.com')
 
 
+class TestGetScimeta(unittest.TestCase):
+
+    @with_httmock(mocks.hydroshare.scimeta_get)
+    def test_get_scimeta(self):
+        hs = HydroShare()
+        scimeta = hs.getScienceMetadata('6dbb0dfb8f3a498881e4de428cb1587c')
+        self.assertTrue(scimeta.find("""<rdf:Description rdf:about="http://www.hydroshare.org/resource/6dbb0dfb8f3a498881e4de428cb1587c">""") != -1)
+
+
 if __name__ == '__main__':
     unittest.main()
