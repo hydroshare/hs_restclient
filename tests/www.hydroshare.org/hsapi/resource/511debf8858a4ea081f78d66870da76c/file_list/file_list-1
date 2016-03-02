@@ -1,0 +1,22 @@
+{
+    "count": 5,
+    "next": "http://www.hydroshare.org/hsapi/resource/511debf8858a4ea081f78d66870da76c/file_list/?page=2",
+    "previous": null,
+    "results": [
+        {
+            "url": "http://www.hydroshare.org/django_irods/download/511debf8858a4ea081f78d66870da76c/data/contents/foo/bar.txt",
+            "size": 23550,
+            "content_type": "text/plain"
+        },
+        {
+            "url": "http://www.hydroshare.org/django_irods/download/511debf8858a4ea081f78d66870da76c/data/contents/dem.tif",
+            "size": 107545,
+            "content_type": "image/tiff"
+        },
+        {
+            "url": "http://www.hydroshare.org/django_irods/download/511debf8858a4ea081f78d66870da76c/data/contents/data.csv",
+            "size": 148,
+            "content_type": "text/csv"
+        }
+    ]
+}

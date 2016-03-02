@@ -242,6 +242,26 @@ class HydroShare(object):
         request_params['file'] = (fname, fd, mime_type)
         return close_fd
 
+    def _getResultsListGenerator(self, url, params=None):
+        # Get first (only?) page of results
+        r = self._request('GET', url, params=params)
+        if r.status_code != 200:
+            raise HydroShareHTTPException((url, 'GET', r.status_code, params))
+        res = r.json()
+        results = res['results']
+        for item in results:
+            yield item
+
+        # Get remaining pages (if any exist)
+        while res['next']:
+            r = self._request('GET', res['next'], params=params)
+            if r.status_code != 200:
+                raise HydroShareHTTPException((url, 'GET', r.status_code, params))
+            res = r.json()
+            results = res['results']
+            for item in results:
+                yield item
+
     def getResourceList(self, creator=None, owner=None, user=None, group=None, from_date=None, to_date=None,
                         types=None):
         """
@@ -319,25 +339,7 @@ class HydroShare(object):
         if types:
             params['type'] = types
 
-        # Get first (only?) page of results
-        r = self._request('GET', url, params=params)
-        if r.status_code != 200:
-            raise HydroShareHTTPException((url, 'GET', r.status_code, params))
-        res = r.json()
-        resources = res['results']
-
-        for r in resources:
-            yield r
-
-        # Get remaining pages (if any exist)
-        while res['next']:
-            r = self._request('GET', res['next'], params=params)
-            if r.status_code != 200:
-                raise HydroShareHTTPException((url, 'GET', r.status_code, params))
-            res = r.json()
-            resources = res['results']
-            for r in resources:
-                yield r
+        return self._getResultsListGenerator(url, params)
 
     def getSystemMetadata(self, pid):
         """ Get system metadata for a resource
@@ -783,6 +785,56 @@ class HydroShare(object):
         response = r.json()
         assert(response['resource_id'] == pid)
         return response['resource_id']
+
+    def getResourceFileList(self, pid):
+        """ Get a listing of files within a resource.
+
+        :param pid: The HydroShare ID of the resource whose resource files are to be listed.
+
+        :raises: HydroShareArgumentException if any parameters are invalid.
+        :raises: HydroShareNotAuthorized if user is not authorized to perform action.
+        :raises: HydroShareNotFound if the resource was not found.
+        :raises: HydroShareHTTPException if an unexpected HTTP response code is encountered.
+
+        :return: A generator that can be used to fetch dict objects, each dict representing
+            the JSON object representation of the resource returned by the REST end point.  For example:
+
+        {
+            "count": 95,
+            "next": "https://www.hydroshare.org/hsapi/resource/32a08bc23a86e471282a832143491b49/file_list/?page=2",
+            "previous": null,
+            "results": [
+                {
+                    "url": "http://www.hydroshare.org/django_irods/download/32a08bc23a86e471282a832143491b49/data/contents/foo/bar.txt",
+                    "size": 23550,
+                    "content_type": "text/plain"
+                },
+                {
+                    "url": "http://www.hydroshare.org/django_irods/download/32a08bc23a86e471282a832143491b49/data/contents/dem.tif",
+                    "size": 107545,
+                    "content_type": "image/tiff"
+                },
+                {
+                    "url": "http://www.hydroshare.org/django_irods/download/32a08bc23a86e471282a832143491b49/data/contents/data.csv",
+                    "size": 148,
+                    "content_type": "text/csv"
+                },
+                {
+                    "url": "http://www.hydroshare.org/django_irods/download/32a08bc23a86e471282a832143491b49/data/contents/data.sqlite",
+                    "size": 267118,
+                    "content_type": "application/x-sqlite3"
+                },
+                {
+                    "url": "http://www.hydroshare.org/django_irods/download/32a08bc23a86e471282a832143491b49/data/contents/viz.png",
+                    "size": 128,
+                    "content_type": "image/png"
+                }
+            ]
+        }
+        """
+        url = "{url_base}/resource/{pid}/file_list/".format(url_base=self.url_base,
+                                                            pid=pid)
+        return self._getResultsListGenerator(url)
 
     def getUserInfo(self):
         """
