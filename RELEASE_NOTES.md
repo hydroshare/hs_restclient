@@ -1,7 +1,7 @@
 # 1.2.1 - 3/1/2016
-  - Add getResourceFileList (/hsapi/resource/<pid>/file_list/)
+  - Add getResourceFileList (/hsapi/resource/\<pid\>/file_list/)
   - Add getUserInfo (/hsapi/userInfo/)
-  - Add getScienceMetadata (/hsapi/scimeta/<pid>/)
+  - Add getScienceMetadata (/hsapi/scimeta/\<pid\>/)
 
 # 1.2.0 - 12/2/2015
   - Add support for OAuth 2.0 authentication/authorization
