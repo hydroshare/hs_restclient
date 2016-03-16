@@ -5,7 +5,7 @@ Client library for HydroShare REST API
 """
 
 __title__ = 'hs_restclient'
-__version__ = '1.2.1.dev1'
+__version__ = '1.2.1.dev2'
 
 import os
 import time
@@ -217,6 +217,7 @@ class HydroShare(object):
 
     def _prepareFileForUpload(self, request_params, resource_file, resource_filename=None):
         fname = None
+        close_fd = False
         if isinstance(resource_file, basestring):
             if not os.path.isfile(resource_file) or not os.access(resource_file, os.R_OK):
                 raise HydroShareArgumentException("{0} is not a file or is not readable.".format(resource_file))
