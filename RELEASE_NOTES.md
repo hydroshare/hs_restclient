@@ -1,3 +1,7 @@
+# 1.2.2 - 4/7/2016
+  - Fix bug where getResourceList() would fail after the first page of results
+    when using HTTPS connections.
+
 # 1.2.1 - 3/1/2016
   - Add getResourceFileList (/hsapi/resource/\<pid\>/file_list/)
   - Add getUserInfo (/hsapi/userInfo/)
