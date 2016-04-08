@@ -5,7 +5,7 @@ Client library for HydroShare REST API
 """
 
 __title__ = 'hs_restclient'
-__version__ = '1.2.2.dev2'
+__version__ = '1.2.2.dev3'
 
 
 import os
@@ -261,14 +261,18 @@ class HydroShare(object):
 
         # Get remaining pages (if any exist)
         while res['next']:
-            r = self._request('GET', res['next'], params=params)
+            next_url = res['next']
+            if self.use_https:
+                # Make sure the next URL uses HTTPS
+                next_url = next_url.replace('http://', 'https://', 1)
+            r = self._request('GET', next_url, params=params)
             if r.status_code != 200:
                 if r.status_code == 403:
-                    raise HydroShareNotAuthorized(('GET', url))
+                    raise HydroShareNotAuthorized(('GET', next_url))
                 elif r.status_code == 404:
-                    raise HydroShareNotFound((url,))
+                    raise HydroShareNotFound((next_url,))
                 else:
-                    raise HydroShareHTTPException((url, 'GET', r.status_code, params))
+                    raise HydroShareHTTPException((next_url, 'GET', r.status_code, params))
             res = r.json()
             results = res['results']
             for item in results:
