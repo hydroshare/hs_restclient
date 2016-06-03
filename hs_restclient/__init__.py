@@ -729,6 +729,12 @@ class HydroShare(object):
             elif r.status_code == 404:
                 raise HydroShareNotFound((pid,))
             else:
+                import json
+                text = json.loads(r.text)
+                msg = None
+                if isinstance(text, dict):
+                    msg = '\n'.join(text.values())
+                print(msg)
                 raise HydroShareHTTPException((url, 'POST', r.status_code))
 
         response = r.json()
