@@ -147,10 +147,9 @@ class TestGetResourceList(unittest.TestCase):
             # Get
             tmpdir = tempfile.mkdtemp()
             hs.getResource(newres, destination=tmpdir)
-            with ZipFile(os.path.join(tmpdir, '0b047b77767e46c6b6f525a2f386b9fe.zip'), 'r') as zfile:
-                contents = zfile.namelist()
-                self.assertEqual(contents[0], '2015.05.22.13.14.24/')
-                downloaded = zfile.open('2015.05.22.13.14.24/data/contents/minimal_resource_file.txt', 'r')
+            with ZipFile(os.path.join(tmpdir, '511debf8858a4ea081f78d66870da76c.zip'), 'r') as zfile:
+                self.assertTrue('511debf8858a4ea081f78d66870da76c/data/contents/minimal_resource_file.txt' in zfile.namelist())
+                downloaded = zfile.open('511debf8858a4ea081f78d66870da76c/data/contents/minimal_resource_file.txt', 'r')
                 original = open('mocks/data/minimal_resource_file.txt', 'r')
                 self.assertEqual(downloaded.read(), original.read())
                 downloaded.close()
@@ -165,7 +164,7 @@ class TestGetResourceList(unittest.TestCase):
     def test_create_get_delete_resource_file(self):
         hs = HydroShare()
         # Add
-        res_id = '0b047b77767e46c6b6f525a2f386b9fe'
+        res_id = '511debf8858a4ea081f78d66870da76c'
         fpath = 'mocks/data/another_resource_file.txt'
         fname = os.path.basename(fpath)
         resp = hs.addResourceFile(res_id, fpath)
@@ -180,6 +179,64 @@ class TestGetResourceList(unittest.TestCase):
         # Delete
         delres = hs.deleteResourceFile(res_id, fname)
         self.assertEqual(delres, res_id)
+
+
+class TestGetUserInfo(unittest.TestCase):
+
+    @with_httmock(mocks.hydroshare.userInfo_get)
+    def test_get_user_info(self):
+        hs = HydroShare()
+        user_info = hs.getUserInfo()
+
+        self.assertEquals(user_info['username'], 'username')
+        self.assertEquals(user_info['first_name'], 'First')
+        self.assertEquals(user_info['last_name'], 'Last')
+        self.assertEquals(user_info['email'], 'user@domain.com')
+
+
+class TestGetScimeta(unittest.TestCase):
+
+    @with_httmock(mocks.hydroshare.scimeta_get)
+    def test_get_scimeta(self):
+        hs = HydroShare()
+        scimeta = hs.getScienceMetadata('6dbb0dfb8f3a498881e4de428cb1587c')
+        self.assertTrue(scimeta.find("""<rdf:Description rdf:about="http://www.hydroshare.org/resource/6dbb0dfb8f3a498881e4de428cb1587c">""") != -1)
+
+
+class TestGetResourceFileList(unittest.TestCase):
+
+    def setUp(self):
+        self.urls = [
+            "http://www.hydroshare.org/django_irods/download/511debf8858a4ea081f78d66870da76c/data/contents/foo/bar.txt",
+            "http://www.hydroshare.org/django_irods/download/511debf8858a4ea081f78d66870da76c/data/contents/dem.tif",
+            "http://www.hydroshare.org/django_irods/download/511debf8858a4ea081f78d66870da76c/data/contents/data.csv",
+            "http://www.hydroshare.org/django_irods/download/511debf8858a4ea081f78d66870da76c/data/contents/data.sqlite",
+            "http://www.hydroshare.org/django_irods/download/511debf8858a4ea081f78d66870da76c/data/contents/viz.png"
+        ]
+        self.sizes = [
+            23550,
+            107545,
+            148,
+            267118,
+            128
+        ]
+        self.content_types = [
+            "text/plain",
+            "image/tiff",
+            "text/csv",
+            "application/x-sqlite3",
+            "image/png"
+        ]
+
+    @with_httmock(mocks.hydroshare.resourceFileList_get)
+    def test_get_resource_file_list(self):
+        hs = HydroShare()
+        res_list = hs.getResourceFileList('511debf8858a4ea081f78d66870da76c')
+
+        for (i, r) in enumerate(res_list):
+            self.assertEquals(r['url'], self.urls[i])
+            self.assertEquals(r['size'], self.sizes[i])
+            self.assertEquals(r['content_type'], self.content_types[i])
 
 
 if __name__ == '__main__':

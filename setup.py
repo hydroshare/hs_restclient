@@ -4,9 +4,6 @@ from setuptools import setup, find_packages
 from codecs import open
 from os import path
 
-# the requirements of hs_restclient need to exist to import. So setup will often fail
-#import hs_restclient
-
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the relevant file
@@ -18,7 +15,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='1.0.0',
+    version='1.2.2',
 
     description='HydroShare REST API client library',
     long_description=long_description,
@@ -66,7 +63,8 @@ setup(
     # your project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=['requests'],
+    install_requires=['requests', 'requests_toolbelt',
+                      'oauthlib', 'requests_oauthlib'],
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). You can install these using the following syntax,
@@ -74,7 +72,7 @@ setup(
     # $ pip install -e .[dev,test]
     extras_require={
         'dev': ['check-manifest'],
-        'test': ['coverage'],
+        'test': ['httmock'],
     },
 
     # If there are data files included in your packages that need to be

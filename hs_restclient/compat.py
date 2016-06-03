@@ -13,3 +13,4 @@ if is_py2:
 
 elif is_py3:
     from http.client import responses as http_responses
+    basestring = str
