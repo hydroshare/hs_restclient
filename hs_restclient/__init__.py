@@ -219,7 +219,15 @@ class HydroShare(object):
     def _prepareFileForUpload(self, request_params, resource_file, resource_filename=None):
         fname = None
         close_fd = False
-        if isinstance(resource_file, basestring):
+
+        try:
+            # python2 has basestring
+            is_correct_type = isinstance(resource_file, basestring)
+        except NameError:
+            # python does not have basestring
+            is_correct_type = isinstance(resource_file, str)
+
+        if is_correct_type:
             if not os.path.isfile(resource_file) or not os.access(resource_file, os.R_OK):
                 raise HydroShareArgumentException("{0} is not a file or is not readable.".format(resource_file))
             fd = open(resource_file, 'rb')
