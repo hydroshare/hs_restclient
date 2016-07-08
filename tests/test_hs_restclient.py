@@ -14,7 +14,6 @@ import tempfile
 import shutil
 from zipfile import ZipFile
 import filecmp
-import time
 
 from httmock import with_httmock, HTTMock
 
