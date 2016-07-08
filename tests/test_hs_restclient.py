@@ -1,4 +1,6 @@
-""" Test hs_restclient functionality, with HydroShare REST end points mocked using httmock.
+"""
+Test hs_restclient functionality, with HydroShare REST end points mocked
+using httmock.
 
     Note: tests must be run from 'tests' directory as in:
 
@@ -6,19 +8,21 @@
 """
 import os
 import sys
-sys.path.append('../')
 import unittest
 from datetime import date, datetime
 import tempfile
 import shutil
 from zipfile import ZipFile
-import difflib
 import filecmp
+import time
 
 from httmock import with_httmock, HTTMock
 
 from hs_restclient import HydroShare
 import mocks.hydroshare
+
+
+sys.path.append('../')
 
 
 class TestGetResourceTypes(unittest.TestCase):
@@ -62,15 +66,15 @@ class TestGetResourceList(unittest.TestCase):
         res_list = hs.getResourceList()
 
         for (i, r) in enumerate(res_list):
-            self.assertEquals(r['resource_title'], self.resource_titles[i])
-            self.assertEquals(r['resource_id'], self.resource_ids[i])
+            self.assertEqual(r['resource_title'], self.resource_titles[i])
+            self.assertEqual(r['resource_id'], self.resource_ids[i])
 
     @with_httmock(mocks.hydroshare.resourceListFilterCreator_get)
     def test_get_resource_list_filter_creator(self):
         hs = HydroShare()
         res_list = hs.getResourceList(creator='bmiles')
         for (i, r) in enumerate(res_list):
-            self.assertEquals(r['creator'], 'bmiles')
+            self.assertEqual(r['creator'], 'bmiles')
 
     @with_httmock(mocks.hydroshare.resourceListFilterDate_get)
     def test_get_resource_list_filter_date(self):
@@ -88,6 +92,7 @@ class TestGetResourceList(unittest.TestCase):
         from_date = date(2015, 5, 19)
         to_date = date(2015, 5, 22) # up to and including 5/21/2015
         res_list = hs.getResourceList(from_date=from_date, to_date=to_date)
+        # time.sleep(1)
         for (i, r) in enumerate(res_list):
             self.assertTrue(datetime.strptime(r['date_created'], '%m-%d-%Y').date() >= from_date)
             self.assertTrue(datetime.strptime(r['date_created'], '%m-%d-%Y').date() < to_date)
@@ -97,7 +102,7 @@ class TestGetResourceList(unittest.TestCase):
         hs = HydroShare()
         res_list = hs.getResourceList(types=('RasterResource',))
         for (i, r) in enumerate(res_list):
-            self.assertEquals(r['resource_type'], 'RasterResource')
+            self.assertEqual(r['resource_type'], 'RasterResource')
 
     def test_create_get_delete_resource(self):
         hs = HydroShare()
@@ -130,7 +135,7 @@ class TestGetResourceList(unittest.TestCase):
             with ZipFile(os.path.join(tmpdir, '511debf8858a4ea081f78d66870da76c.zip'), 'r') as zfile:
                 self.assertTrue('511debf8858a4ea081f78d66870da76c/data/contents/minimal_resource_file.txt' in zfile.namelist())
                 downloaded = zfile.open('511debf8858a4ea081f78d66870da76c/data/contents/minimal_resource_file.txt', 'r')
-                original = open('mocks/data/minimal_resource_file.txt', 'r')
+                original = open('mocks/data/minimal_resource_file.txt', 'rb')
                 self.assertEqual(downloaded.read(), original.read())
                 downloaded.close()
                 original.close()
@@ -168,10 +173,10 @@ class TestGetUserInfo(unittest.TestCase):
         hs = HydroShare()
         user_info = hs.getUserInfo()
 
-        self.assertEquals(user_info['username'], 'username')
-        self.assertEquals(user_info['first_name'], 'First')
-        self.assertEquals(user_info['last_name'], 'Last')
-        self.assertEquals(user_info['email'], 'user@domain.com')
+        self.assertEqual(user_info['username'], 'username')
+        self.assertEqual(user_info['first_name'], 'First')
+        self.assertEqual(user_info['last_name'], 'Last')
+        self.assertEqual(user_info['email'], 'user@domain.com')
 
 
 class TestGetScimeta(unittest.TestCase):
@@ -214,9 +219,9 @@ class TestGetResourceFileList(unittest.TestCase):
         res_list = hs.getResourceFileList('511debf8858a4ea081f78d66870da76c')
 
         for (i, r) in enumerate(res_list):
-            self.assertEquals(r['url'], self.urls[i])
-            self.assertEquals(r['size'], self.sizes[i])
-            self.assertEquals(r['content_type'], self.content_types[i])
+            self.assertEqual(r['url'], self.urls[i])
+            self.assertEqual(r['size'], self.sizes[i])
+            self.assertEqual(r['content_type'], self.content_types[i])
 
 
 if __name__ == '__main__':

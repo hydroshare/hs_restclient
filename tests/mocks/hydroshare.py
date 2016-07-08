@@ -92,6 +92,7 @@ def resourceListFilterDate_get(url, request):
         # catch any environment errors (i.e. file does not exist) and return a
         # 404.
         return response(404, {}, HEADERS, None, 5, request)
+
     return response(200, content, HEADERS, None, 5, request)
 
 @urlmatch(netloc=NETLOC, method=GET)
