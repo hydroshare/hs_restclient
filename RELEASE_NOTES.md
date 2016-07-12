@@ -1,3 +1,7 @@
+# 1.2.3 - 7/12/2016
+  - Add ability to supply metadata (in addition to 'title', 'abstract', and 'keywords')
+  to createResource()
+
 # 1.2.2 - 4/7/2016
   - Fix bug where getResourceList() would fail after the first page of results
     when using HTTPS connections.
