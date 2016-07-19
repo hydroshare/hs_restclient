@@ -5,7 +5,7 @@ Client library for HydroShare REST API
 """
 
 __title__ = 'hs_restclient'
-__version__ = '1.2.2'
+__version__ = '1.2.3.dev1'
 
 
 import os
@@ -555,7 +555,7 @@ class HydroShare(object):
     def createResource(self, resource_type, title, resource_file=None, resource_filename=None,
                        abstract=None, keywords=None,
                        edit_users=None, view_users=None, edit_groups=None, view_groups=None,
-                       progress_callback=None):
+                       metadata=None, progress_callback=None):
         """ Create a new resource.
 
         :param resource_type: string representing the a HydroShare resource type recognized by this
@@ -573,6 +573,7 @@ class HydroShare(object):
         :param view_users: list of HydroShare usernames who will be given view permissions
         :param edit_groups: list of HydroShare group names that will be given edit permissions
         :param view_groups: list of HydroShare group names that will be given view permissions
+        :param metadata: json string data for each of the metadata elements
         :param progress_callback: user-defined function to provide feedback to the user about the progress
             of the upload of resource_file.  For more information, see:
             http://toolbelt.readthedocs.org/en/latest/uploading-data.html#monitoring-your-streaming-multipart-upload
@@ -609,6 +610,9 @@ class HydroShare(object):
             params['edit_groups'] = edit_groups
         if view_groups:
             params['view_groups'] = view_groups
+
+        if metadata:
+            params['metadata'] = metadata
 
         if resource_file:
             close_fd = self._prepareFileForUpload(params, resource_file, resource_filename)
@@ -681,12 +685,16 @@ class HydroShare(object):
         assert(resource['resource_id'] == pid)
         return resource['resource_id']
 
-    def addResourceFile(self, pid, resource_file, progress_callback=None):
+    def addResourceFile(self, pid, resource_file, resource_filename=None, progress_callback=None):
         """ Add a new file to an existing resource
 
         :param pid: The HydroShare ID of the resource
         :param resource_file: a read-only binary file-like object (i.e. opened with the flag 'rb') or a string
             representing path to file to be uploaded as part of the new resource
+        :param resource_filename: string representing the filename of the resource file.  Must be specified
+            if resource_file is a file-like object.  If resource_file is a string representing a valid file path,
+            and resource_filename is not specified, resource_filename will be equal to os.path.basename(resource_file).
+            is a string
         :param progress_callback: user-defined function to provide feedback to the user about the progress
             of the upload of resource_file.  For more information, see:
             http://toolbelt.readthedocs.org/en/latest/uploading-data.html#monitoring-your-streaming-multipart-upload
@@ -702,7 +710,7 @@ class HydroShare(object):
                                                         pid=pid)
 
         params = {}
-        close_fd = self._prepareFileForUpload(params, resource_file)
+        close_fd = self._prepareFileForUpload(params, resource_file, resource_filename)
 
         encoder = MultipartEncoder(params)
         if progress_callback is None:

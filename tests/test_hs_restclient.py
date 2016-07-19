@@ -14,6 +14,7 @@ import tempfile
 import shutil
 from zipfile import ZipFile
 import filecmp
+import json
 
 from httmock import with_httmock, HTTMock
 
@@ -111,10 +112,13 @@ class TestGetResourceList(unittest.TestCase):
         keywords = ('hello', 'world')
         rtype = 'GenericResource'
         fname = 'mocks/data/minimal_resource_file.txt'
+        metadata = json.dumps([{'coverage': {'type': 'period', 'start': '01/01/2000',
+                                             'end': '12/12/2010'}}])
 
         with HTTMock(mocks.hydroshare.createResourceCRUD):
             # Create
-            newres = hs.createResource(rtype, title, resource_file=fname, keywords=keywords, abstract=abstract)
+            newres = hs.createResource(rtype, title, resource_file=fname, keywords=keywords,
+                                       abstract=abstract, metadata=metadata)
             self.assertIsNotNone(newres)
             sysmeta = hs.getSystemMetadata(newres)
             self.assertEqual(sysmeta['resource_id'], newres)
