@@ -163,7 +163,7 @@ To create a resource:
     >>> keywords = ('my keyword 1', 'my keyword 2')
     >>> rtype = 'GenericResource'
     >>> fpath = '/path/to/a/file'
-    >>> metadata = '[{"coverage": {"start": "01/01/2000", "end": "12/12/2010", "type": "period"}}, {"creator": {"name": "John Smith"}}, {"creator": {"name": "Lisa Miller"}}]'
+    >>> metadata = '[{"coverage":{"type":"period", "value":{"start":"01/01/2000", "end":"12/12/2010"}}}, {"creator":{"name":"John Smith"}}, {"creator":{"name":"Lisa Miller"}}]'
     >>> resource_id = hs.createResource(rtype, title, resource_file=fpath, keywords=keywords, abstract=abstract, metadata=metadata)
 
 To make a resource public:
