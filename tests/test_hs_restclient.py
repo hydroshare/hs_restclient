@@ -112,8 +112,10 @@ class TestGetResourceList(unittest.TestCase):
         keywords = ('hello', 'world')
         rtype = 'GenericResource'
         fname = 'mocks/data/minimal_resource_file.txt'
-        metadata = json.dumps([{'coverage': {'type': 'period', 'start': '01/01/2000',
-                                             'end': '12/12/2010'}}])
+        metadata = json.dumps([{'coverage': {'type': 'period', 'value': {'start': '01/01/2000',
+                                             'end': '12/12/2010'}}},
+                               {'creator': {'name': 'John Smith'}}, 
+                               {'contributor': {'name': 'Lisa Miller'}}])
 
         with HTTMock(mocks.hydroshare.createResourceCRUD):
             # Create
