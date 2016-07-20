@@ -5,7 +5,7 @@ Client library for HydroShare REST API
 """
 
 __title__ = 'hs_restclient'
-__version__ = '1.2.3.dev1'
+__version__ = '1.2.3'
 
 
 import os
@@ -219,7 +219,7 @@ class HydroShare(object):
     def _prepareFileForUpload(self, request_params, resource_file, resource_filename=None):
         fname = None
         close_fd = False
-        if isinstance(resource_file, basestring):
+        if isinstance(resource_file, str):
             if not os.path.isfile(resource_file) or not os.access(resource_file, os.R_OK):
                 raise HydroShareArgumentException("{0} is not a file or is not readable.".format(resource_file))
             fd = open(resource_file, 'rb')
@@ -465,7 +465,7 @@ class HydroShare(object):
             else:
                 raise HydroShareHTTPException((url, 'GET', r.status_code))
 
-        return r.content
+        return str(r.content)
 
     def getResource(self, pid, destination=None, unzip=False):
         """ Get a resource in BagIt format
