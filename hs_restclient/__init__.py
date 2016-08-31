@@ -538,14 +538,18 @@ class HydroShare(object):
         elif r.headers['content-type'] == 'application/json':
             content = json.loads(r.content)
             if content['bag_status'] == "Not ready":
-                # wait for 10 seconds to give task a chance to run and finish
-                time.sleep(10)
-                task_id = content['task_id']
-                # check task status
-                status = self._getTaskStatus(task_id)
-                if status:
-                    # bag is ready for download
-                    self._getBagStream(pid)
+                # wait for 15 seconds to give task a chance to run and finish
+                status_check_count = 0
+                while status_check_count < 5:
+                    time.sleep(3)
+                    task_id = content['task_id']
+                    # check task status
+                    status = self._getTaskStatus(task_id)
+                    status_check_count += 1
+                    if status:
+                        # bag is ready for download
+                        self._getBagStream(pid)
+
         elif r.headers['content-type'] == 'text/plain':
             # this is the case of big file issue
             raise HydroShareException(r.content)
