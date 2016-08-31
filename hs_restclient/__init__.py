@@ -14,6 +14,7 @@ import zipfile
 import tempfile
 import shutil
 import mimetypes
+import json
 
 import requests
 
@@ -534,7 +535,29 @@ class HydroShare(object):
                 raise HydroShareNotFound((pid,))
             else:
                 raise HydroShareHTTPException((bag_url, 'GET', r.status_code))
+        elif r.headers['content-type'] == 'application/json':
+            content = json.loads(r.content)
+            if content['bag_status'] == "Not ready":
+                # wait for 10 seconds to give task a chance to run and finish
+                time.sleep(10)
+                task_id = content['task_id']
+                # check task status
+                status = self._getTaskStatus(task_id)
+                if status:
+                    # bag is ready for download
+                    self._getBagStream(pid)
+        elif r.headers['content-type'] == 'text/plain':
+            # this is the case of big file issue
+            raise HydroShareException(r.content)
+
         return r.iter_content(STREAM_CHUNK_SIZE)
+
+    def _getTaskStatus(self, task_id):
+        task_status_url = "{url_base}/taskstatus/{task_id}/"
+        task_status_url = task_status_url.format(url_base=self.url_base, task_id=task_id)
+        r = self._request('GET', task_status_url)
+        response_data = json.loads(r.content)
+        return response_data['status']
 
     def getResourceTypes(self):
         """ Get the list of resource types supported by the HydroShare server
