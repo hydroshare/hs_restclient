@@ -489,7 +489,7 @@ class HydroShare(object):
             resource.
         :raises: HydroShareNotFound if the resource was not found.
         :raises: HydroShareHTTPException to signal an HTTP error
-        :raise: HydroShareBagNotReady if the bag is not reday to be downloaded and wait_for_bag_download is False
+        :raise: HydroShareBagNotReady if the bag is not ready to be downloaded and wait_for_bag_creation is False
 
         :return: None if the bag was saved directly to disk.  Or a generator representing a buffered stream of the
             bytes comprising the bag returned by the REST end point.
