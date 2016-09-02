@@ -153,6 +153,18 @@ or to get the BagIt archive as a generator (sort of like a buffered stream):
     >>>     for chunk in resource:
     >>>         fd.write(chunk)
 
+Note that when the BagIt archive is not ready for download (this archive zip file needs to be
+recreated) the client by default will wait until the BagIt archive is recreated. This may take a
+while. If you want to get the BagIt archive only if it is ready for download:
+
+    >>> from hs_restclient import HydroShare
+    >>> hs = HydroShare()
+    >>>try:
+    >>>     hs.getResource('e62a438bec384087b6c00ddcd1b6475a', destination='/tmp', wait_for_bag_creation=False)
+    >>>except HydroShareBagNotReadyException as e:
+    >>>     print('BagIt file is being generated and not ready for download at this time.')
+
+
 To create a resource:
 
     >>> from hs_restclient import HydroShare, HydroShareAuthBasic
