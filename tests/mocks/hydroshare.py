@@ -53,7 +53,7 @@ def resourceList_get(url, request):
     elif url.query == 'page=2':
         file_path = url.netloc + url.path + 'resourceList-2'
     else:
-        file_path = '';
+        file_path = ''
     try:
         content = Resource(file_path).get()
     except EnvironmentError:
@@ -67,7 +67,7 @@ def resourceListFilterCreator_get(url, request):
     if url.query == 'creator=bmiles':
         file_path = url.netloc + url.path + 'resourceList-bmiles'
     else:
-        file_path = '';
+        file_path = ''
     try:
         content = Resource(file_path).get()
     except EnvironmentError:
@@ -85,7 +85,7 @@ def resourceListFilterDate_get(url, request):
     elif url.query == 'from_date=2015-05-19&to_date=2015-05-22':
         file_path = url.netloc + url.path + 'resourceList-from_date-to_date'
     else:
-        file_path = '';
+        file_path = ''
     try:
         content = Resource(file_path).get()
     except EnvironmentError:
@@ -100,7 +100,7 @@ def resourceListFilterType_get(url, request):
     if url.query == 'type=RasterResource':
         file_path = url.netloc + url.path + 'resourceList-type'
     else:
-        file_path = '';
+        file_path = ''
     try:
         content = Resource(file_path).get()
     except EnvironmentError:
@@ -129,6 +129,7 @@ def createResourceCRUD(url, request):
             file_path = url.netloc + url.path
             # Remove trailing slash so that we can open the file
             file_path = file_path.strip('/') + '.zip'
+            HEADERS['content-type'] = 'application/zip'
             response_status = 200
     elif request.method == 'POST' and url.path == '/hsapi/resource/':
         file_path = url.netloc + url.path + 'create-response'
@@ -225,7 +226,7 @@ def resourceFileList_get(url, request):
     elif url.query == 'page=2':
         file_path = url.netloc + url.path + 'file_list-2'
     else:
-        file_path = '';
+        file_path = ''
     try:
         content = Resource(file_path).get()
     except EnvironmentError:
