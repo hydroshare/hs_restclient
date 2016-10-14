@@ -592,7 +592,7 @@ class HydroShare(object):
     def createResource(self, resource_type, title, resource_file=None, resource_filename=None,
                        abstract=None, keywords=None,
                        edit_users=None, view_users=None, edit_groups=None, view_groups=None,
-                       metadata=None, progress_callback=None):
+                       metadata=None, extra_metadata=None, progress_callback=None):
         """ Create a new resource.
 
         :param resource_type: string representing the a HydroShare resource type recognized by this
@@ -611,6 +611,7 @@ class HydroShare(object):
         :param edit_groups: list of HydroShare group names that will be given edit permissions
         :param view_groups: list of HydroShare group names that will be given view permissions
         :param metadata: json string data for each of the metadata elements
+        :param extra_metadata: json string data for key/value pair metadata elements defined by user
         :param progress_callback: user-defined function to provide feedback to the user about the progress
             of the upload of resource_file.  For more information, see:
             http://toolbelt.readthedocs.org/en/latest/uploading-data.html#monitoring-your-streaming-multipart-upload
@@ -650,6 +651,9 @@ class HydroShare(object):
 
         if metadata:
             params['metadata'] = metadata
+
+        if extra_metadata:
+            params['extra_metadata'] = extra_metadata
 
         if resource_file:
             close_fd = self._prepareFileForUpload(params, resource_file, resource_filename)
