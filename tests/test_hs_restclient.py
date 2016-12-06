@@ -117,10 +117,12 @@ class TestGetResourceList(unittest.TestCase):
                                {'creator': {'name': 'John Smith'}}, 
                                {'contributor': {'name': 'Lisa Miller'}}])
 
+        extra_metadata = json.dumps({'latitude': '40', 'longitude': '-111'})
+
         with HTTMock(mocks.hydroshare.createResourceCRUD):
             # Create
             newres = hs.createResource(rtype, title, resource_file=fname, keywords=keywords,
-                                       abstract=abstract, metadata=metadata)
+                                       abstract=abstract, metadata=metadata, extra_metadata=extra_metadata)
             self.assertIsNotNone(newres)
             sysmeta = hs.getSystemMetadata(newres)
             self.assertEqual(sysmeta['resource_id'], newres)
