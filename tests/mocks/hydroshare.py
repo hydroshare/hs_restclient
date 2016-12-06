@@ -220,6 +220,18 @@ def scimeta_get(url, request):
     return response(200, content, HEADERS, None, 5, request)
 
 @urlmatch(netloc=NETLOC, method=GET)
+def resourcemap_get(url, request):
+    file_path = url.netloc + url.path + 'resourcemap.xml'
+
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(200, content, HEADERS, None, 5, request)
+
+@urlmatch(netloc=NETLOC, method=GET)
 def resourceFileList_get(url, request):
     if url.query == '':
         file_path = url.netloc + url.path + 'file_list-1'

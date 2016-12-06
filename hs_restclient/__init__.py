@@ -472,6 +472,85 @@ class HydroShare(object):
 
         return str(r.content)
 
+    def getResourceMap(self, pid):
+        """ Get resource map metadata for a resource
+
+        :param pid: The HydroShare ID of the resource
+        :raises: HydroShareNotAuthorized if the user is not authorized to view the metadata.
+        :raises: HydroShareNotFound if the resource was not found.
+        :raises: HydroShareHTTPException to signal an HTTP error.
+        :return: A string representing the XML+RDF serialization of resource map metadata.
+        Example of data returned:
+
+        <?xml version="1.0" encoding="UTF-8"?>
+        <rdf:RDF
+           xmlns:citoterms="http://purl.org/spar/cito/"
+           xmlns:dc="http://purl.org/dc/elements/1.1/"
+           xmlns:dcterms="http://purl.org/dc/terms/"
+           xmlns:foaf="http://xmlns.com/foaf/0.1/"
+           xmlns:ore="http://www.openarchives.org/ore/terms/"
+           xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+           xmlns:rdfs1="http://www.w3.org/2001/01/rdf-schema#"
+        >
+          <rdf:Description rdf:about="http://foresite-toolkit.googlecode.com/#pythonAgent">
+            <foaf:name>Foresite Toolkit (Python)</foaf:name>
+            <foaf:mbox>foresite@googlegroups.com</foaf:mbox>
+          </rdf:Description>
+          <rdf:Description rdf:about="http://www.hydroshare.org/terms/GenericResource">
+            <rdfs1:label>Generic</rdfs1:label>
+            <rdfs1:isDefinedBy>http://www.hydroshare.org/terms</rdfs1:isDefinedBy>
+          </rdf:Description>
+          <rdf:Description rdf:about="http://www.hydroshare.org/resource/03c862ccf17b4853ac4288d63ab2d766/data/contents/test.txt">
+            <ore:isAggregatedBy>http://www.hydroshare.org/resource/03c862ccf17b4853ac4288d63ab2d766/data/resourcemap.xml#aggregation</ore:isAggregatedBy>
+            <dc:format>text/plain</dc:format>
+          </rdf:Description>
+          <rdf:Description rdf:about="http://www.hydroshare.org/resource/03c862ccf17b4853ac4288d63ab2d766/data/resourcemap.xml">
+            <dc:identifier>03c862ccf17b4853ac4288d63ab2d766</dc:identifier>
+            <ore:describes rdf:resource="http://www.hydroshare.org/resource/03c862ccf17b4853ac4288d63ab2d766/data/resourcemap.xml#aggregation"/>
+            <rdf:type rdf:resource="http://www.openarchives.org/ore/terms/ResourceMap"/>
+            <dc:format>application/rdf+xml</dc:format>
+            <dc:creator rdf:resource="http://foresite-toolkit.googlecode.com/#pythonAgent"/>
+            <dcterms:created>2016-11-29T16:17:52Z</dcterms:created>
+            <dcterms:modified>2016-11-29T16:17:52Z</dcterms:modified>
+          </rdf:Description>
+          <rdf:Description rdf:about="http://www.openarchives.org/ore/terms/ResourceMap">
+            <rdfs1:isDefinedBy>http://www.openarchives.org/ore/terms/</rdfs1:isDefinedBy>
+            <rdfs1:label>ResourceMap</rdfs1:label>
+          </rdf:Description>
+          <rdf:Description rdf:about="http://www.hydroshare.org/resource/03c862ccf17b4853ac4288d63ab2d766/data/resourcemap.xml#aggregation">
+            <citoterms:isDocumentedBy>http://www.hydroshare.org/resource/03c862ccf17b4853ac4288d63ab2d766/data/resourcemetadata.xml</citoterms:isDocumentedBy>
+            <dc:title>Gen Res-1</dc:title>
+            <dcterms:type rdf:resource="http://www.hydroshare.org/terms/GenericResource"/>
+            <ore:isDescribedBy>http://www.hydroshare.org/resource/03c862ccf17b4853ac4288d63ab2d766/data/resourcemap.xml</ore:isDescribedBy>
+            <ore:aggregates rdf:resource="http://www.hydroshare.org/resource/03c862ccf17b4853ac4288d63ab2d766/data/resourcemetadata.xml"/>
+            <ore:aggregates rdf:resource="http://www.hydroshare.org/resource/03c862ccf17b4853ac4288d63ab2d766/data/contents/test.txt"/>
+            <rdf:type rdf:resource="http://www.openarchives.org/ore/terms/Aggregation"/>
+              </rdf:Description>
+          <rdf:Description rdf:about="http://www.hydroshare.org/resource/03c862ccf17b4853ac4288d63ab2d766/data/resourcemetadata.xml">
+            <ore:isAggregatedBy>http://www.hydroshare.org/resource/03c862ccf17b4853ac4288d63ab2d766/data/resourcemap.xml#aggregation</ore:isAggregatedBy>
+            <citoterms:documents>http://www.hydroshare.org/resource/03c862ccf17b4853ac4288d63ab2d766/data/resourcemap.xml#aggregation</citoterms:documents>
+            <dc:title>Dublin Core science metadata document describing the HydroShare resource</dc:title>
+            <dc:format>application/rdf+xml</dc:format>
+          </rdf:Description>
+          <rdf:Description rdf:about="http://www.openarchives.org/ore/terms/Aggregation">
+            <rdfs1:label>Aggregation</rdfs1:label>
+            <rdfs1:isDefinedBy>http://www.openarchives.org/ore/terms/</rdfs1:isDefinedBy>
+          </rdf:Description>
+        </rdf:RDF>
+        """
+        url = "{url_base}/resource/{pid}/map/".format(url_base=self.url_base,
+                                                 pid=pid)
+        r = self._request('GET', url)
+        if r.status_code != 200:
+            if r.status_code == 403:
+                raise HydroShareNotAuthorized(('GET', url))
+            elif r.status_code == 404:
+                raise HydroShareNotFound((pid,))
+            else:
+                raise HydroShareHTTPException((url, 'GET', r.status_code))
+
+        return str(r.content)
+
     def getResource(self, pid, destination=None, unzip=False, wait_for_bag_creation=True):
         """ Get a resource in BagIt format
 
@@ -627,7 +706,7 @@ class HydroShare(object):
 
         close_fd = False
 
-        if not resource_type in self.resource_types:
+        if resource_type not in self.resource_types:
             raise HydroShareArgumentException("Resource type {0} is not among known resources: {1}".format(resource_type,
                                                                                                            ", ".join([r for r in self.resource_types])))
 
