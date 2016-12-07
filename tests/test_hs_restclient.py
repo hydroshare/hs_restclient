@@ -195,6 +195,15 @@ class TestGetScimeta(unittest.TestCase):
         self.assertTrue(scimeta.find("""<rdf:Description rdf:about="http://www.hydroshare.org/resource/6dbb0dfb8f3a498881e4de428cb1587c">""") != -1)
 
 
+class TestGetResourceMap(unittest.TestCase):
+
+    @with_httmock(mocks.hydroshare.resourcemap_get)
+    def test_get_resourcemap(self):
+        hs = HydroShare()
+        resourcemap = hs.getResourceMap('6dbb0dfb8f3a498881e4de428cb1587c')
+        self.assertTrue(resourcemap.find("""<rdf:Description rdf:about="http://www.hydroshare.org/resource/6dbb0dfb8f3a498881e4de428cb1587c">""") != -1)
+
+
 class TestGetResourceFileList(unittest.TestCase):
 
     def setUp(self):
