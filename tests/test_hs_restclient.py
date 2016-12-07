@@ -117,10 +117,12 @@ class TestGetResourceList(unittest.TestCase):
                                {'creator': {'name': 'John Smith'}}, 
                                {'contributor': {'name': 'Lisa Miller'}}])
 
+        extra_metadata = json.dumps({'latitude': '40', 'longitude': '-111'})
+
         with HTTMock(mocks.hydroshare.createResourceCRUD):
             # Create
             newres = hs.createResource(rtype, title, resource_file=fname, keywords=keywords,
-                                       abstract=abstract, metadata=metadata)
+                                       abstract=abstract, metadata=metadata, extra_metadata=extra_metadata)
             self.assertIsNotNone(newres)
             sysmeta = hs.getSystemMetadata(newres)
             self.assertEqual(sysmeta['resource_id'], newres)
@@ -191,6 +193,15 @@ class TestGetScimeta(unittest.TestCase):
         hs = HydroShare()
         scimeta = hs.getScienceMetadata('6dbb0dfb8f3a498881e4de428cb1587c')
         self.assertTrue(scimeta.find("""<rdf:Description rdf:about="http://www.hydroshare.org/resource/6dbb0dfb8f3a498881e4de428cb1587c">""") != -1)
+
+
+class TestGetResourceMap(unittest.TestCase):
+
+    @with_httmock(mocks.hydroshare.resourcemap_get)
+    def test_get_resourcemap(self):
+        hs = HydroShare()
+        resourcemap = hs.getResourceMap('6dbb0dfb8f3a498881e4de428cb1587c')
+        self.assertTrue(resourcemap.find("""<rdf:Description rdf:about="http://www.hydroshare.org/resource/6dbb0dfb8f3a498881e4de428cb1587c">""") != -1)
 
 
 class TestGetResourceFileList(unittest.TestCase):

@@ -176,7 +176,8 @@ To create a resource:
     >>> rtype = 'GenericResource'
     >>> fpath = '/path/to/a/file'
     >>> metadata = '[{"coverage":{"type":"period", "value":{"start":"01/01/2000", "end":"12/12/2010"}}}, {"creator":{"name":"John Smith"}}, {"creator":{"name":"Lisa Miller"}}]'
-    >>> resource_id = hs.createResource(rtype, title, resource_file=fpath, keywords=keywords, abstract=abstract, metadata=metadata)
+    >>> extra_metadata = '{"key-1": "value-1", "key-2": "value-2"}'
+    >>> resource_id = hs.createResource(rtype, title, resource_file=fpath, keywords=keywords, abstract=abstract, metadata=metadata, extra_metadata=extra_metadata)
 
 To make a resource public:
 
@@ -216,7 +217,19 @@ To delete a file from a resource:
     >>> fname = 'somefile.txt'
     >>> resource_id = hs.deleteResourceFile('ID OF RESOURCE GOES HERE', fname)
 
+To get resource map xml data for a resource:
 
+    >>> from hs_restclient import HydroShare, HydroShareAuthBasic
+    >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
+    >>> hs = HydroShare(auth=auth)
+    >>> resource_map_xml = hs.getResourceMap('ID OF RESOURCE GOES HERE')
+
+To get science xml data for a resource:
+
+    >>> from hs_restclient import HydroShare, HydroShareAuthBasic
+    >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
+    >>> hs = HydroShare(auth=auth)
+    >>> science_metadata_xml = hs.getScienceMetadata('ID OF RESOURCE GOES HERE')
 
 Index
 -----

@@ -1,3 +1,8 @@
+# 1.2.5 - 12/7/2016
+  - Add ability to supply key/value metadata (in addition to 'title', 'abstract', 'keywords', and 'metadata')
+  to createResource()
+  - Add getResourceMap (/hsapi/resource/\<pid\>map/)
+
 # 1.2.4 - 9/2/2016
   - Add support for async resource bag (BagIt archive) creation prior to downloading
   the bag file in getResource()
