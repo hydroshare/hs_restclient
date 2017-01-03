@@ -397,49 +397,80 @@ class HydroShare(object):
 
         return r.json()
 
-    def getScienceMetadata(self, pid):
-        """ Get science metadata for a resource
+    def getScienceMetadata(self, pid, data_format='xml'):
+        """ Get science metadata for a resource in XML or JSON format
+        Note: In JSON format only dublin core metadata is retrieved.
 
         :param pid: The HydroShare ID of the resource
+        :param data_format: Default format of returned science metadata is in XML format.
+        If *data_format* is not equal to 'xml' then the returned metadata string will be in JSON format.
         :raises: HydroShareNotAuthorized if the user is not authorized to view the metadata.
         :raises: HydroShareNotFound if the resource was not found.
         :raises: HydroShareHTTPException to signal an HTTP error.
-        :return: A string representing the XML+RDF serialization of science metadata.
-        Example of data returned:
+        :return: A string representing the XML+RDF or JSON serialization of science metadata.
+        Example of data XML+RDF returned:
 
         <?xml version="1.0"?>
         <!DOCTYPE rdf:RDF PUBLIC "-//DUBLIN CORE//DCMES DTD 2002/07/31//EN"
         "http://dublincore.org/documents/2002/07/31/dcmes-xml/dcmes-xml-dtd.dtd">
-        <rdf:RDF xmlns:dcterms="http://purl.org/dc/terms/" xmlns:hsterms="http://hydroshare.org/terms/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs1="http://www.w3.org/2001/01/rdf-schema#" xmlns:dc="http://purl.org/dc/elements/1.1/">
-          <rdf:Description rdf:about="http://www.hydroshare.org/resource/6dbb0dfb8f3a498881e4de428cb1587c">
-            <dc:title>RHESSys model of Dead Run 5 watershed, Baltimore County, Maryland, USA (with rain gardens)</dc:title>
+        <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:hsterms="http://hydroshare.org/terms/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs1="http://www.w3.org/2001/01/rdf-schema#">
+          <rdf:Description rdf:about="http://www.hydroshare.org/resource/87ffb608900e407ab4b67d30c93b329e">
+            <dc:title>Great Salt Lake Level and Volume</dc:title>
             <dc:type rdf:resource="http://www.hydroshare.org/terms/GenericResource"/>
             <dc:description>
               <rdf:Description>
-                <dcterms:abstract>3-m spatial resolution RHESSys model for Dead Run 5 watershed in Baltimore County, Maryland.  This model contains example implementation of rain gardens.</dcterms:abstract>
+                <dcterms:abstract>Time series of level, area and volume in the Great Salt Lake. Volume and area of the Great Salt Lake are derived from recorded levels</dcterms:abstract>
               </rdf:Description>
             </dc:description>
+            <hsterms:awardInfo>
+              <rdf:Description rdf:about="http://www.nsf.gov">
+                <hsterms:fundingAgencyName>National Science Foundation</hsterms:fundingAgencyName>
+                <hsterms:awardTitle>Model Execution Cyberinfrastructure </hsterms:awardTitle>
+                <hsterms:awardNumber>NSF_9087658_2017</hsterms:awardNumber>
+              </rdf:Description>
+            </hsterms:awardInfo>
             <dc:creator>
-              <rdf:Description rdf:about="http://www.hydroshare.org/user/28/">
-                <hsterms:name>Brian Miles</hsterms:name>
+              <rdf:Description>
+                <hsterms:name>John Smith</hsterms:name>
                 <hsterms:creatorOrder>1</hsterms:creatorOrder>
-                <hsterms:email>brian_miles@unc.edu</hsterms:email>
+                <hsterms:organization>Utah State University</hsterms:organization>
+                <hsterms:email>john.smith@gmail.com</hsterms:email>
+                <hsterms:address>Engineering Building, USU, Logan, Utah</hsterms:address>
+                <hsterms:phone rdf:resource="tel:435-797-8967"/>
               </rdf:Description>
             </dc:creator>
+            <dc:creator>
+              <rdf:Description>
+                <hsterms:name>Lisa Miller</hsterms:name>
+                <hsterms:creatorOrder>2</hsterms:creatorOrder>
+              </rdf:Description>
+            </dc:creator>
+            <dc:contributor>
+              <rdf:Description>
+                <hsterms:name>Jenny Parker</hsterms:name>
+                <hsterms:organization>Univesity of Utah</hsterms:organization>
+                <hsterms:email>jenny_parker@hotmail.com</hsterms:email>
+              </rdf:Description>
+            </dc:contributor>
+            <dc:coverage>
+              <dcterms:period>
+                <rdf:value>start=2000-01-01T00:00:00; end=2010-12-12T00:00:00; scheme=W3C-DTF</rdf:value>
+              </dcterms:period>
+            </dc:coverage>
             <dc:date>
               <dcterms:created>
-                <rdf:value>2015-07-27T18:35:27.954135+00:00</rdf:value>
+                <rdf:value>2017-01-03T17:06:18.932217+00:00</rdf:value>
               </dcterms:created>
             </dc:date>
             <dc:date>
               <dcterms:modified>
-                <rdf:value>2015-08-07T13:44:44.757870+00:00</rdf:value>
+                <rdf:value>2017-01-03T17:35:34.067279+00:00</rdf:value>
               </dcterms:modified>
             </dc:date>
-            <dc:format>application/zip</dc:format>
+            <dc:format>image/tiff</dc:format>
             <dc:identifier>
               <rdf:Description>
-                <hsterms:hydroShareIdentifier>http://www.hydroshare.org/resource/6dbb0dfb8f3a498881e4de428cb1587c</hsterms:hydroShareIdentifier>
+                <hsterms:hydroShareIdentifier>http://www.hydroshare.org/resource/87ffb608900e407ab4b67d30c93b329e</hsterms:hydroShareIdentifier>
               </rdf:Description>
             </dc:identifier>
             <dc:language>eng</dc:language>
@@ -449,18 +480,72 @@ class HydroShare(object):
                 <hsterms:URL rdf:resource="http://creativecommons.org/licenses/by/4.0/"/>
               </rdf:Description>
             </dc:rights>
-            <dc:subject>RHESSys</dc:subject>
-            <dc:subject>Baltimore Ecosystem Study</dc:subject>
-            <dc:subject>green infrastructure</dc:subject>
+            <dc:subject>NSF</dc:subject>
+            <dc:subject>Model</dc:subject>
+            <dc:subject>Cyberinfrastructure</dc:subject>
+            <hsterms:extendedMetadata>
+              <rdf:Description>
+                <hsterms:key>model</hsterms:key>
+                <hsterms:value>ueb</hsterms:value>
+              </rdf:Description>
+            </hsterms:extendedMetadata>
+            <hsterms:extendedMetadata>
+              <rdf:Description>
+                <hsterms:key>os</hsterms:key>
+                <hsterms:value>windows</hsterms:value>
+              </rdf:Description>
+            </hsterms:extendedMetadata>
           </rdf:Description>
           <rdf:Description rdf:about="http://www.hydroshare.org/terms/GenericResource">
             <rdfs1:label>Generic</rdfs1:label>
             <rdfs1:isDefinedBy>http://www.hydroshare.org/terms</rdfs1:isDefinedBy>
           </rdf:Description>
         </rdf:RDF>
+
+        Example of data JSON returned:
+
+        {
+            "title":"Great Salt Lake Level and Volume",
+            "creators":[
+                        {"name":"John Smith","description":"/user/24/","organization":"USU","email":"john.smith@usu.edu","address":"Engineering Building, USU, Logan, Utah","phone":"435-789-9087","homepage":null,"order":1},
+                        {"name":"Lisa Miller","description":null,"organization":null,"email":null,"address":null,"phone":null,"homepage":null,"order":2}
+                       ],
+            "contributors":[
+                            {"name":"Jenny Parker","description":"","organization":"Univesity of Utah","email":"jenny_parker@hotmail.com","address":"","phone":"","homepage":""}
+                           ],
+            "coverages":[
+                            {"type":"period","value":{"start":"01/01/2000","end":"12/12/2010"}}
+                        ],
+            "dates":[
+                        {"type":"created","start_date":"2017-01-03T17:06:18.932217Z","end_date":null},
+                        {"type":"modified","start_date":"2017-01-03T17:06:19.162694Z","end_date":null}
+                    ],
+            "description":"Time series of level, area and volume in the Great Salt Lake. Volume and area of the Great Salt Lake are derived from recorded levels",
+            "formats":[
+                        {"value":"image/tiff"}
+                      ],
+            "funding_agencies":[
+                                {"agency_name":"National Science Foundation","award_title":"Model Execution Cyberinfrastructure ","award_number":"NSF_9087658_2017","agency_url":"http://www.nsf.gov"}
+                               ],
+            "identifiers":[
+                            {"name":"hydroShareIdentifier","url":"http://www.hydroshare.org/resource/87ffb608900e407ab4b67d30c93b329e"}
+                        ],
+            "language":"eng",
+            "rights":"This resource is shared under the Creative Commons Attribution CC BY. http://creativecommons.org/licenses/by/4.0/",
+            "type":"http://www.hydroshare.org/terms/GenericResource",
+            "publisher":null,"sources":[],
+            "subjects":[
+                        {"value":"NSF"},
+                        {"value":"Modeling"}
+                       ],
+            "relations":[]
+        }
         """
-        url = "{url_base}/scimeta/{pid}/".format(url_base=self.url_base,
-                                                 pid=pid)
+        if data_format.lower() == 'xml':
+            url = "{url_base}/scimeta/{pid}/".format(url_base=self.url_base, pid=pid)
+        else:
+            url = "{url_base}/resource/{pid}/scimeta/elements".format(url_base=self.url_base, pid=pid)
+
         r = self._request('GET', url)
         if r.status_code != 200:
             if r.status_code == 403:
