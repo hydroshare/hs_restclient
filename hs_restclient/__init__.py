@@ -557,6 +557,69 @@ class HydroShare(object):
 
         return str(r.content)
 
+    def updateScienceMetadata(self, pid, metadata):
+        """Update dublin core metadata for a resource
+
+        :param pid: The HydroShare ID of the resource for which science metadata needs to be updated
+        :param  metadata: A dict containing data for each of the dublin core metadata elements that needs to be updated
+        :raises: HydroShareNotAuthorized if the user is not authorized to view the metadata.
+        :raises: HydroShareNotFound if the resource was not found.
+        :raises: HydroShareHTTPException to signal an HTTP error.
+        :return: A string representing the JSON serialization of resource science metadata.
+
+        Example of data JSON returned:
+
+        {
+            "title":"Great Salt Lake Level and Volume",
+            "creators":[
+                        {"name":"John Smith","description":"/user/24/","organization":"USU","email":"john.smith@usu.edu","address":"Engineering Building, USU, Logan, Utah","phone":"435-789-9087","homepage":null,"order":1},
+                        {"name":"Lisa Miller","description":null,"organization":null,"email":null,"address":null,"phone":null,"homepage":null,"order":2}
+                       ],
+            "contributors":[
+                            {"name":"Jenny Parker","description":"","organization":"Univesity of Utah","email":"jenny_parker@hotmail.com","address":"","phone":"","homepage":""}
+                           ],
+            "coverages":[
+                            {"type":"period","value":{"start":"01/01/2000","end":"12/12/2010"}}
+                        ],
+            "dates":[
+                        {"type":"created","start_date":"2017-01-03T17:06:18.932217Z","end_date":null},
+                        {"type":"modified","start_date":"2017-01-03T17:06:19.162694Z","end_date":null}
+                    ],
+            "description":"Time series of level, area and volume in the Great Salt Lake. Volume and area of the Great Salt Lake are derived from recorded levels",
+            "formats":[
+                        {"value":"image/tiff"}
+                      ],
+            "funding_agencies":[
+                                {"agency_name":"National Science Foundation","award_title":"Model Execution Cyberinfrastructure ","award_number":"NSF_9087658_2017","agency_url":"http://www.nsf.gov"}
+                               ],
+            "identifiers":[
+                            {"name":"hydroShareIdentifier","url":"http://www.hydroshare.org/resource/87ffb608900e407ab4b67d30c93b329e"}
+                        ],
+            "language":"eng",
+            "rights":"This resource is shared under the Creative Commons Attribution CC BY. http://creativecommons.org/licenses/by/4.0/",
+            "type":"http://www.hydroshare.org/terms/GenericResource",
+            "publisher":null,"sources":[],
+            "subjects":[
+                        {"value":"NSF"},
+                        {"value":"Modeling"}
+                       ],
+            "relations":[]
+        }
+        """
+
+        url = "{url_base}/resource/{pid}/scimeta/elements/".format(url_base=self.url_base, pid=pid)
+
+        r = self._request('PUT', url, data=metadata)
+        if r.status_code != 202:
+            if r.status_code == 403:
+                raise HydroShareNotAuthorized(('PUT', url))
+            elif r.status_code == 404:
+                raise HydroShareNotFound((pid,))
+            else:
+                raise HydroShareHTTPException((url, 'PUT', r.status_code, metadata))
+
+        return str(r.content)
+
     def getResourceMap(self, pid):
         """ Get resource map metadata for a resource
 
