@@ -219,6 +219,30 @@ To get science xml data for a resource:
     >>> hs = HydroShare(auth=auth)
     >>> science_metadata_xml = hs.getScienceMetadata('ID OF RESOURCE GOES HERE')
 
+To get science json data (Dublin core metadata only) for a resource:
+
+    >>> from hs_restclient import HydroShare, HydroShareAuthBasic
+    >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
+    >>> hs = HydroShare(auth=auth)
+    >>> science_metadata_json = hs.getScienceMetadata('ID OF RESOURCE GOES HERE', data_format='json')
+
+To update science metadata (Dublin core metadata only) for a resource:
+
+    >>> from hs_restclient import HydroShare, HydroShareAuthBasic
+    >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
+    >>> hs = HydroShare(auth=auth)
+    >>> metadata = {
+                     "title": "A new title for my resource",
+                     "coverages":[
+							{"type":"period", "value":{"start":"01/01/2000", "end":"12/12/2010"}}
+						],
+			         "creators":[
+						{"name":"John Smith", "organization": "USU"},
+						{"name":"Lisa Miller", "email": "lisa_miller@gmail.com"}
+					   ]
+			      }
+    >>> science_metadata_json = hs.updateScienceMetadata('ID OF RESOURCE GOES HERE', metadata=metadata)
+
 Index
 -----
 
