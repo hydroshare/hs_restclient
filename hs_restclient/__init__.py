@@ -980,6 +980,35 @@ class HydroShare(object):
                                                             pid=pid)
         return self._getResultsListGenerator(url)
 
+    def getResourceFolderContents(self, pid, pathname):
+        """ Get a listing of files and folders for a resource at the specified path (*pathname*)
+
+        :param pid: The HydroShare ID of the resource whose folder contents to be listed
+        :param pathname: Folder path for which contents (files and folders) need to be listed
+        :return: A JSON object representing the contents of the specified folder
+
+        Example of JSON data returned:
+        {
+            'resource_id': "32a08bc23a86e471282a832143491b49",
+            'path': "model/initial",
+            'files': ["model.exe", "param.txt"],
+            'folders': ["run/1", "run/2"]
+        }
+        """
+
+        url = "{url_base}/resource/{pid}/folders/{path}".format(url_base=self.url_base, pid=pid, path=pathname)
+
+        r = self._request('GET', url)
+        if r.status_code != 200:
+            if r.status_code == 403:
+                raise HydroShareNotAuthorized(('GET', url))
+            elif r.status_code == 404:
+                raise HydroShareNotFound((pid,))
+            else:
+                raise HydroShareHTTPException((url, 'GET', r.status_code))
+
+        return r.json()
+        
     def getUserInfo(self):
         """
         Query the GET /hsapi/userInfo/ REST end point of the HydroShare server.
