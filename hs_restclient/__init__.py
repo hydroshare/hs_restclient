@@ -987,6 +987,10 @@ class HydroShare(object):
         :param pathname: Folder path for which contents (files and folders) need to be listed
         :return: A JSON object representing the contents of the specified folder
 
+        :raises: HydroShareNotAuthorized if user is not authorized to perform action.
+        :raises: HydroShareNotFound if the resource or resource file was not found.
+        :raises: HydroShareHTTPException if an unexpected HTTP response code is encountered.
+
         Example of JSON data returned:
         {
             'resource_id': "32a08bc23a86e471282a832143491b49",
@@ -1008,7 +1012,38 @@ class HydroShare(object):
                 raise HydroShareHTTPException((url, 'GET', r.status_code))
 
         return r.json()
-        
+
+    def createResourceFolder(self, pid, pathname):
+        """Create folder as specified by *pathname* for a given resource
+
+        :param pid: The HydroShare ID of the resource for which folder to be created
+        :param pathname: Folder path/name for the folder to be created
+        :return: A JSON object representing the resource id and path of the folder that was created
+
+        :raises: HydroShareNotAuthorized if user is not authorized to perform action.
+        :raises: HydroShareNotFound if the resource or resource file was not found.
+        :raises: HydroShareHTTPException if an unexpected HTTP response code is encountered.
+
+        Example of JSON data returned:
+        {
+            'resource_id': "32a08bc23a86e471282a832143491b49",
+            'path': "model/initial"
+        }
+        """
+
+        url = "{url_base}/resource/{pid}/folders/{path}".format(url_base=self.url_base, pid=pid, path=pathname)
+
+        r = self._request('PUT', url)
+        if r.status_code != 201:
+            if r.status_code == 403:
+                raise HydroShareNotAuthorized(('PUT', url))
+            elif r.status_code == 404:
+                raise HydroShareNotFound((pid,))
+            else:
+                raise HydroShareHTTPException((url, 'PUT', r.status_code))
+
+        return r.json()
+
     def getUserInfo(self):
         """
         Query the GET /hsapi/userInfo/ REST end point of the HydroShare server.
