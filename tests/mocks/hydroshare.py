@@ -207,8 +207,9 @@ def userInfo_get(url, request):
         return response(404, {}, HEADERS, None, 5, request)
     return response(200, content, HEADERS, None, 5, request)
 
+
 @urlmatch(netloc=NETLOC, method=GET)
-def scimeta_get(url, request):
+def scimeta_xml_get(url, request):
     file_path = url.netloc + url.path + 'scimeta.xml'
 
     try:
@@ -218,6 +219,33 @@ def scimeta_get(url, request):
         # 404.
         return response(404, {}, HEADERS, None, 5, request)
     return response(200, content, HEADERS, None, 5, request)
+
+
+@urlmatch(netloc=NETLOC, method=GET)
+def scimeta_json_get(url, request):
+    file_path = url.netloc + url.path + '/scimeta-get-response'
+
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(200, content, HEADERS, None, 5, request)
+
+
+@urlmatch(netloc=NETLOC, method=PUT)
+def scimeta_json_put(url, request):
+    file_path = url.netloc + url.path + '/scimeta-update-response'
+
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(202, content, HEADERS, None, 5, request)
+
 
 @urlmatch(netloc=NETLOC, method=GET)
 def resourcemap_get(url, request):

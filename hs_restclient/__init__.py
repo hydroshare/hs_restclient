@@ -555,7 +555,10 @@ class HydroShare(object):
             else:
                 raise HydroShareHTTPException((url, 'GET', r.status_code))
 
-        return str(r.content)
+        if data_format.lower() == 'xml':
+            return str(r.content)
+        else:
+            return r.json()
 
     def updateScienceMetadata(self, pid, metadata):
         """Update dublin core metadata for a resource
@@ -618,7 +621,7 @@ class HydroShare(object):
             else:
                 raise HydroShareHTTPException((url, 'PUT', r.status_code, metadata))
 
-        return str(r.content)
+        return r.json()
 
     def getResourceMap(self, pid):
         """ Get resource map metadata for a resource
