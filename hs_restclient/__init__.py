@@ -993,10 +993,10 @@ class HydroShare(object):
 
         Example of JSON data returned:
         {
-            'resource_id': "32a08bc23a86e471282a832143491b49",
-            'path': "model/initial",
-            'files': ["model.exe", "param.txt"],
-            'folders': ["run/1", "run/2"]
+            "resource_id": "32a08bc23a86e471282a832143491b49",
+            "path": "model/initial",
+            "files": ["model.exe", "param.txt"],
+            "folders": ["run/1", "run/2"]
         }
         """
 
@@ -1026,8 +1026,8 @@ class HydroShare(object):
 
         Example of JSON data returned:
         {
-            'resource_id': "32a08bc23a86e471282a832143491b49",
-            'path': "model/initial"
+            "resource_id": "32a08bc23a86e471282a832143491b49",
+            "path": "model/initial"
         }
         """
 
@@ -1136,6 +1136,6 @@ class HydroShareAuthOAuth2(AbstractHydroShareAuth):
         self.token = token
 
         if self.token:
-            if not 'expires_at' in self.token:
+            if 'expires_at' not in self.token:
                 self.token['expires_at'] = int(time.time()) + int(self.token['expires_in']) - EXPIRES_AT_ROUNDDOWN_SEC
 
