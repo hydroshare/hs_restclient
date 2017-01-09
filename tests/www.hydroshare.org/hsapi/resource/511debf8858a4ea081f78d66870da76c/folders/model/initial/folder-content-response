@@ -1,0 +1,6 @@
+{
+    "resource_id": "511debf8858a4ea081f78d66870da76c",
+    "path": "model/initial",
+    "files": ["model.exe", "param.txt"],
+    "folders": ["run/1", "run/2"]
+}

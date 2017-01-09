@@ -219,6 +219,30 @@ To get science xml data for a resource:
     >>> hs = HydroShare(auth=auth)
     >>> science_metadata_xml = hs.getScienceMetadata('ID OF RESOURCE GOES HERE')
 
+To get the contents of a specific folder of a resource:
+
+    >>> from hs_restclient import HydroShare, HydroShareAuthBasic
+    >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
+    >>> hs = HydroShare(auth=auth)
+    >>> folder_name = 'some_folder'
+    >>> folder_contents_json = hs.getResourceFolderContents('ID OF RESOURCE GOES HERE', pathname=folder_name)
+
+To create a folder for a resource:
+
+    >>> from hs_restclient import HydroShare, HydroShareAuthBasic
+    >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
+    >>> hs = HydroShare(auth=auth)
+    >>> folder_to_create = "folder_1/folder_2"
+    >>> response_json = hs.createResourceFolder('ID OF RESOURCE GOES HERE', pathname=folder_to_create)
+
+To delete a folder for a resource:
+
+    >>> from hs_restclient import HydroShare, HydroShareAuthBasic
+    >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
+    >>> hs = HydroShare(auth=auth)
+    >>> folder_to_delete = "folder_1/folder_2"
+    >>> response_json = hs.deleteResourceFolder('ID OF RESOURCE GOES HERE', pathname=folder_to_delete)
+
 Index
 -----
 
