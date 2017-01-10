@@ -14,6 +14,7 @@ HEADERS = {'content-type': 'application/json'}
 GET = 'get'
 POST = 'post'
 PUT = 'put'
+DELETE = 'delete'
 
 
 class Resource:
@@ -267,6 +268,42 @@ def resourceFileList_get(url, request):
         file_path = url.netloc + url.path + 'file_list-2'
     else:
         file_path = ''
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(200, content, HEADERS, None, 5, request)
+
+
+@urlmatch(netloc=NETLOC, method=GET)
+def resourceFolderContents_get(url, request):
+    file_path = url.netloc + url.path + 'folder-content-response'
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(200, content, HEADERS, None, 5, request)
+
+
+@urlmatch(netloc=NETLOC, method=PUT)
+def resourceFolderCreate_put(url, request):
+    file_path = url.netloc + url.path + 'create-folder-response'
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(201, content, HEADERS, None, 5, request)
+
+
+@urlmatch(netloc=NETLOC, method=DELETE)
+def resourceFolderDelete_delete(url, request):
+    file_path = url.netloc + url.path + 'delete-folder-response'
     try:
         content = Resource(file_path).get()
     except EnvironmentError:

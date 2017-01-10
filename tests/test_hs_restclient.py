@@ -286,5 +286,33 @@ class TestGetResourceFileList(unittest.TestCase):
             self.assertEqual(r['content_type'], self.content_types[i])
 
 
+class TestResourceFolderCRUD(unittest.TestCase):
+
+    @with_httmock(mocks.hydroshare.resourceFolderContents_get)
+    def test_get_folder_contents(self):
+        hs = HydroShare()
+        folder_contents = hs.getResourceFolderContents('511debf8858a4ea081f78d66870da76c', pathname='model/initial/')
+
+        self.assertEqual(folder_contents['resource_id'], '511debf8858a4ea081f78d66870da76c')
+        self.assertEqual(folder_contents['path'], 'model/initial')
+        self.assertEqual(folder_contents['files'], ["model.exe", "param.txt"])
+        self.assertEqual(folder_contents['folders'], ["run/1", "run/2"])
+
+    @with_httmock(mocks.hydroshare.resourceFolderCreate_put)
+    def test_folder_create(self):
+        hs = HydroShare()
+        response = hs.createResourceFolder('511debf8858a4ea081f78d66870da76c', pathname='model/initial/')
+
+        self.assertEqual(response['resource_id'], '511debf8858a4ea081f78d66870da76c')
+        self.assertEqual(response['path'], 'model/initial')
+
+    @with_httmock(mocks.hydroshare.resourceFolderDelete_delete)
+    def test_folder_delete(self):
+        hs = HydroShare()
+        response = hs.deleteResourceFolder('511debf8858a4ea081f78d66870da76c', pathname='model/initial/')
+
+        self.assertEqual(response['resource_id'], '511debf8858a4ea081f78d66870da76c')
+        self.assertEqual(response['path'], 'model/initial')
+                
 if __name__ == '__main__':
     unittest.main()
