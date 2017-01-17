@@ -116,13 +116,13 @@ def createResourceCRUD(url, request):
     # This gets tricky.  HydroShare.createResource() can implicitly
     # call HydroShare.getResourceTypes(), so we need to handle those requests too
     if request.method == 'GET':
-        if url.path == '/hsapi/resourceTypes/':
+        if url.path == '/hsapi/resource/types':
             file_path = url.netloc + url.path
             # Remove trailing slash so that we can open the file
             file_path = file_path.strip('/')
             response_status = 200
-        if url.path == '/hsapi/sysmeta/511debf8858a4ea081f78d66870da76c/':
-            file_path = url.netloc + url.path
+        if url.path == '/hsapi/resource/511debf8858a4ea081f78d66870da76c/sysmeta/':
+            file_path = url.netloc + url.path + '511debf8858a4ea081f78d66870da76c'
             # Remove trailing slash so that we can open the file
             file_path = file_path.strip('/')
             response_status = 200
@@ -182,8 +182,8 @@ def accessRules_put(url, request):
         else:
             file_path = ''
     elif request.method == 'GET':
-        if url.path == '/hsapi/sysmeta/511debf8858a4ea081f78d66870da76c/':
-            file_path = url.netloc + url.path
+        if url.path == '/hsapi/resource/511debf8858a4ea081f78d66870da76c/sysmeta/':
+            file_path = url.netloc + url.path + '511debf8858a4ea081f78d66870da76c'
             # Remove trailing slash so that we can open the file
             file_path = file_path.strip('/') + '-public'
     else:

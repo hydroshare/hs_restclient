@@ -286,7 +286,7 @@ class HydroShare(object):
     def getResourceList(self, creator=None, owner=None, user=None, group=None, from_date=None, to_date=None,
                         types=None):
         """
-        Query the GET /hsapi/resourceList/ REST end point of the HydroShare server.
+        Query the GET /hsapi/resource/ REST end point of the HydroShare server.
 
         :param creator: Filter results by the HydroShare user name of resource creators
         :param owner: Filter results by the HydroShare user name of resource owners
@@ -342,7 +342,7 @@ class HydroShare(object):
           /hsapi/resourceList/?sharedWith=user
 
         """
-        url = "{url_base}/resourceList/".format(url_base=self.url_base)
+        url = "{url_base}/resource/".format(url_base=self.url_base)
 
         params = {}
         if creator:
@@ -384,7 +384,7 @@ class HydroShare(object):
           u'public': True}
 
         """
-        url = "{url_base}/sysmeta/{pid}/".format(url_base=self.url_base,
+        url = "{url_base}/resource/{pid}/sysmeta/".format(url_base=self.url_base,
                                                  pid=pid)
         r = self._request('GET', url)
         if r.status_code != 200:
@@ -810,7 +810,7 @@ class HydroShare(object):
 
         :raises: HydroShareHTTPException to signal an HTTP error
         """
-        url = "{url_base}/resourceTypes/".format(url_base=self.url_base)
+        url = "{url_base}/resource/types".format(url_base=self.url_base)
 
         r = self._request('GET', url)
         if r.status_code != 200:
@@ -1127,7 +1127,7 @@ class HydroShare(object):
             ]
         }
         """
-        url = "{url_base}/resource/{pid}/file_list/".format(url_base=self.url_base,
+        url = "{url_base}/resource/{pid}/files/".format(url_base=self.url_base,
                                                             pid=pid)
         return self._getResultsListGenerator(url)
 

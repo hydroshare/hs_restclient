@@ -1,7 +1,7 @@
 {
     "count": 5,
     "next": null,
-    "previous": "http://www.hydroshare.org/hsapi/resourceList/",
+    "previous": "http://www.hydroshare.org/hsapi/resource/",
     "results": [
         {
             "resource_type": "GenericResource",

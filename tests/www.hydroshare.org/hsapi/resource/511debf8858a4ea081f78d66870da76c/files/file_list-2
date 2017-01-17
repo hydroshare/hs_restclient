@@ -1,7 +1,7 @@
 {
     "count": 5,
     "next": null,
-    "previous": "http://www.hydroshare.org/hsapi/resource/511debf8858a4ea081f78d66870da76c/file_list/?page=1",
+    "previous": "http://www.hydroshare.org/hsapi/resource/511debf8858a4ea081f78d66870da76c/files/?page=1",
     "results": [
         {
             "url": "http://www.hydroshare.org/django_irods/download/511debf8858a4ea081f78d66870da76c/data/contents/data.sqlite",
