@@ -397,17 +397,14 @@ class HydroShare(object):
 
         return r.json()
 
-    def getScienceMetadata(self, pid, data_format='xml'):
-        """ Get science metadata for a resource in XML or JSON format
-        Note: In JSON format only dublin core metadata is retrieved.
+    def getScienceMetadataRDF(self, pid):
+        """ Get science metadata for a resource in XML+RDF format
 
         :param pid: The HydroShare ID of the resource
-        :param data_format: Default format of returned science metadata is in XML format.
-        If *data_format* is not equal to 'xml' then the returned metadata string will be in JSON format.
         :raises: HydroShareNotAuthorized if the user is not authorized to view the metadata.
         :raises: HydroShareNotFound if the resource was not found.
         :raises: HydroShareHTTPException to signal an HTTP error.
-        :return: A string representing the XML+RDF or JSON serialization of science metadata.
+        :return: A string representing the XML+RDF serialization of science metadata.
         Example of data XML+RDF returned:
 
         <?xml version="1.0"?>
@@ -501,6 +498,29 @@ class HydroShare(object):
             <rdfs1:isDefinedBy>http://www.hydroshare.org/terms</rdfs1:isDefinedBy>
           </rdf:Description>
         </rdf:RDF>
+        """
+
+        url = "{url_base}/scimeta/{pid}/".format(url_base=self.url_base, pid=pid)
+        r = self._request('GET', url)
+        if r.status_code != 200:
+            if r.status_code == 403:
+                raise HydroShareNotAuthorized(('GET', url))
+            elif r.status_code == 404:
+                raise HydroShareNotFound((pid,))
+            else:
+                raise HydroShareHTTPException((url, 'GET', r.status_code))
+
+        return str(r.content)
+
+    def getScienceMetadata(self, pid):
+        """ Get science metadata for a resource in JSON format
+        Note: Only Dublin core metadata is retrieved.
+
+        :param pid: The HydroShare ID of the resource
+        :raises: HydroShareNotAuthorized if the user is not authorized to view the metadata.
+        :raises: HydroShareNotFound if the resource was not found.
+        :raises: HydroShareHTTPException to signal an HTTP error.
+        :return: A string representing JSON serialization of science metadata.
 
         Example of data JSON returned:
 
@@ -541,10 +561,8 @@ class HydroShare(object):
             "relations":[]
         }
         """
-        if data_format.lower() == 'xml':
-            url = "{url_base}/scimeta/{pid}/".format(url_base=self.url_base, pid=pid)
-        else:
-            url = "{url_base}/resource/{pid}/scimeta/elements".format(url_base=self.url_base, pid=pid)
+
+        url = "{url_base}/resource/{pid}/scimeta/elements".format(url_base=self.url_base, pid=pid)
 
         r = self._request('GET', url)
         if r.status_code != 200:
@@ -555,13 +573,10 @@ class HydroShare(object):
             else:
                 raise HydroShareHTTPException((url, 'GET', r.status_code))
 
-        if data_format.lower() == 'xml':
-            return str(r.content)
-        else:
-            return r.json()
+        return r.json()
 
     def updateScienceMetadata(self, pid, metadata):
-        """Update dublin core metadata for a resource
+        """Update Dublin core metadata for a resource
 
         :param pid: The HydroShare ID of the resource for which science metadata needs to be updated
         :param  metadata: A dict containing data for each of the dublin core metadata elements that needs to be updated

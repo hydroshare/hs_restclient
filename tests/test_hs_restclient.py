@@ -191,13 +191,13 @@ class TestScimeta(unittest.TestCase):
     @with_httmock(mocks.hydroshare.scimeta_xml_get)
     def test_get_scimeta_xml(self):
         hs = HydroShare()
-        scimeta = hs.getScienceMetadata('6dbb0dfb8f3a498881e4de428cb1587c')
+        scimeta = hs.getScienceMetadataRDF('6dbb0dfb8f3a498881e4de428cb1587c')
         self.assertTrue(scimeta.find("""<rdf:Description rdf:about="http://www.hydroshare.org/resource/6dbb0dfb8f3a498881e4de428cb1587c">""") != -1)
 
     @with_httmock(mocks.hydroshare.scimeta_json_get)
     def test_get_scimeta_json(self):
         hs = HydroShare()
-        scimeta = hs.getScienceMetadata('511debf8858a4ea081f78d66870da76c', data_format='json')
+        scimeta = hs.getScienceMetadata('511debf8858a4ea081f78d66870da76c')
 
         self.assertEqual(scimeta['title'], 'Great Salt Lake Level and Volume')
         self.assertEqual(len(scimeta['creators']), 2)
