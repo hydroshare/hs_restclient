@@ -212,12 +212,12 @@ To get resource map xml data for a resource:
     >>> hs = HydroShare(auth=auth)
     >>> resource_map_xml = hs.getResourceMap('ID OF RESOURCE GOES HERE')
 
-To get science xml data for a resource:
+To get science metadata as xml+rdf data for a resource:
 
     >>> from hs_restclient import HydroShare, HydroShareAuthBasic
     >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
     >>> hs = HydroShare(auth=auth)
-    >>> science_metadata_xml = hs.getScienceMetadata('ID OF RESOURCE GOES HERE')
+    >>> science_metadata_xml = hs.getScienceMetadataRDF('ID OF RESOURCE GOES HERE')
 
 To get the contents of a specific folder of a resource:
 
@@ -242,6 +242,30 @@ To delete a folder for a resource:
     >>> hs = HydroShare(auth=auth)
     >>> folder_to_delete = "folder_1/folder_2"
     >>> response_json = hs.deleteResourceFolder('ID OF RESOURCE GOES HERE', pathname=folder_to_delete)
+
+To get science metadata as json data (Dublin core metadata only) for a resource:
+
+    >>> from hs_restclient import HydroShare, HydroShareAuthBasic
+    >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
+    >>> hs = HydroShare(auth=auth)
+    >>> science_metadata_json = hs.getScienceMetadata('ID OF RESOURCE GOES HERE', data_format='json')
+
+To update science metadata (Dublin core metadata only) for a resource:
+
+    >>> from hs_restclient import HydroShare, HydroShareAuthBasic
+    >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
+    >>> hs = HydroShare(auth=auth)
+    >>> metadata = {
+                     "title": "A new title for my resource",
+                     "coverages": [
+							        {"type": "period", "value": {"start": "01/01/2000", "end": "12/12/2010"}}
+						          ],
+			         "creators": [
+						            {"name": "John Smith", "organization": "USU"},
+						            {"name": "Lisa Miller", "email": "lisa_miller@gmail.com"}
+					             ]
+			      }
+    >>> science_metadata_json = hs.updateScienceMetadata('ID OF RESOURCE GOES HERE', metadata=metadata)
 
 Index
 -----

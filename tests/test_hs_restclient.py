@@ -186,14 +186,60 @@ class TestGetUserInfo(unittest.TestCase):
         self.assertEqual(user_info['email'], 'user@domain.com')
 
 
-class TestGetScimeta(unittest.TestCase):
+class TestScimeta(unittest.TestCase):
 
-    @with_httmock(mocks.hydroshare.scimeta_get)
-    def test_get_scimeta(self):
+    @with_httmock(mocks.hydroshare.scimeta_xml_get)
+    def test_get_scimeta_xml(self):
         hs = HydroShare()
-        scimeta = hs.getScienceMetadata('6dbb0dfb8f3a498881e4de428cb1587c')
+        scimeta = hs.getScienceMetadataRDF('6dbb0dfb8f3a498881e4de428cb1587c')
         self.assertTrue(scimeta.find("""<rdf:Description rdf:about="http://www.hydroshare.org/resource/6dbb0dfb8f3a498881e4de428cb1587c">""") != -1)
 
+    @with_httmock(mocks.hydroshare.scimeta_json_get)
+    def test_get_scimeta_json(self):
+        hs = HydroShare()
+        scimeta = hs.getScienceMetadata('511debf8858a4ea081f78d66870da76c')
+
+        self.assertEqual(scimeta['title'], 'Great Salt Lake Level and Volume')
+        self.assertEqual(len(scimeta['creators']), 2)
+        self.assertEqual(len(scimeta['contributors']), 1)
+        self.assertEqual(len(scimeta['coverages']), 1)
+        self.assertEqual(len(scimeta['dates']), 2)
+        self.assertEqual(scimeta['description'], 'Time series of level, area and volume in the Great Salt Lake. Volume and area of the Great Salt Lake are derived from recorded levels')
+        self.assertEqual(scimeta['formats'][0]['value'], 'image/tiff')
+        self.assertEqual(len(scimeta['funding_agencies']), 1)
+        self.assertEqual(len(scimeta['identifiers']), 1)
+        self.assertEqual(scimeta['language'], 'eng')
+        self.assertEqual(scimeta['rights'], 'This resource is shared under the Creative Commons Attribution CC BY. http://creativecommons.org/licenses/by/4.0/')
+        self.assertEqual(scimeta['type'], 'http://www.hydroshare.org/terms/GenericResource')
+        self.assertEqual(scimeta['publisher'], None)
+        self.assertEqual(len(scimeta['sources']), 0)
+        self.assertEqual(len(scimeta['relations']), 0)
+        self.assertEqual(len(scimeta['subjects']), 2)
+
+    @with_httmock(mocks.hydroshare.scimeta_json_put)
+    def test_update_scimeta(self):
+        hs = HydroShare()
+        metadata_to_update = {'title': 'Updated resource title'}
+        scimeta = hs.updateScienceMetadata('511debf8858a4ea081f78d66870da76c', metadata=metadata_to_update)
+
+        self.assertEqual(scimeta['title'], 'Updated resource title')
+        self.assertEqual(len(scimeta['creators']), 2)
+        self.assertEqual(len(scimeta['contributors']), 1)
+        self.assertEqual(len(scimeta['coverages']), 1)
+        self.assertEqual(len(scimeta['dates']), 2)
+        self.assertEqual(scimeta['description'],
+                         'Time series of level, area and volume in the Great Salt Lake. Volume and area of the Great Salt Lake are derived from recorded levels')
+        self.assertEqual(scimeta['formats'][0]['value'], 'image/tiff')
+        self.assertEqual(len(scimeta['funding_agencies']), 1)
+        self.assertEqual(len(scimeta['identifiers']), 1)
+        self.assertEqual(scimeta['language'], 'eng')
+        self.assertEqual(scimeta['rights'],
+                         'This resource is shared under the Creative Commons Attribution CC BY. http://creativecommons.org/licenses/by/4.0/')
+        self.assertEqual(scimeta['type'], 'http://www.hydroshare.org/terms/GenericResource')
+        self.assertEqual(scimeta['publisher'], None)
+        self.assertEqual(len(scimeta['sources']), 0)
+        self.assertEqual(len(scimeta['relations']), 0)
+        self.assertEqual(len(scimeta['subjects']), 2)
 
 class TestGetResourceMap(unittest.TestCase):
 
