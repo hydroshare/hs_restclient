@@ -1,6 +1,6 @@
 {
     "count": 5,
-    "next": "http://www.hydroshare.org/hsapi/resourceList/?page=2",
+    "next": "http://www.hydroshare.org/hsapi/resource/?page=2",
     "previous": null,
     "results": [
         {

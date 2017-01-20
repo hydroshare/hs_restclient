@@ -5,7 +5,7 @@ Client library for HydroShare REST API
 """
 
 __title__ = 'hs_restclient'
-__version__ = '1.2.5'
+__version__ = '1.2.6'
 
 
 import os
@@ -286,7 +286,7 @@ class HydroShare(object):
     def getResourceList(self, creator=None, owner=None, user=None, group=None, from_date=None, to_date=None,
                         types=None):
         """
-        Query the GET /hsapi/resourceList/ REST end point of the HydroShare server.
+        Query the GET /hsapi/resource/ REST end point of the HydroShare server.
 
         :param creator: Filter results by the HydroShare user name of resource creators
         :param owner: Filter results by the HydroShare user name of resource owners
@@ -342,7 +342,7 @@ class HydroShare(object):
           /hsapi/resourceList/?sharedWith=user
 
         """
-        url = "{url_base}/resourceList/".format(url_base=self.url_base)
+        url = "{url_base}/resource/".format(url_base=self.url_base)
 
         params = {}
         if creator:
@@ -384,7 +384,7 @@ class HydroShare(object):
           u'public': True}
 
         """
-        url = "{url_base}/sysmeta/{pid}/".format(url_base=self.url_base,
+        url = "{url_base}/resource/{pid}/sysmeta/".format(url_base=self.url_base,
                                                  pid=pid)
         r = self._request('GET', url)
         if r.status_code != 200:
@@ -397,49 +397,77 @@ class HydroShare(object):
 
         return r.json()
 
-    def getScienceMetadata(self, pid):
-        """ Get science metadata for a resource
+    def getScienceMetadataRDF(self, pid):
+        """ Get science metadata for a resource in XML+RDF format
 
         :param pid: The HydroShare ID of the resource
         :raises: HydroShareNotAuthorized if the user is not authorized to view the metadata.
         :raises: HydroShareNotFound if the resource was not found.
         :raises: HydroShareHTTPException to signal an HTTP error.
         :return: A string representing the XML+RDF serialization of science metadata.
-        Example of data returned:
+        Example of data XML+RDF returned:
 
         <?xml version="1.0"?>
         <!DOCTYPE rdf:RDF PUBLIC "-//DUBLIN CORE//DCMES DTD 2002/07/31//EN"
         "http://dublincore.org/documents/2002/07/31/dcmes-xml/dcmes-xml-dtd.dtd">
-        <rdf:RDF xmlns:dcterms="http://purl.org/dc/terms/" xmlns:hsterms="http://hydroshare.org/terms/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs1="http://www.w3.org/2001/01/rdf-schema#" xmlns:dc="http://purl.org/dc/elements/1.1/">
-          <rdf:Description rdf:about="http://www.hydroshare.org/resource/6dbb0dfb8f3a498881e4de428cb1587c">
-            <dc:title>RHESSys model of Dead Run 5 watershed, Baltimore County, Maryland, USA (with rain gardens)</dc:title>
+        <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:hsterms="http://hydroshare.org/terms/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs1="http://www.w3.org/2001/01/rdf-schema#">
+          <rdf:Description rdf:about="http://www.hydroshare.org/resource/87ffb608900e407ab4b67d30c93b329e">
+            <dc:title>Great Salt Lake Level and Volume</dc:title>
             <dc:type rdf:resource="http://www.hydroshare.org/terms/GenericResource"/>
             <dc:description>
               <rdf:Description>
-                <dcterms:abstract>3-m spatial resolution RHESSys model for Dead Run 5 watershed in Baltimore County, Maryland.  This model contains example implementation of rain gardens.</dcterms:abstract>
+                <dcterms:abstract>Time series of level, area and volume in the Great Salt Lake. Volume and area of the Great Salt Lake are derived from recorded levels</dcterms:abstract>
               </rdf:Description>
             </dc:description>
+            <hsterms:awardInfo>
+              <rdf:Description rdf:about="http://www.nsf.gov">
+                <hsterms:fundingAgencyName>National Science Foundation</hsterms:fundingAgencyName>
+                <hsterms:awardTitle>Model Execution Cyberinfrastructure </hsterms:awardTitle>
+                <hsterms:awardNumber>NSF_9087658_2017</hsterms:awardNumber>
+              </rdf:Description>
+            </hsterms:awardInfo>
             <dc:creator>
-              <rdf:Description rdf:about="http://www.hydroshare.org/user/28/">
-                <hsterms:name>Brian Miles</hsterms:name>
+              <rdf:Description>
+                <hsterms:name>John Smith</hsterms:name>
                 <hsterms:creatorOrder>1</hsterms:creatorOrder>
-                <hsterms:email>brian_miles@unc.edu</hsterms:email>
+                <hsterms:organization>Utah State University</hsterms:organization>
+                <hsterms:email>john.smith@gmail.com</hsterms:email>
+                <hsterms:address>Engineering Building, USU, Logan, Utah</hsterms:address>
+                <hsterms:phone rdf:resource="tel:435-797-8967"/>
               </rdf:Description>
             </dc:creator>
+            <dc:creator>
+              <rdf:Description>
+                <hsterms:name>Lisa Miller</hsterms:name>
+                <hsterms:creatorOrder>2</hsterms:creatorOrder>
+              </rdf:Description>
+            </dc:creator>
+            <dc:contributor>
+              <rdf:Description>
+                <hsterms:name>Jenny Parker</hsterms:name>
+                <hsterms:organization>Univesity of Utah</hsterms:organization>
+                <hsterms:email>jenny_parker@hotmail.com</hsterms:email>
+              </rdf:Description>
+            </dc:contributor>
+            <dc:coverage>
+              <dcterms:period>
+                <rdf:value>start=2000-01-01T00:00:00; end=2010-12-12T00:00:00; scheme=W3C-DTF</rdf:value>
+              </dcterms:period>
+            </dc:coverage>
             <dc:date>
               <dcterms:created>
-                <rdf:value>2015-07-27T18:35:27.954135+00:00</rdf:value>
+                <rdf:value>2017-01-03T17:06:18.932217+00:00</rdf:value>
               </dcterms:created>
             </dc:date>
             <dc:date>
               <dcterms:modified>
-                <rdf:value>2015-08-07T13:44:44.757870+00:00</rdf:value>
+                <rdf:value>2017-01-03T17:35:34.067279+00:00</rdf:value>
               </dcterms:modified>
             </dc:date>
-            <dc:format>application/zip</dc:format>
+            <dc:format>image/tiff</dc:format>
             <dc:identifier>
               <rdf:Description>
-                <hsterms:hydroShareIdentifier>http://www.hydroshare.org/resource/6dbb0dfb8f3a498881e4de428cb1587c</hsterms:hydroShareIdentifier>
+                <hsterms:hydroShareIdentifier>http://www.hydroshare.org/resource/87ffb608900e407ab4b67d30c93b329e</hsterms:hydroShareIdentifier>
               </rdf:Description>
             </dc:identifier>
             <dc:language>eng</dc:language>
@@ -449,9 +477,21 @@ class HydroShare(object):
                 <hsterms:URL rdf:resource="http://creativecommons.org/licenses/by/4.0/"/>
               </rdf:Description>
             </dc:rights>
-            <dc:subject>RHESSys</dc:subject>
-            <dc:subject>Baltimore Ecosystem Study</dc:subject>
-            <dc:subject>green infrastructure</dc:subject>
+            <dc:subject>NSF</dc:subject>
+            <dc:subject>Model</dc:subject>
+            <dc:subject>Cyberinfrastructure</dc:subject>
+            <hsterms:extendedMetadata>
+              <rdf:Description>
+                <hsterms:key>model</hsterms:key>
+                <hsterms:value>ueb</hsterms:value>
+              </rdf:Description>
+            </hsterms:extendedMetadata>
+            <hsterms:extendedMetadata>
+              <rdf:Description>
+                <hsterms:key>os</hsterms:key>
+                <hsterms:value>windows</hsterms:value>
+              </rdf:Description>
+            </hsterms:extendedMetadata>
           </rdf:Description>
           <rdf:Description rdf:about="http://www.hydroshare.org/terms/GenericResource">
             <rdfs1:label>Generic</rdfs1:label>
@@ -459,8 +499,8 @@ class HydroShare(object):
           </rdf:Description>
         </rdf:RDF>
         """
-        url = "{url_base}/scimeta/{pid}/".format(url_base=self.url_base,
-                                                 pid=pid)
+
+        url = "{url_base}/scimeta/{pid}/".format(url_base=self.url_base, pid=pid)
         r = self._request('GET', url)
         if r.status_code != 200:
             if r.status_code == 403:
@@ -471,6 +511,132 @@ class HydroShare(object):
                 raise HydroShareHTTPException((url, 'GET', r.status_code))
 
         return str(r.content)
+
+    def getScienceMetadata(self, pid):
+        """ Get science metadata for a resource in JSON format
+        Note: Only Dublin core metadata is retrieved.
+
+        :param pid: The HydroShare ID of the resource
+        :raises: HydroShareNotAuthorized if the user is not authorized to view the metadata.
+        :raises: HydroShareNotFound if the resource was not found.
+        :raises: HydroShareHTTPException to signal an HTTP error.
+        :return: A string representing JSON serialization of science metadata.
+
+        Example of data JSON returned:
+
+        {
+            "title":"Great Salt Lake Level and Volume",
+            "creators":[
+                        {"name":"John Smith","description":"/user/24/","organization":"USU","email":"john.smith@usu.edu","address":"Engineering Building, USU, Logan, Utah","phone":"435-789-9087","homepage":null,"order":1},
+                        {"name":"Lisa Miller","description":null,"organization":null,"email":null,"address":null,"phone":null,"homepage":null,"order":2}
+                       ],
+            "contributors":[
+                            {"name":"Jenny Parker","description":"","organization":"Univesity of Utah","email":"jenny_parker@hotmail.com","address":"","phone":"","homepage":""}
+                           ],
+            "coverages":[
+                            {"type":"period","value":{"start":"01/01/2000","end":"12/12/2010"}}
+                        ],
+            "dates":[
+                        {"type":"created","start_date":"2017-01-03T17:06:18.932217Z","end_date":null},
+                        {"type":"modified","start_date":"2017-01-03T17:06:19.162694Z","end_date":null}
+                    ],
+            "description":"Time series of level, area and volume in the Great Salt Lake. Volume and area of the Great Salt Lake are derived from recorded levels",
+            "formats":[
+                        {"value":"image/tiff"}
+                      ],
+            "funding_agencies":[
+                                {"agency_name":"National Science Foundation","award_title":"Model Execution Cyberinfrastructure ","award_number":"NSF_9087658_2017","agency_url":"http://www.nsf.gov"}
+                               ],
+            "identifiers":[
+                            {"name":"hydroShareIdentifier","url":"http://www.hydroshare.org/resource/87ffb608900e407ab4b67d30c93b329e"}
+                        ],
+            "language":"eng",
+            "rights":"This resource is shared under the Creative Commons Attribution CC BY. http://creativecommons.org/licenses/by/4.0/",
+            "type":"http://www.hydroshare.org/terms/GenericResource",
+            "publisher":null,"sources":[],
+            "subjects":[
+                        {"value":"NSF"},
+                        {"value":"Modeling"}
+                       ],
+            "relations":[]
+        }
+        """
+
+        url = "{url_base}/resource/{pid}/scimeta/elements".format(url_base=self.url_base, pid=pid)
+
+        r = self._request('GET', url)
+        if r.status_code != 200:
+            if r.status_code == 403:
+                raise HydroShareNotAuthorized(('GET', url))
+            elif r.status_code == 404:
+                raise HydroShareNotFound((pid,))
+            else:
+                raise HydroShareHTTPException((url, 'GET', r.status_code))
+
+        return r.json()
+
+    def updateScienceMetadata(self, pid, metadata):
+        """Update Dublin core metadata for a resource
+
+        :param pid: The HydroShare ID of the resource for which science metadata needs to be updated
+        :param  metadata: A dict containing data for each of the dublin core metadata elements that needs to be updated
+        :raises: HydroShareNotAuthorized if the user is not authorized to view the metadata.
+        :raises: HydroShareNotFound if the resource was not found.
+        :raises: HydroShareHTTPException to signal an HTTP error.
+        :return: A string representing the JSON serialization of resource science metadata.
+
+        Example of data JSON returned:
+
+        {
+            "title":"Great Salt Lake Level and Volume",
+            "creators":[
+                        {"name":"John Smith","description":"/user/24/","organization":"USU","email":"john.smith@usu.edu","address":"Engineering Building, USU, Logan, Utah","phone":"435-789-9087","homepage":null,"order":1},
+                        {"name":"Lisa Miller","description":null,"organization":null,"email":null,"address":null,"phone":null,"homepage":null,"order":2}
+                       ],
+            "contributors":[
+                            {"name":"Jenny Parker","description":"","organization":"Univesity of Utah","email":"jenny_parker@hotmail.com","address":"","phone":"","homepage":""}
+                           ],
+            "coverages":[
+                            {"type":"period","value":{"start":"01/01/2000","end":"12/12/2010"}}
+                        ],
+            "dates":[
+                        {"type":"created","start_date":"2017-01-03T17:06:18.932217Z","end_date":null},
+                        {"type":"modified","start_date":"2017-01-03T17:06:19.162694Z","end_date":null}
+                    ],
+            "description":"Time series of level, area and volume in the Great Salt Lake. Volume and area of the Great Salt Lake are derived from recorded levels",
+            "formats":[
+                        {"value":"image/tiff"}
+                      ],
+            "funding_agencies":[
+                                {"agency_name":"National Science Foundation","award_title":"Model Execution Cyberinfrastructure ","award_number":"NSF_9087658_2017","agency_url":"http://www.nsf.gov"}
+                               ],
+            "identifiers":[
+                            {"name":"hydroShareIdentifier","url":"http://www.hydroshare.org/resource/87ffb608900e407ab4b67d30c93b329e"}
+                        ],
+            "language":"eng",
+            "rights":"This resource is shared under the Creative Commons Attribution CC BY. http://creativecommons.org/licenses/by/4.0/",
+            "type":"http://www.hydroshare.org/terms/GenericResource",
+            "publisher":null,"sources":[],
+            "subjects":[
+                        {"value":"NSF"},
+                        {"value":"Modeling"}
+                       ],
+            "relations":[]
+        }
+        """
+
+        url = "{url_base}/resource/{pid}/scimeta/elements/".format(url_base=self.url_base, pid=pid)
+
+        r = self._request('PUT', url, data=metadata)
+        if r.status_code != 202:
+            if r.status_code == 403:
+                raise HydroShareNotAuthorized(('PUT', url))
+            elif r.status_code == 404:
+                raise HydroShareNotFound((pid,))
+            else:
+                raise HydroShareHTTPException((url, 'PUT', r.status_code, metadata))
+
+        return r.json()
 
     def getResourceMap(self, pid):
         """ Get resource map metadata for a resource
@@ -659,7 +825,7 @@ class HydroShare(object):
 
         :raises: HydroShareHTTPException to signal an HTTP error
         """
-        url = "{url_base}/resourceTypes/".format(url_base=self.url_base)
+        url = "{url_base}/resource/types".format(url_base=self.url_base)
 
         r = self._request('GET', url)
         if r.status_code != 200:
@@ -976,9 +1142,104 @@ class HydroShare(object):
             ]
         }
         """
-        url = "{url_base}/resource/{pid}/file_list/".format(url_base=self.url_base,
+        url = "{url_base}/resource/{pid}/files/".format(url_base=self.url_base,
                                                             pid=pid)
         return self._getResultsListGenerator(url)
+
+    def getResourceFolderContents(self, pid, pathname):
+        """ Get a listing of files and folders for a resource at the specified path (*pathname*)
+
+        :param pid: The HydroShare ID of the resource whose folder contents to be listed
+        :param pathname: Folder path for which contents (files and folders) need to be listed
+        :return: A JSON object representing the contents of the specified folder
+
+        :raises: HydroShareNotAuthorized if user is not authorized to perform action.
+        :raises: HydroShareNotFound if the resource or resource file was not found.
+        :raises: HydroShareHTTPException if an unexpected HTTP response code is encountered.
+
+        Example of JSON data returned:
+        {
+            "resource_id": "32a08bc23a86e471282a832143491b49",
+            "path": "model/initial",
+            "files": ["model.exe", "param.txt"],
+            "folders": ["run/1", "run/2"]
+        }
+        """
+
+        url = "{url_base}/resource/{pid}/folders/{path}".format(url_base=self.url_base, pid=pid, path=pathname)
+
+        r = self._request('GET', url)
+        if r.status_code != 200:
+            if r.status_code == 403:
+                raise HydroShareNotAuthorized(('GET', url))
+            elif r.status_code == 404:
+                raise HydroShareNotFound((pid,))
+            else:
+                raise HydroShareHTTPException((url, 'GET', r.status_code))
+
+        return r.json()
+
+    def createResourceFolder(self, pid, pathname):
+        """Create folder as specified by *pathname* for a given resource
+
+        :param pid: The HydroShare ID of the resource for which folder to be created
+        :param pathname: Folder path/name for the folder to be created
+        :return: A JSON object representing the resource id and path of the folder that was created
+
+        :raises: HydroShareNotAuthorized if user is not authorized to perform action.
+        :raises: HydroShareNotFound if the resource or resource file was not found.
+        :raises: HydroShareHTTPException if an unexpected HTTP response code is encountered.
+
+        Example of JSON data returned:
+        {
+            "resource_id": "32a08bc23a86e471282a832143491b49",
+            "path": "model/initial"
+        }
+        """
+
+        url = "{url_base}/resource/{pid}/folders/{path}".format(url_base=self.url_base, pid=pid, path=pathname)
+
+        r = self._request('PUT', url)
+        if r.status_code != 201:
+            if r.status_code == 403:
+                raise HydroShareNotAuthorized(('PUT', url))
+            elif r.status_code == 404:
+                raise HydroShareNotFound((pid,))
+            else:
+                raise HydroShareHTTPException((url, 'PUT', r.status_code))
+
+        return r.json()
+
+    def deleteResourceFolder(self, pid, pathname):
+        """Delete a folder as specified by *pathname* for a given resource
+
+        :param pid: The HydroShare ID of the resource for which folder to be deleted
+        :param pathname: Folder path/name for the folder to be deleted
+        :return: A JSON object representing the resource id and path of the folder that was deleted
+
+        :raises: HydroShareNotAuthorized if user is not authorized to perform action.
+        :raises: HydroShareNotFound if the resource or resource file was not found.
+        :raises: HydroShareHTTPException if an unexpected HTTP response code is encountered.
+
+        Example of JSON data returned:
+        {
+            'resource_id': "32a08bc23a86e471282a832143491b49",
+            'path': "model/initial"
+        }
+        """
+
+        url = "{url_base}/resource/{pid}/folders/{path}".format(url_base=self.url_base, pid=pid, path=pathname)
+
+        r = self._request('DELETE', url)
+        if r.status_code != 200:
+            if r.status_code == 403:
+                raise HydroShareNotAuthorized(('DELETE', url))
+            elif r.status_code == 404:
+                raise HydroShareNotFound((pid,))
+            else:
+                raise HydroShareHTTPException((url, 'DELETE', r.status_code))
+
+        return r.json()
 
     def getUserInfo(self):
         """
@@ -1041,6 +1302,6 @@ class HydroShareAuthOAuth2(AbstractHydroShareAuth):
         self.token = token
 
         if self.token:
-            if not 'expires_at' in self.token:
+            if 'expires_at' not in self.token:
                 self.token['expires_at'] = int(time.time()) + int(self.token['expires_in']) - EXPIRES_AT_ROUNDDOWN_SEC
 

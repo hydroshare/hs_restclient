@@ -14,6 +14,7 @@ HEADERS = {'content-type': 'application/json'}
 GET = 'get'
 POST = 'post'
 PUT = 'put'
+DELETE = 'delete'
 
 
 class Resource:
@@ -115,13 +116,13 @@ def createResourceCRUD(url, request):
     # This gets tricky.  HydroShare.createResource() can implicitly
     # call HydroShare.getResourceTypes(), so we need to handle those requests too
     if request.method == 'GET':
-        if url.path == '/hsapi/resourceTypes/':
+        if url.path == '/hsapi/resource/types':
             file_path = url.netloc + url.path
             # Remove trailing slash so that we can open the file
             file_path = file_path.strip('/')
             response_status = 200
-        if url.path == '/hsapi/sysmeta/511debf8858a4ea081f78d66870da76c/':
-            file_path = url.netloc + url.path
+        if url.path == '/hsapi/resource/511debf8858a4ea081f78d66870da76c/sysmeta/':
+            file_path = url.netloc + url.path + '511debf8858a4ea081f78d66870da76c'
             # Remove trailing slash so that we can open the file
             file_path = file_path.strip('/')
             response_status = 200
@@ -181,8 +182,8 @@ def accessRules_put(url, request):
         else:
             file_path = ''
     elif request.method == 'GET':
-        if url.path == '/hsapi/sysmeta/511debf8858a4ea081f78d66870da76c/':
-            file_path = url.netloc + url.path
+        if url.path == '/hsapi/resource/511debf8858a4ea081f78d66870da76c/sysmeta/':
+            file_path = url.netloc + url.path + '511debf8858a4ea081f78d66870da76c'
             # Remove trailing slash so that we can open the file
             file_path = file_path.strip('/') + '-public'
     else:
@@ -207,8 +208,9 @@ def userInfo_get(url, request):
         return response(404, {}, HEADERS, None, 5, request)
     return response(200, content, HEADERS, None, 5, request)
 
+
 @urlmatch(netloc=NETLOC, method=GET)
-def scimeta_get(url, request):
+def scimeta_xml_get(url, request):
     file_path = url.netloc + url.path + 'scimeta.xml'
 
     try:
@@ -218,6 +220,33 @@ def scimeta_get(url, request):
         # 404.
         return response(404, {}, HEADERS, None, 5, request)
     return response(200, content, HEADERS, None, 5, request)
+
+
+@urlmatch(netloc=NETLOC, method=GET)
+def scimeta_json_get(url, request):
+    file_path = url.netloc + url.path + '/scimeta-get-response'
+
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(200, content, HEADERS, None, 5, request)
+
+
+@urlmatch(netloc=NETLOC, method=PUT)
+def scimeta_json_put(url, request):
+    file_path = url.netloc + url.path + '/scimeta-update-response'
+
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(202, content, HEADERS, None, 5, request)
+
 
 @urlmatch(netloc=NETLOC, method=GET)
 def resourcemap_get(url, request):
@@ -239,6 +268,42 @@ def resourceFileList_get(url, request):
         file_path = url.netloc + url.path + 'file_list-2'
     else:
         file_path = ''
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(200, content, HEADERS, None, 5, request)
+
+
+@urlmatch(netloc=NETLOC, method=GET)
+def resourceFolderContents_get(url, request):
+    file_path = url.netloc + url.path + 'folder-content-response'
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(200, content, HEADERS, None, 5, request)
+
+
+@urlmatch(netloc=NETLOC, method=PUT)
+def resourceFolderCreate_put(url, request):
+    file_path = url.netloc + url.path + 'create-folder-response'
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(201, content, HEADERS, None, 5, request)
+
+
+@urlmatch(netloc=NETLOC, method=DELETE)
+def resourceFolderDelete_delete(url, request):
+    file_path = url.netloc + url.path + 'delete-folder-response'
     try:
         content = Resource(file_path).get()
     except EnvironmentError:

@@ -1,3 +1,11 @@
+# 1.2.6 - 1/20/2017
+  - Add getScienceMetadataRDF (/hsapi/scimeta/\<pid\>/)
+  - Add getScienceMetadata (/hsapi/resource/\<pid\>/scimeta/elements)
+  - Add updateScienceMetadata (/hsapi/resource/\<pid\>/scimeta/elements)
+  - Add getResourceFolderContents (/hsapi/resource/\<pid\>/folders/\<path\>)
+  - Add createResourceFolder (/hsapi/resource/\<pid\>/folders/\<path\>)
+  - Add deleteResourceFolder (/hsapi/resource/\<pid\>/folders/\<path\>)
+
 # 1.2.5 - 12/7/2016
   - Add ability to supply key/value metadata (in addition to 'title', 'abstract', 'keywords', and 'metadata')
   to createResource()
