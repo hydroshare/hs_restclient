@@ -212,13 +212,6 @@ To get resource map xml data for a resource:
     >>> hs = HydroShare(auth=auth)
     >>> resource_map_xml = hs.getResourceMap('ID OF RESOURCE GOES HERE')
 
-To get science metadata as xml+rdf data for a resource:
-
-    >>> from hs_restclient import HydroShare, HydroShareAuthBasic
-    >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
-    >>> hs = HydroShare(auth=auth)
-    >>> science_metadata_xml = hs.getScienceMetadataRDF('ID OF RESOURCE GOES HERE')
-
 To get the contents of a specific folder of a resource:
 
     >>> from hs_restclient import HydroShare, HydroShareAuthBasic
@@ -243,12 +236,19 @@ To delete a folder for a resource:
     >>> folder_to_delete = "folder_1/folder_2"
     >>> response_json = hs.deleteResourceFolder('ID OF RESOURCE GOES HERE', pathname=folder_to_delete)
 
+To get science metadata as xml+rdf data for a resource:
+
+    >>> from hs_restclient import HydroShare, HydroShareAuthBasic
+    >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
+    >>> hs = HydroShare(auth=auth)
+    >>> science_metadata_xml = hs.getScienceMetadataRDF('ID OF RESOURCE GOES HERE')
+
 To get science metadata as json data (Dublin core metadata only) for a resource:
 
     >>> from hs_restclient import HydroShare, HydroShareAuthBasic
     >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
     >>> hs = HydroShare(auth=auth)
-    >>> science_metadata_json = hs.getScienceMetadata('ID OF RESOURCE GOES HERE', data_format='json')
+    >>> science_metadata_json = hs.getScienceMetadata('ID OF RESOURCE GOES HERE')
 
 To update science metadata (Dublin core metadata only) for a resource:
 
