@@ -18,11 +18,10 @@ import json
 
 from httmock import with_httmock, HTTMock
 
-from hs_restclient import HydroShare
 import mocks.hydroshare
 
-
 sys.path.append('../')
+from hs_restclient import HydroShare
 
 
 class TestGetResourceTypes(unittest.TestCase):
@@ -313,6 +312,25 @@ class TestResourceFolderCRUD(unittest.TestCase):
 
         self.assertEqual(response['resource_id'], '511debf8858a4ea081f78d66870da76c')
         self.assertEqual(response['path'], 'model/initial')
-                
+
+
+class TestResourceCopy(unittest.TestCase):
+    @with_httmock(mocks.hydroshare.resourceCopy_post)
+    def test_resource_copy(self):
+        hs = HydroShare()
+        response = hs.resource.copy('511debf8858a4ea081f78d66870da76c')
+        self.assertNotEqual('6dbb0dfb8f3a498881e4de428cb1587c', response)
+        self.assertEqual(response.status_code, 202)
+
+
+class TestResourceVersion(unittest.TestCase):
+    @with_httmock(mocks.hydroshare.resourceVersion_post)
+    def test_resource_copy(self):
+        hs = HydroShare()
+        response = hs.resource.version('511debf8858a4ea081f78d66870da76c')
+        self.assertNotEqual('6dbb0dfb8f3a498881e4de428cb1587c', response)
+        self.assertEqual(response.status_code, 202)
+
+
 if __name__ == '__main__':
     unittest.main()

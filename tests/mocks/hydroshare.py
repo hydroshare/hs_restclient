@@ -311,3 +311,27 @@ def resourceFolderDelete_delete(url, request):
         # 404.
         return response(404, {}, HEADERS, None, 5, request)
     return response(200, content, HEADERS, None, 5, request)
+
+
+@urlmatch(netloc=NETLOC, method=POST)
+def resourceCopy_post(url, request):
+    file_path = url.netloc + url.path + 'copy-1'
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(202, content, HEADERS, None, 5, request)
+
+
+@urlmatch(netloc=NETLOC, method=POST)
+def resourceVersion_post(url, request):
+    file_path = url.netloc + url.path + 'version-1'
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(202, content, HEADERS, None, 5, request)
