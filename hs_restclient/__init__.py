@@ -23,7 +23,7 @@ from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2 import LegacyApplicationClient, TokenExpiredError
 
 from .compat import http_responses
-from resource import ResourceEndpoint
+from endpoints.resource import ResourceEndpoint
 
 
 STREAM_CHUNK_SIZE = 100 * 1024
@@ -169,10 +169,12 @@ class HydroShare(object):
             self.url_base = self._URL_PROTO_WITHOUT_PORT.format(scheme=self.scheme,
                                                                 hostname=self.hostname)
 
-        self.resource = ResourceEndpoint(self)
-
         self._initializeSession()
         self._resource_types = None
+
+    def resource(self, pid):
+        resource_endpoint = ResourceEndpoint(self, pid)
+        return resource_endpoint
 
     @property
     def resource_types(self):
