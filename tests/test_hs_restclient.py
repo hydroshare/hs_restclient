@@ -332,5 +332,55 @@ class TestResourceVersion(unittest.TestCase):
         self.assertEqual(response.status_code, 202)
 
 
+class TestResourceFlags(unittest.TestCase):
+    @with_httmock(mocks.hydroshare.resourceFlags_post)
+    def test_resource_flag_make_public(self):
+        hs = HydroShare()
+        response = hs.resource('511debf8858a4ea081f78d66870da76c').flag({
+            "t": "make_public"
+        })
+        self.assertEqual(response.status_code, 202)
+
+    @with_httmock(mocks.hydroshare.resourceFlags_post)
+    def test_resource_flag_make_public(self):
+        hs = HydroShare()
+        response = hs.resource('511debf8858a4ea081f78d66870da76c').flag({
+            "t": "make_private"
+        })
+        self.assertEqual(response.status_code, 202)
+
+    @with_httmock(mocks.hydroshare.resourceFlags_post)
+    def test_resource_flag_make_discoverable(self):
+        hs = HydroShare()
+        response = hs.resource('511debf8858a4ea081f78d66870da76c').flag({
+            "t": "make_discoverable"
+        })
+        self.assertEqual(response.status_code, 202)
+
+    @with_httmock(mocks.hydroshare.resourceFlags_post)
+    def test_resource_flag_make_not_discoverable(self):
+        hs = HydroShare()
+        response = hs.resource('511debf8858a4ea081f78d66870da76c').flag({
+            "t": "make_not_discoverable"
+        })
+        self.assertEqual(response.status_code, 202)
+
+    @with_httmock(mocks.hydroshare.resourceFlags_post)
+    def test_resource_flag_make_shareable(self):
+        hs = HydroShare()
+        response = hs.resource('511debf8858a4ea081f78d66870da76c').flag({
+            "t": "make_shareable"
+        })
+        self.assertEqual(response.status_code, 202)
+
+    @with_httmock(mocks.hydroshare.resourceFlags_post)
+    def test_resource_flag_make_not_shareable(self):
+        hs = HydroShare()
+        response = hs.resource('511debf8858a4ea081f78d66870da76c').flag({
+            "t": "make_not_shareable"
+        })
+        self.assertEqual(response.status_code, 202)
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -14,3 +14,10 @@ class ResourceEndpoint(object):
                                                           pid=self.pid)
         r = self.hs._request('POST', url)
         return r
+
+    def flag(self, payload):
+        url = "{url_base}/resource/{pid}/flag/".format(url_base=self.hs.url_base,
+                                                          pid=self.pid)
+
+        r = self.hs._request('POST', url, None, payload)
+        return r

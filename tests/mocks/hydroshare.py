@@ -5,6 +5,7 @@ Adapted from: http://www.appneta.com/blog/python-unit-test-mock/
 
 """
 import os
+from urlparse import parse_qs
 
 from httmock import response, urlmatch
 
@@ -333,5 +334,19 @@ def resourceVersion_post(url, request):
     except EnvironmentError:
         # catch any environment errors (i.e. file does not exist) and return a
         # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(202, content, HEADERS, None, 5, request)
+
+
+@urlmatch(netloc=NETLOC, method=POST)
+def resourceFlags_post(url, request):
+    body = parse_qs(request.body)
+    file_path = url.netloc + url.path + body.get('t')[0]
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        import pdb; pdb.set_trace()
         return response(404, {}, HEADERS, None, 5, request)
     return response(202, content, HEADERS, None, 5, request)
