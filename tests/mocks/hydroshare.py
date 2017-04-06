@@ -347,6 +347,5 @@ def resourceFlags_post(url, request):
     except EnvironmentError:
         # catch any environment errors (i.e. file does not exist) and return a
         # 404.
-        import pdb; pdb.set_trace()
         return response(404, {}, HEADERS, None, 5, request)
     return response(202, content, HEADERS, None, 5, request)
