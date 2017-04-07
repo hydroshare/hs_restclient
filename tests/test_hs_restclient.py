@@ -113,7 +113,7 @@ class TestGetResourceList(unittest.TestCase):
         fname = 'mocks/data/minimal_resource_file.txt'
         metadata = json.dumps([{'coverage': {'type': 'period', 'value': {'start': '01/01/2000',
                                              'end': '12/12/2010'}}},
-                               {'creator': {'name': 'John Smith'}}, 
+                               {'creator': {'name': 'John Smith'}},
                                {'contributor': {'name': 'Lisa Miller'}}])
 
         extra_metadata = json.dumps({'latitude': '40', 'longitude': '-111'})
@@ -380,6 +380,28 @@ class TestResourceFlags(unittest.TestCase):
             "t": "make_not_shareable"
         })
         self.assertEqual(response.status_code, 202)
+
+
+class TestResourceScimetaCustom(unittest.TestCase):
+    @with_httmock(mocks.hydroshare.resourceScimetaCustom_post)
+    def test_resource_scimeta_custom(self):
+        hs = HydroShare()
+        response = hs.resource('511debf8858a4ea081f78d66870da76c').scimeta.custom({
+            "foo": "bar",
+            "foo2": "bar2"
+        })
+        self.assertEqual(response.status_code, 200)
+
+
+class TestResourceMoveFileOrFolder(unittest.TestCase):
+    @with_httmock(mocks.hydroshare.resourceMoveFileOrFolder_post)
+    def test_resource_move_or_rename(self):
+        hs = HydroShare()
+        response = hs.resource('511debf8858a4ea081f78d66870da76c').functions.move_or_rename({
+            "source_path": "/source/path",
+            "target_path": "/target/path"
+        })
+        self.assertEqual(response.status_code, 200)
 
 
 if __name__ == '__main__':
