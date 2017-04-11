@@ -27,6 +27,19 @@ class FunctionsSubEndpoint(object):
         r = self.hs._request('POST', url, None, payload)
         return r
 
+    def zip(self, payload):
+        url = "{url_base}/resource/{pid}/functions/zip/".format(
+            url_base=self.hs.url_base,
+            pid=self.pid)
+        r = self.hs._request('POST', url, None, payload)
+        return r
+
+    def unzip(self, payload):
+        url = "{url_base}/resource/{pid}/functions/unzip/".format(
+            url_base=self.hs.url_base,
+            pid=self.pid)
+        r = self.hs._request('POST', url, None, payload)
+        return r
 
 class ResourceEndpoint(BaseEndpoint):
     def __init__(self, hs, pid):
@@ -41,10 +54,11 @@ class ResourceEndpoint(BaseEndpoint):
         r = self.hs._request('POST', url)
         return r
 
-    def version(self):
-        url = "{url_base}/resource/{pid}/version/".format(url_base=self.hs.url_base,
-                                                          pid=self.pid)
-        r = self.hs._request('POST', url)
+    def files(self, payload):
+        url = "{url_base}/resource/{pid}/files/".format(url_base=self.hs.url_base,
+                                                       pid=self.pid)
+
+        r = self.hs._request('POST', url, None, payload)
         return r
 
     def flag(self, payload):
@@ -56,3 +70,9 @@ class ResourceEndpoint(BaseEndpoint):
 
     def scimeta(self, payload=None):
         return ScimetaSubEndpoint(self.hs, self.pid)
+
+    def version(self):
+        url = "{url_base}/resource/{pid}/version/".format(url_base=self.hs.url_base,
+                                                          pid=self.pid)
+        r = self.hs._request('POST', url)
+        return r

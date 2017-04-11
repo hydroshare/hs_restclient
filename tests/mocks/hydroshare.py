@@ -373,3 +373,38 @@ def resourceMoveFileOrFolder_post(url, request):
         # 404.
         return response(404, {}, HEADERS, None, 5, request)
     return response(200, content, HEADERS, None, 5, request)
+
+@urlmatch(netloc=NETLOC, method=POST)
+def resourceZipFolder_post(url, request):
+    file_path = url.netloc + url.path + 'zip-folder-response'
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(200, content, HEADERS, None, 5, request)
+
+
+@urlmatch(netloc=NETLOC, method=POST)
+def resourceUnzipFile_post(url, request):
+    file_path = url.netloc + url.path + 'unzip-file-response'
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(200, content, HEADERS, None, 5, request)
+
+
+@urlmatch(netloc=NETLOC, method=POST)
+def resourceUploadFile_post(url, request):
+    file_path = url.netloc + url.path + 'upload-file-response'
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(200, content, HEADERS, None, 5, request)

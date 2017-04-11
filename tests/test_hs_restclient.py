@@ -404,5 +404,36 @@ class TestResourceMoveFileOrFolder(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
 
+class TestResourceZipUnzip(unittest.TestCase):
+    @with_httmock(mocks.hydroshare.resourceZipFolder_post)
+    def test_resource_zip_folder(self):
+        hs = HydroShare()
+        response = hs.resource('511debf8858a4ea081f78d66870da76c').functions.zip({
+            "source_path": "/source/path",
+            "target_path": "/target/path"
+        })
+        self.assertEqual(response.status_code, 200)
+
+    @with_httmock(mocks.hydroshare.resourceUnzipFile_post)
+    def test_resource_unzip_file(self):
+        hs = HydroShare()
+        response = hs.resource('511debf8858a4ea081f78d66870da76c').functions.unzip({
+            "source_path": "/source/path",
+            "target_path": "/target/path"
+        })
+        self.assertEqual(response.status_code, 200)
+
+
+class TestResourceUploadFileToFolder(unittest.TestCase):
+    @with_httmock(mocks.hydroshare.resourceUploadFile_post)
+    def test_resource_upload_file(self):
+        hs= HydroShare()
+
+        response = hs.resource('511debf8858a4ea081f78d66870da76c').files({
+            "file": open('mocks/data/minimal_resource_file.txt', 'rb'),
+            "folder": "/target/folder"
+        })
+        self.assertEqual(response.status_code, 200)
+
 if __name__ == '__main__':
     unittest.main()
