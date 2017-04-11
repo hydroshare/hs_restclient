@@ -23,7 +23,7 @@ from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2 import LegacyApplicationClient, TokenExpiredError
 
 from .compat import http_responses
-from endpoints.resource import ResourceEndpoint
+from .endpoints.resource import ResourceEndpoint
 
 
 STREAM_CHUNK_SIZE = 100 * 1024
