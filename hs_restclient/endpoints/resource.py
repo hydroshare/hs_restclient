@@ -68,8 +68,8 @@ class FunctionsSubEndpoint(object):
         Unzips a file
 
         :param payload:
-            zip_with_rel_path:
-            remove_original_zip:
+            zip_with_rel_path: string
+            remove_original_zip: string
         :return: (object)
             unzipped_path: string
         """
