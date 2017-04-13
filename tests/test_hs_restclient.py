@@ -409,8 +409,9 @@ class TestResourceZipUnzip(unittest.TestCase):
     def test_resource_zip_folder(self):
         hs = HydroShare()
         response = hs.resource('511debf8858a4ea081f78d66870da76c').functions.zip({
-            "source_path": "/source/path",
-            "target_path": "/target/path"
+            "input_coll_path": "/source/path",
+            "output_zip_fname": "filename.zip",
+            "remove_original_after_zip": True
         })
         self.assertEqual(response.status_code, 200)
 
@@ -418,8 +419,8 @@ class TestResourceZipUnzip(unittest.TestCase):
     def test_resource_unzip_file(self):
         hs = HydroShare()
         response = hs.resource('511debf8858a4ea081f78d66870da76c').functions.unzip({
-            "source_path": "/source/path",
-            "target_path": "/target/path"
+            "zip_with_rel_path": "/path/to/zip",
+            "remove_original_zip": True
         })
         self.assertEqual(response.status_code, 200)
 
