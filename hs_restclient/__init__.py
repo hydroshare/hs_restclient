@@ -1188,20 +1188,6 @@ class HydroShare(object):
 
         return r.json()
 
-    def copyResource(self, pid):
-        """
-        Utility Function to make copy of a resource
-
-        :param pid: string resource id
-        :return: string resource id
-        """
-        warning_text = """
-        This function is deprecated and will be removed. In the future, please use hs.resource(id).copy()
-        """.strip()
-        print(warning_text)
-        warnings.warn(warning_text, DeprecationWarning)
-        return self.resource(pid).copy()
-
     def createResourceFolder(self, pid, pathname):
         """Create folder as specified by *pathname* for a given resource
 

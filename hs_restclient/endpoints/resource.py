@@ -54,7 +54,7 @@ class FunctionsSubEndpoint(object):
             remove_original_after_zip: (boolean)
         :return: (object)
             name: output_zip_fname
-            size: size
+            size: size of the zipped file
             type: 'zip'
         """
         url = "{url_base}/resource/{pid}/functions/zip/".format(
@@ -69,7 +69,7 @@ class FunctionsSubEndpoint(object):
 
         :param payload:
             zip_with_rel_path: string
-            remove_original_zip: string
+            remove_original_zip: boolean
         :return: (object)
             unzipped_path: string
         """
@@ -132,7 +132,7 @@ class ResourceEndpoint(BaseEndpoint):
 
     def version(self):
         """
-        Increments the version of a resource
+        Creates a new version of a resource
 
         :return: resource id (string)
         """

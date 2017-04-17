@@ -308,7 +308,7 @@ To unzip a resource file or folder:
     >>> hs = HydroShare(auth=auth)
     >>> options = {
                      "zip_with_rel_path": "/source/path/file.zip",
-                     "remove_original_zip": TRre
+                     "remove_original_zip": True
 			      }
     >>> result = hs.resource('ID OF RESOURCE GOES HERE').functions.unzip(options)
 
@@ -317,7 +317,15 @@ To create a copy of a resource:
     >>> from hs_restclient import HydroShare, HydroShareAuthBasic
     >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
     >>> hs = HydroShare(auth=auth)
-    >>> resource_copy_id = hs.resource('ID OF RESOURCE GOES HERE').copy()
+    >>> result = hs.resource('ID OF RESOURCE GOES HERE').copy()
+
+
+To create a new version of a resource:
+
+    >>> from hs_restclient import HydroShare, HydroShareAuthBasic
+    >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
+    >>> hs = HydroShare(auth=auth)
+    >>> result = hs.resource('ID OF RESOURCE GOES HERE').version()
 
 To upload files to a specific resource folder:
 
@@ -328,7 +336,7 @@ To upload files to a specific resource folder:
                      "folder": "/path/to/folder",
                      "files": (file objects)
                   }
-    >>> resource_copy_id = hs.resource('ID OF RESOURCE GOES HERE').files(options)
+    >>> result = hs.resource('ID OF RESOURCE GOES HERE').files(options)
 
 To set resource flags:
 
@@ -339,7 +347,7 @@ To set resource flags:
                      "t": "one of make_public, make_private, make_shareable,
             make_not_shareable, make_discoverable, make_not_discoverable"
                   }
-    >>> resource_copy_id = hs.resource('ID OF RESOURCE GOES HERE').flag(options)
+    >>> result = hs.resource('ID OF RESOURCE GOES HERE').flag(options)
 
 Index
 -----
