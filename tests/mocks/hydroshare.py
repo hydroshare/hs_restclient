@@ -5,6 +5,7 @@ Adapted from: http://www.appneta.com/blog/python-unit-test-mock/
 
 """
 import os
+from urlparse import parse_qs
 
 from httmock import response, urlmatch
 
@@ -304,6 +305,102 @@ def resourceFolderCreate_put(url, request):
 @urlmatch(netloc=NETLOC, method=DELETE)
 def resourceFolderDelete_delete(url, request):
     file_path = url.netloc + url.path + 'delete-folder-response'
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(200, content, HEADERS, None, 5, request)
+
+
+@urlmatch(netloc=NETLOC, method=POST)
+def resourceCopy_post(url, request):
+    file_path = url.netloc + url.path + 'copy-1'
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(202, content, HEADERS, None, 5, request)
+
+
+@urlmatch(netloc=NETLOC, method=POST)
+def resourceVersion_post(url, request):
+    file_path = url.netloc + url.path + 'version-1'
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(202, content, HEADERS, None, 5, request)
+
+
+@urlmatch(netloc=NETLOC, method=POST)
+def resourceFlags_post(url, request):
+    body = parse_qs(request.body)
+    file_path = url.netloc + url.path + body.get('t')[0]
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(202, content, HEADERS, None, 5, request)
+
+
+@urlmatch(netloc=NETLOC, method=POST)
+def resourceScimetaCustom_post(url, request):
+    file_path = url.netloc + url.path + 'custom-response'
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(200, content, HEADERS, None, 5, request)
+
+
+@urlmatch(netloc=NETLOC, method=POST)
+def resourceMoveFileOrFolder_post(url, request):
+    file_path = url.netloc + url.path + 'move-or-rename-response'
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(200, content, HEADERS, None, 5, request)
+
+@urlmatch(netloc=NETLOC, method=POST)
+def resourceZipFolder_post(url, request):
+    file_path = url.netloc + url.path + 'zip-folder-response'
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(200, content, HEADERS, None, 5, request)
+
+
+@urlmatch(netloc=NETLOC, method=POST)
+def resourceUnzipFile_post(url, request):
+    file_path = url.netloc + url.path + 'unzip-file-response'
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(200, content, HEADERS, None, 5, request)
+
+
+@urlmatch(netloc=NETLOC, method=POST)
+def resourceUploadFile_post(url, request):
+    file_path = url.netloc + url.path + 'upload-file-response'
     try:
         content = Resource(file_path).get()
     except EnvironmentError:

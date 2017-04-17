@@ -267,6 +267,88 @@ To update science metadata (Dublin core metadata only) for a resource:
 			      }
     >>> science_metadata_json = hs.updateScienceMetadata('ID OF RESOURCE GOES HERE', metadata=metadata)
 
+To update custom science metadata (non-Dublin core) for a resource:
+
+    >>> from hs_restclient import HydroShare, HydroShareAuthBasic
+    >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
+    >>> hs = HydroShare(auth=auth)
+    >>> metadata = {
+                     "weather": "sunny",
+                     "temp": "80C"
+			      }
+    >>> result = hs.resource('ID OF RESOURCE GOES HERE').scimeta.custom(metadata)
+
+To move or rename a resource file:
+
+    >>> from hs_restclient import HydroShare, HydroShareAuthBasic
+    >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
+    >>> hs = HydroShare(auth=auth)
+    >>> options = {
+                     "source_path": "/source/path/file.txt",
+                     "target_path": "/target/path/file.txt"
+			      }
+    >>> result = hs.resource('ID OF RESOURCE GOES HERE').functions.move_or_rename(options)
+
+To zip a resource file or folder:
+
+    >>> from hs_restclient import HydroShare, HydroShareAuthBasic
+    >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
+    >>> hs = HydroShare(auth=auth)
+    >>> options = {
+                     "input_coll_path": "/source/path/file.txt",
+                     "target_path": "/target/path/file.txt",
+                     "remove_original_after_zip": True
+			      }
+    >>> result = hs.resource('ID OF RESOURCE GOES HERE').functions.zip(options)
+
+To unzip a resource file or folder:
+
+    >>> from hs_restclient import HydroShare, HydroShareAuthBasic
+    >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
+    >>> hs = HydroShare(auth=auth)
+    >>> options = {
+                     "zip_with_rel_path": "/source/path/file.zip",
+                     "remove_original_zip": True
+			      }
+    >>> result = hs.resource('ID OF RESOURCE GOES HERE').functions.unzip(options)
+
+To create a copy of a resource:
+
+    >>> from hs_restclient import HydroShare, HydroShareAuthBasic
+    >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
+    >>> hs = HydroShare(auth=auth)
+    >>> result = hs.resource('ID OF RESOURCE GOES HERE').copy()
+
+
+To create a new version of a resource:
+
+    >>> from hs_restclient import HydroShare, HydroShareAuthBasic
+    >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
+    >>> hs = HydroShare(auth=auth)
+    >>> result = hs.resource('ID OF RESOURCE GOES HERE').version()
+
+To upload files to a specific resource folder:
+
+    >>> from hs_restclient import HydroShare, HydroShareAuthBasic
+    >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
+    >>> hs = HydroShare(auth=auth)
+    >>> options = {
+                     "folder": "/path/to/folder",
+                     "files": (file objects)
+                  }
+    >>> result = hs.resource('ID OF RESOURCE GOES HERE').files(options)
+
+To set resource flags:
+
+    >>> from hs_restclient import HydroShare, HydroShareAuthBasic
+    >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
+    >>> hs = HydroShare(auth=auth)
+    >>> options = {
+                     "t": "one of make_public, make_private, make_shareable,
+            make_not_shareable, make_discoverable, make_not_discoverable"
+                  }
+    >>> result = hs.resource('ID OF RESOURCE GOES HERE').flag(options)
+
 Index
 -----
 

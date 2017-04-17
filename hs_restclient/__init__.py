@@ -15,6 +15,7 @@ import tempfile
 import shutil
 import mimetypes
 import json
+import warnings
 
 import requests
 
@@ -23,6 +24,7 @@ from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2 import LegacyApplicationClient, TokenExpiredError
 
 from .compat import http_responses
+from .endpoints.resource import ResourceEndpoint
 
 
 STREAM_CHUNK_SIZE = 100 * 1024
@@ -45,6 +47,7 @@ class HydroShareArgumentException(HydroShareException):
 class HydroShareBagNotReadyException(HydroShareException):
     def __init__(self, args):
         super(HydroShareBagNotReadyException, self).__init__(args)
+
 
 class HydroShareNotAuthorized(HydroShareException):
     def __init__(self, args):
@@ -139,6 +142,7 @@ class HydroShare(object):
     _URL_PROTO_WITHOUT_PORT = "{scheme}://{hostname}/hsapi"
     _URL_PROTO_WITH_PORT = "{scheme}://{hostname}:{port}/hsapi"
 
+
     def __init__(self, hostname=DEFAULT_HOSTNAME, port=None, use_https=True, verify=True,
                  auth=None):
         self.hostname = hostname
@@ -165,8 +169,13 @@ class HydroShare(object):
         else:
             self.url_base = self._URL_PROTO_WITHOUT_PORT.format(scheme=self.scheme,
                                                                 hostname=self.hostname)
+
         self._initializeSession()
         self._resource_types = None
+
+    def resource(self, pid):
+        resource_endpoint = ResourceEndpoint(self, pid)
+        return resource_endpoint
 
     @property
     def resource_types(self):

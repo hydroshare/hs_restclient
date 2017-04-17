@@ -18,11 +18,10 @@ import json
 
 from httmock import with_httmock, HTTMock
 
-from hs_restclient import HydroShare
 import mocks.hydroshare
 
-
 sys.path.append('../')
+from hs_restclient import HydroShare
 
 
 class TestGetResourceTypes(unittest.TestCase):
@@ -114,7 +113,7 @@ class TestGetResourceList(unittest.TestCase):
         fname = 'mocks/data/minimal_resource_file.txt'
         metadata = json.dumps([{'coverage': {'type': 'period', 'value': {'start': '01/01/2000',
                                              'end': '12/12/2010'}}},
-                               {'creator': {'name': 'John Smith'}}, 
+                               {'creator': {'name': 'John Smith'}},
                                {'contributor': {'name': 'Lisa Miller'}}])
 
         extra_metadata = json.dumps({'latitude': '40', 'longitude': '-111'})
@@ -313,6 +312,129 @@ class TestResourceFolderCRUD(unittest.TestCase):
 
         self.assertEqual(response['resource_id'], '511debf8858a4ea081f78d66870da76c')
         self.assertEqual(response['path'], 'model/initial')
-                
+
+
+class TestResourceCopy(unittest.TestCase):
+    @with_httmock(mocks.hydroshare.resourceCopy_post)
+    def test_resource_copy(self):
+        hs = HydroShare()
+        response = hs.resource('511debf8858a4ea081f78d66870da76c').copy()
+        self.assertNotEqual('6dbb0dfb8f3a498881e4de428cb1587c', response)
+        self.assertEqual(response.status_code, 202)
+
+
+class TestResourceVersion(unittest.TestCase):
+    @with_httmock(mocks.hydroshare.resourceVersion_post)
+    def test_resource_copy(self):
+        hs = HydroShare()
+        response = hs.resource('511debf8858a4ea081f78d66870da76c').version()
+        self.assertNotEqual('6dbb0dfb8f3a498881e4de428cb1587c', response)
+        self.assertEqual(response.status_code, 202)
+
+
+class TestResourceFlags(unittest.TestCase):
+    @with_httmock(mocks.hydroshare.resourceFlags_post)
+    def test_resource_flag_make_public(self):
+        hs = HydroShare()
+        response = hs.resource('511debf8858a4ea081f78d66870da76c').flag({
+            "t": "make_public"
+        })
+        self.assertEqual(response.status_code, 202)
+
+    @with_httmock(mocks.hydroshare.resourceFlags_post)
+    def test_resource_flag_make_public(self):
+        hs = HydroShare()
+        response = hs.resource('511debf8858a4ea081f78d66870da76c').flag({
+            "t": "make_private"
+        })
+        self.assertEqual(response.status_code, 202)
+
+    @with_httmock(mocks.hydroshare.resourceFlags_post)
+    def test_resource_flag_make_discoverable(self):
+        hs = HydroShare()
+        response = hs.resource('511debf8858a4ea081f78d66870da76c').flag({
+            "t": "make_discoverable"
+        })
+        self.assertEqual(response.status_code, 202)
+
+    @with_httmock(mocks.hydroshare.resourceFlags_post)
+    def test_resource_flag_make_not_discoverable(self):
+        hs = HydroShare()
+        response = hs.resource('511debf8858a4ea081f78d66870da76c').flag({
+            "t": "make_not_discoverable"
+        })
+        self.assertEqual(response.status_code, 202)
+
+    @with_httmock(mocks.hydroshare.resourceFlags_post)
+    def test_resource_flag_make_shareable(self):
+        hs = HydroShare()
+        response = hs.resource('511debf8858a4ea081f78d66870da76c').flag({
+            "t": "make_shareable"
+        })
+        self.assertEqual(response.status_code, 202)
+
+    @with_httmock(mocks.hydroshare.resourceFlags_post)
+    def test_resource_flag_make_not_shareable(self):
+        hs = HydroShare()
+        response = hs.resource('511debf8858a4ea081f78d66870da76c').flag({
+            "t": "make_not_shareable"
+        })
+        self.assertEqual(response.status_code, 202)
+
+
+class TestResourceScimetaCustom(unittest.TestCase):
+    @with_httmock(mocks.hydroshare.resourceScimetaCustom_post)
+    def test_resource_scimeta_custom(self):
+        hs = HydroShare()
+        response = hs.resource('511debf8858a4ea081f78d66870da76c').scimeta.custom({
+            "foo": "bar",
+            "foo2": "bar2"
+        })
+        self.assertEqual(response.status_code, 200)
+
+
+class TestResourceMoveFileOrFolder(unittest.TestCase):
+    @with_httmock(mocks.hydroshare.resourceMoveFileOrFolder_post)
+    def test_resource_move_or_rename(self):
+        hs = HydroShare()
+        response = hs.resource('511debf8858a4ea081f78d66870da76c').functions.move_or_rename({
+            "source_path": "/source/path",
+            "target_path": "/target/path"
+        })
+        self.assertEqual(response.status_code, 200)
+
+
+class TestResourceZipUnzip(unittest.TestCase):
+    @with_httmock(mocks.hydroshare.resourceZipFolder_post)
+    def test_resource_zip_folder(self):
+        hs = HydroShare()
+        response = hs.resource('511debf8858a4ea081f78d66870da76c').functions.zip({
+            "input_coll_path": "/source/path",
+            "output_zip_fname": "filename.zip",
+            "remove_original_after_zip": True
+        })
+        self.assertEqual(response.status_code, 200)
+
+    @with_httmock(mocks.hydroshare.resourceUnzipFile_post)
+    def test_resource_unzip_file(self):
+        hs = HydroShare()
+        response = hs.resource('511debf8858a4ea081f78d66870da76c').functions.unzip({
+            "zip_with_rel_path": "/path/to/zip",
+            "remove_original_zip": True
+        })
+        self.assertEqual(response.status_code, 200)
+
+
+class TestResourceUploadFileToFolder(unittest.TestCase):
+    @with_httmock(mocks.hydroshare.resourceUploadFile_post)
+    def test_resource_upload_file(self):
+        hs= HydroShare()
+
+        response = hs.resource('511debf8858a4ea081f78d66870da76c').files({
+            "file": open('mocks/data/minimal_resource_file.txt', 'rb'),
+            "folder": "/target/folder"
+        })
+        self.assertEqual(response.status_code, 200)
+
 if __name__ == '__main__':
     unittest.main()
