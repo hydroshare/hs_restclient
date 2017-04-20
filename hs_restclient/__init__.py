@@ -24,7 +24,9 @@ from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2 import LegacyApplicationClient, TokenExpiredError
 
 from .compat import http_responses
-from .endpoints.resource import ResourceEndpoint
+from .endpoints.resources import ResourceEndpoint, ResourceList
+from .exceptions import *
+from .generators import resultsListGenerator
 
 
 STREAM_CHUNK_SIZE = 100 * 1024
@@ -32,92 +34,6 @@ STREAM_CHUNK_SIZE = 100 * 1024
 DEFAULT_HOSTNAME = 'www.hydroshare.org'
 
 EXPIRES_AT_ROUNDDOWN_SEC = 15
-
-
-class HydroShareException(Exception):
-    def __init__(self, args):
-        super(HydroShareException, self).__init__(args)
-
-
-class HydroShareArgumentException(HydroShareException):
-    def __init__(self, args):
-        super(HydroShareArgumentException, self).__init__(args)
-
-
-class HydroShareBagNotReadyException(HydroShareException):
-    def __init__(self, args):
-        super(HydroShareBagNotReadyException, self).__init__(args)
-
-
-class HydroShareNotAuthorized(HydroShareException):
-    def __init__(self, args):
-        super(HydroShareNotAuthorized, self).__init__(args)
-        self.method = args[0]
-        self.url = args[1]
-
-    def __str__(self):
-        msg = "Not authorized to perform {method} on {url}."
-        return msg.format(method=self.method, url=self.url)
-
-    def __unicode__(self):
-        return unicode(str(self))
-
-
-class HydroShareNotFound(HydroShareException):
-    def __init__(self, args):
-        super(HydroShareNotFound, self).__init__(args)
-        self.pid = args[0]
-        if len(args) >= 2:
-            self.filename = args[1]
-        else:
-            self.filename = None
-
-    def __str__(self):
-        if self.filename:
-            msg = "File '{filename}' was not found in resource '{pid}'."
-            msg = msg.format(filename=self.filename, pid=self.pid)
-        else:
-            msg = "Resource '{pid}' was not found."
-            msg = msg.format(pid=self.pid)
-        return msg
-
-    def __unicode__(self):
-        return unicode(str(self))
-
-
-class HydroShareHTTPException(HydroShareException):
-    """ Exception used to communicate HTTP errors from HydroShare server
-
-        Arguments in tuple passed to constructor must be: (url, status_code, params).
-        url and status_code are of type string, while the optional params argument
-        should be a dict.
-    """
-    def __init__(self, args):
-        super(HydroShareHTTPException, self).__init__(args)
-        self.url = args[0]
-        self.method = args[1]
-        self.status_code = args[2]
-        if len(args) >= 4:
-            self.params = args[3]
-        else:
-            self.params = None
-
-    def __str__(self):
-        msg = "Received status {status_code} {status_msg} when accessing {url} " + \
-              "with method {method} and params {params}."
-        return msg.format(status_code=self.status_code,
-                          status_msg=http_responses[self.status_code],
-                          url=self.url,
-                          method=self.method,
-                          params=self.params)
-
-    def __unicode__(self):
-        return unicode(str(self))
-
-
-class HydroShareAuthenticationException(HydroShareException):
-    def __init__(self, args):
-        super(HydroShareArgumentException, self).__init__(args)
 
 
 def default_progress_callback(monitor):
@@ -174,8 +90,14 @@ class HydroShare(object):
         self._resource_types = None
 
     def resource(self, pid):
-        resource_endpoint = ResourceEndpoint(self, pid)
-        return resource_endpoint
+        return self.resources(id=pid)
+
+    def resources(self, **kwargs):
+        if 'id' in kwargs:
+            resource_endpoint = ResourceEndpoint(self, kwargs.get('id', None))
+            return resource_endpoint
+
+        return ResourceList(self, **kwargs).list
 
     @property
     def resource_types(self):
@@ -258,118 +180,9 @@ class HydroShare(object):
         request_params['file'] = (fname, fd, mime_type)
         return close_fd
 
-    def _getResultsListGenerator(self, url, params=None):
-        # Get first (only?) page of results
-        r = self._request('GET', url, params=params)
-        if r.status_code != 200:
-            if r.status_code == 403:
-                raise HydroShareNotAuthorized(('GET', url))
-            elif r.status_code == 404:
-                raise HydroShareNotFound((url,))
-            else:
-                raise HydroShareHTTPException((url, 'GET', r.status_code, params))
-        res = r.json()
-        results = res['results']
-        for item in results:
-            yield item
-
-        # Get remaining pages (if any exist)
-        while res['next']:
-            next_url = res['next']
-            if self.use_https:
-                # Make sure the next URL uses HTTPS
-                next_url = next_url.replace('http://', 'https://', 1)
-            r = self._request('GET', next_url, params=params)
-            if r.status_code != 200:
-                if r.status_code == 403:
-                    raise HydroShareNotAuthorized(('GET', next_url))
-                elif r.status_code == 404:
-                    raise HydroShareNotFound((next_url,))
-                else:
-                    raise HydroShareHTTPException((next_url, 'GET', r.status_code, params))
-            res = r.json()
-            results = res['results']
-            for item in results:
-                yield item
-
-    def getResourceList(self, creator=None, owner=None, user=None, group=None, from_date=None, to_date=None,
-                        types=None):
-        """
-        Query the GET /hsapi/resource/ REST end point of the HydroShare server.
-
-        :param creator: Filter results by the HydroShare user name of resource creators
-        :param owner: Filter results by the HydroShare user name of resource owners
-        :param user: Filter results by the HydroShare user name of resource users (i.e. owner, editor, viewer, public
-            resource)
-        :param group: Filter results by the HydroShare group name associated with resources
-        :param from_date: Filter results to those created after from_date.  Must be datetime.date.
-        :param to_date: Filter results to those created before to_date.  Must be datetime.date.  Because dates have
-            no time information, you must specify date+1 day to get results for date (e.g. use 2015-05-06 to get
-            resources created up to and including 2015-05-05)
-        :param types: Filter results to particular HydroShare resource types.  Must be a sequence type
-            (e.g. list, tuple, etc.), but not a string.
-
-        :raises: HydroShareHTTPException to signal an HTTP error
-        :raises: HydroShareArgumentException for any invalid arguments
-
-        :return: A generator that can be used to fetch dict objects, each dict representing
-            the JSON object representation of the resource returned by the REST end point.  For example:
-
-        >>> for resource in hs.getResourceList():
-        >>>>    print resource
-         {u'bag_url': u'http://www.hydroshare.org/static/media/bags/e62a438bec384087b6c00ddcd1b6475a.zip',
-          u'creator': u'B Miles',
-          u'date_created': u'05-05-2015',
-          u'date_last_updated': u'05-05-2015',
-          u'resource_id': u'e62a438bec384087b6c00ddcd1b6475a',
-          u'resource_title': u'My sample DEM',
-          u'resource_type': u'RasterResource',
-          u'science_metadata_url': u'http://www.hydroshare.org/hsapi/scimeta/e62a438bec384087b6c00ddcd1b6475a/',
-          u'public': True}
-         {u'bag_url': u'http://www.hydroshare.org/static/media/bags/hr3hy35y5ht4y54hhthrtg43w.zip',
-          u'creator': u'B Miles',
-          u'date_created': u'01-02-2015',
-          u'date_last_updated': u'05-13-2015',
-          u'resource_id': u'hr3hy35y5ht4y54hhthrtg43w',
-          u'resource_title': u'Other raster',
-          u'resource_type': u'RasterResource',
-          u'science_metadata_url': u'http://www.hydroshare.org/hsapi/scimeta/hr3hy35y5ht4y54hhthrtg43w/',
-          u'public': True}
-
-
-          Filtering (have):
-
-          /hsapi/resourceList/?from_date=2015-05-03&to_date=2015-05-06
-          /hsapi/resourceList/?user=admin
-          /hsapi/resourceList/?owner=admin
-          /hsapi/resourceList/?creator=admin
-          /hsapi/resourceList/?group=groupname
-          /hsapi/resourceList/?types=GenericResource&types=RasterResource
-
-          Filtering (need):
-
-          /hsapi/resourceList/?sharedWith=user
-
-        """
-        url = "{url_base}/resource/".format(url_base=self.url_base)
-
-        params = {}
-        if creator:
-            params['creator'] = creator
-        if owner:
-            params['owner'] = owner
-        if user:
-            params['user'] = user
-        if group:
-            params['group'] = group
-        if from_date:
-            params['from_date'] = from_date.strftime('%Y-%m-%d')
-        if to_date:
-            params['to_date'] = to_date.strftime('%Y-%m-%d')
-        if types:
-            params['type'] = types
-
-        return self._getResultsListGenerator(url, params)
+    def getResourceList(self, **kwargs):
+        warnings.warn("This syntax is deprecated, please use hs.resources(**kwargs) instead.")
+        return self.resources(**kwargs)
 
     def getSystemMetadata(self, pid):
         """ Get system metadata for a resource
@@ -1153,7 +966,7 @@ class HydroShare(object):
         """
         url = "{url_base}/resource/{pid}/files/".format(url_base=self.url_base,
                                                             pid=pid)
-        return self._getResultsListGenerator(url)
+        return resultsListGenerator(self, url)
 
     def getResourceFolderContents(self, pid, pathname):
         """ Get a listing of files and folders for a resource at the specified path (*pathname*)

@@ -436,5 +436,28 @@ class TestResourceUploadFileToFolder(unittest.TestCase):
         })
         self.assertEqual(response.status_code, 200)
 
+
+class TestResourceListByKeyword(unittest.TestCase):
+    @with_httmock(mocks.hydroshare.resourcesListByKeyword_get)
+    def test_resource_list_by_keyword(self):
+        hs= HydroShare()
+        res_list = hs.resources(subject="one,two,three")
+        for (i, r) in enumerate(res_list):
+            self.assertEquals(True, True)
+
+
+class TestResourceListByBoundingBox(unittest.TestCase):
+    @with_httmock(mocks.hydroshare.resourcesListByBoundingBox_get)
+    def test_resource_list_by_bounding_box(self):
+        hs= HydroShare()
+
+        res_list = hs.resources(coverage_type="box",
+                                north="50",
+                                south="30",
+                                east="40",
+                                west="20")
+        for (i, r) in enumerate(res_list):
+            self.assertEquals(True, True)
+
 if __name__ == '__main__':
     unittest.main()
