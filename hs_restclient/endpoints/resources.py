@@ -1,4 +1,13 @@
+import os
+
+from requests_toolbelt import MultipartEncoder, MultipartEncoderMonitor
+
 from ..generators import resultsListGenerator
+
+
+def default_progress_callback(monitor):
+    pass
+
 
 class BaseEndpoint(object):
     def __init__(self, hs):
@@ -100,23 +109,6 @@ class ResourceEndpoint(BaseEndpoint):
         r = self.hs._request('POST', url)
         return r
 
-    def files(self, payload):
-        """
-        Uploads a file to a hydroshare resource
-
-        :param payload:
-            file: File object to upload to server
-            folder: folder path to upload the file to
-        :return: json object
-            resource_id: string resource id,
-            file_name: string name of file
-        """
-        url = "{url_base}/resource/{pid}/files/".format(url_base=self.hs.url_base,
-                                                       pid=self.pid)
-
-        r = self.hs._request('POST', url, None, payload)
-        return r
-
     def flag(self, payload):
         """
         Sets a single flag on a resource
@@ -132,6 +124,32 @@ class ResourceEndpoint(BaseEndpoint):
 
         r = self.hs._request('POST', url, None, payload)
         return r
+
+    def files(self, payload):
+        """
+        Uploads a file to a hydroshare resource
+
+        :param payload:
+            file: File object to upload to server
+            folder: folder path to upload the file to
+        :return: json object
+            resource_id: string resource id,
+            file_name: string name of file
+        """
+        url = "{url_base}/resource/{pid}/files/".format(url_base=self.hs.url_base,
+                                                       pid=self.pid)
+
+        params = {}
+        file_to_upload = self.hs._prepareFileForUpload(params,
+                                                       payload['file'],
+                                                       os.path.basename(payload['file']))
+
+        encoder = MultipartEncoder(params)
+        monitor = MultipartEncoderMonitor(encoder, default_progress_callback)
+
+        payload.pop('file')
+        r = self.hs._request('POST', url, None, data=monitor, headers={'Content-Type': monitor.content_type})
+        return r.text
 
     def version(self):
         """

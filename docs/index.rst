@@ -334,7 +334,7 @@ To upload files to a specific resource folder:
     >>> hs = HydroShare(auth=auth)
     >>> options = {
                      "folder": "/path/to/folder",
-                     "files": (file objects)
+                     "files": "local/path/to/file.txt"
                   }
     >>> result = hs.resource('ID OF RESOURCE GOES HERE').files(options)
 
@@ -348,6 +348,22 @@ To set resource flags:
             make_not_shareable, make_discoverable, make_not_discoverable"
                   }
     >>> result = hs.resource('ID OF RESOURCE GOES HERE').flag(options)
+
+To discover resources via subject or bounding box:
+
+    >>> from hs_restclient import HydroShare, HydroShareAuthBasic
+    >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
+    >>> hs = HydroShare(auth=auth)
+    >>> result = hs.resources(subject="comma,separated,list,of,subjects")
+
+    >>> from hs_restclient import HydroShare, HydroShareAuthBasic
+    >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
+    >>> hs = HydroShare(auth=auth)
+    >>> result = hs.resources(coverage_type="box",
+                              north="50",
+                              south="30",
+                              east="40",
+                              west="20")
 
 Index
 -----

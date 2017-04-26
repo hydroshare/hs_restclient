@@ -431,7 +431,7 @@ class TestResourceUploadFileToFolder(unittest.TestCase):
         hs= HydroShare()
 
         response = hs.resource('511debf8858a4ea081f78d66870da76c').files({
-            "file": open('mocks/data/minimal_resource_file.txt', 'rb'),
+            "file": 'mocks/data/another_resource_file.txt',
             "folder": "/target/folder"
         })
         self.assertEqual(response.status_code, 200)
