@@ -181,6 +181,18 @@ class ResourceList(BaseEndpoint):
             resources created up to and including 2015-05-05)
         :param types: Filter results to particular HydroShare resource types.  Must be a sequence type
             (e.g. list, tuple, etc.), but not a string.
+        :param start: Filter results by start
+        :param count: Filter results by count
+        :param subject: Filter by comma separated list of subjects
+        :param metadata: Fillter by JSON metadata
+        :param full_text_search: Filter by fill text search
+        :param edit_permission: Filter by boolean edit permission
+        :param published: Filter by boolean published status
+        :param coverage_type: Filter by coverage type, one of 'box' or 'point'
+        :param north: Filter by north coordinate, float or char
+        :param south: Filter by south coordinate, float or char
+        :param east: Filter by east coordinate, float or char
+        :param west: Filter by west coordinate, float or char
 
         :raises: HydroShareHTTPException to signal an HTTP error
         :raises: HydroShareArgumentException for any invalid arguments
@@ -197,6 +209,12 @@ class ResourceList(BaseEndpoint):
           u'resource_id': u'e62a438bec384087b6c00ddcd1b6475a',
           u'resource_title': u'My sample DEM',
           u'resource_type': u'RasterResource',
+          u'discoverable': True,
+          u'shareable': True,
+          u'immutable': True,
+          u'published': True,
+          u'resource_url': u'http://www.hydroshare.org/resource/e62a438bec384087b6c00ddcd1b6475a/',
+          u'resource_map_url': u'http://www.hydroshare.org/resource/e62a438bec384087b6c00ddcd1b6475a/map/',
           u'science_metadata_url': u'http://www.hydroshare.org/hsapi/scimeta/e62a438bec384087b6c00ddcd1b6475a/',
           u'public': True}
          {u'bag_url': u'http://www.hydroshare.org/static/media/bags/hr3hy35y5ht4y54hhthrtg43w.zip',
@@ -206,6 +224,12 @@ class ResourceList(BaseEndpoint):
           u'resource_id': u'hr3hy35y5ht4y54hhthrtg43w',
           u'resource_title': u'Other raster',
           u'resource_type': u'RasterResource',
+          u'discoverable': True,
+          u'shareable': True,
+          u'immutable': True,
+          u'published': True,
+          u'resource_url': u'http://www.hydroshare.org/resource/hr3hy35y5ht4y54hhthrtg43w/',
+          u'resource_map_url': u'http://www.hydroshare.org/resource/hr3hy35y5ht4y54hhthrtg43w/map/',
           u'science_metadata_url': u'http://www.hydroshare.org/hsapi/scimeta/hr3hy35y5ht4y54hhthrtg43w/',
           u'public': True}
 
