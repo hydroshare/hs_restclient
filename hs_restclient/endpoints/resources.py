@@ -184,8 +184,8 @@ class ResourceList(BaseEndpoint):
         :param start: Filter results by start
         :param count: Filter results by count
         :param subject: Filter by comma separated list of subjects
-        :param metadata: Fillter by JSON metadata
-        :param full_text_search: Filter by fill text search
+        :param metadata: Filter by JSON metadata
+        :param full_text_search: Filter by full text search
         :param edit_permission: Filter by boolean edit permission
         :param published: Filter by boolean published status
         :param coverage_type: Filter by coverage type, one of 'box' or 'point'
