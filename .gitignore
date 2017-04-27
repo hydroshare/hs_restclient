@@ -64,3 +64,4 @@ target/
 
 # Virtualenv
 venv/
+venv3/

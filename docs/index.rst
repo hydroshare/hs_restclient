@@ -30,7 +30,7 @@ To get system metadata for public resources:
 
     >>> from hs_restclient import HydroShare
     >>> hs = HydroShare()
-    >>> for resource in hs.getResourceList():
+    >>> for resource in hs.resources():
     >>>     print(resource)
 
 To authenticate using HTTP Basic authentication, and then get system metadata for resources you have access to:
@@ -38,7 +38,7 @@ To authenticate using HTTP Basic authentication, and then get system metadata fo
     >>> from hs_restclient import HydroShare, HydroShareAuthBasic
     >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
     >>> hs = HydroShare(auth=auth)
-    >>> for resource in hs.getResourceList():
+    >>> for resource in hs.resources():
     >>>     print(resource)
 
 To authenticate using OAuth2 authentication (using a user and password supplied by the user), and then get a list of
@@ -59,11 +59,11 @@ resources you have access to:
     >>> hs = HydroShare(auth=auth)
     >>>
     >>> try:
-    >>>     for resource in hs.getResourceList():
+    >>>     for resource in hs.resources():
     >>>         print(resource)
     >>> except TokenExpiredError as e:
     >>>     hs = HydroShare(auth=auth)
-    >>>    for resource in hs.getResourceList():
+    >>>    for resource in hs.resources():
     >>>         print(resource)
 
 Note that currently the client does not handle token renewal, hence the need to catch TokenExpiredError.
@@ -96,7 +96,7 @@ access to:
     >>>                             token=token)
     >>> try:
     >>>     hs = HydroShare(auth=auth)
-    >>>     for resource in hs.getResourceList():
+    >>>     for resource in hs.resources():
     >>>         print(resource)
     >>> except:
     >>>     # get_token() is a stand in for how you get a new token on your system.
@@ -104,7 +104,7 @@ access to:
     >>>     auth = HydroShareAuthOAuth2(client_id, client_secret,
     >>>                                 token=token)
     >>>     hs = HydroShare(auth=auth)
-    >>>     for resource in hs.getResourceList():
+    >>>     for resource in hs.resources():
     >>>         print(resource)
 
 Note that currently the client does not handle token renewal, hence the need to catch TokenExpiredError.
@@ -113,14 +113,14 @@ To connect to a development HydroShare server that uses a self-sign security cer
 
     >>> from hs_restclient import HydroShare
     >>> hs = HydroShare(hostname='mydev.mydomain.net', verify=False)
-    >>> for resource in hs.getResourceList():
+    >>> for resource in hs.resources():
     >>>     print(resource)
 
 To connect to a development HydroShare server that is not running HTTPS:
 
     >>> from hs_restclient import HydroShare
     >>> hs = HydroShare(hostname='mydev.mydomain.net', port=8000, use_https=False)
-    >>> for resource in hs.getResourceList():
+    >>> for resource in hs.resources():
     >>>     print(resource)
 
 Note that authenticated connections **must** use HTTPS.
@@ -152,6 +152,18 @@ or to get the BagIt archive as a generator (sort of like a buffered stream):
     >>> with open('/tmp/myresource.zip', 'wb') as fd:
     >>>     for chunk in resource:
     >>>         fd.write(chunk)
+
+Note that when the BagIt archive is not ready for download (this archive zip file needs to be
+recreated) the client by default will wait until the BagIt archive is recreated. This may take a
+while. If you want to get the BagIt archive only if it is ready for download:
+
+    >>> from hs_restclient import HydroShare
+    >>> hs = HydroShare()
+    >>>try:
+    >>>     hs.getResource('e62a438bec384087b6c00ddcd1b6475a', destination='/tmp', wait_for_bag_creation=False)
+    >>>except HydroShareBagNotReadyException as e:
+    >>>     print('BagIt file is being generated and not ready for download at this time.')
+
 
 To create a resource:
 
@@ -334,7 +346,7 @@ To upload files to a specific resource folder:
     >>> hs = HydroShare(auth=auth)
     >>> options = {
                      "folder": "/path/to/folder",
-                     "files": (file objects)
+                     "files": "local/path/to/file.txt"
                   }
     >>> result = hs.resource('ID OF RESOURCE GOES HERE').files(options)
 
@@ -349,6 +361,50 @@ To set resource flags:
                   }
     >>> result = hs.resource('ID OF RESOURCE GOES HERE').flag(options)
 
+To discover resources via subject or bounding box:
+
+    >>> from hs_restclient import HydroShare, HydroShareAuthBasic
+    >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
+    >>> hs = HydroShare(auth=auth)
+    >>> result = hs.resources(subject="comma,separated,list,of,subjects")
+
+    >>> result = hs.resources(coverage_type="box",
+                              north="50",
+                              south="30",
+                              east="40",
+                              west="20")
+
+To discover resources via other parameters
+
+    >>> from hs_restclient import HydroShare, HydroShareAuthBasic
+    >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
+    >>> hs = HydroShare(auth=auth)
+    
+    >>> # Discover via creator, group, user, owner
+    >>> resources = hs.resources(creator="email or name")
+    >>> resources = hs.resources(user="email or name")
+    >>> resources = hs.resources(owner="email or name")
+    >>> resources = hs.resources(author="email or name")
+    >>> resources = hs.resources(group="id or name")
+
+    >>> # Discover via date range (datetime objects)
+    >>> resources = hs.resources(from_date=datetime, to_date=datetime)
+
+    >>> # Discover via start or count (integers)
+    >>> resources = hs.resources(start=4)
+    >>> resources = hs.resources(count=4)
+    
+    >>> # Discover via full text search
+    >>> resources = hs.resources(full_text_search="any text here")
+    
+    >>> # Discover via flags (boolean)
+    >>> resources = hs.resources(published=False)
+    >>> resources = hs.resources(edit_permission=False)
+    >>> resources = hs.resources(public=False)
+
+    >>> # Discover via resource type
+    >>> resources = hs.resources(type=None)
+		      
 Index
 -----
 
