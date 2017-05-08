@@ -139,15 +139,12 @@ class ResourceEndpoint(BaseEndpoint):
         url = "{url_base}/resource/{pid}/files/".format(url_base=self.hs.url_base,
                                                        pid=self.pid)
 
-        params = {}
-        file_to_upload = self.hs._prepareFileForUpload(params,
-                                                       payload['file'],
-                                                       os.path.basename(payload['file']))
-
-        encoder = MultipartEncoder(params)
+        encoder = MultipartEncoder({
+            "file": (payload['file'], open(payload['file'], 'r')),
+            "folder": payload['folder']
+        })
         monitor = MultipartEncoderMonitor(encoder, default_progress_callback)
 
-        payload.pop('file')
         r = self.hs._request('POST', url, None, data=monitor, headers={'Content-Type': monitor.content_type})
         return r.text
 
