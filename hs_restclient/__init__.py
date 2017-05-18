@@ -5,7 +5,7 @@ Client library for HydroShare REST API
 """
 
 __title__ = 'hs_restclient'
-__version__ = '1.2.7'
+__version__ = '1.2.8'
 
 
 import os
@@ -114,8 +114,8 @@ class HydroShare(object):
             self.session = requests.Session()
         elif isinstance(self.auth, HydroShareAuthBasic):
             # HTTP basic authentication
-            if not self.use_https:
-                raise HydroShareAuthenticationException("HTTPS is required when using authentication.")
+            # if not self.use_https:
+            #     raise HydroShareAuthenticationException("HTTPS is required when using authentication.")
             self.session = requests.Session()
             self.session.auth = (self.auth.username, self.auth.password)
         elif isinstance(self.auth, HydroShareAuthOAuth2):
