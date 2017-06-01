@@ -86,7 +86,7 @@ class FunctionsSubEndpoint(object):
         """
         zip_with_rel_path = payload.pop('zip_with_rel_path')
 
-        url = "{url_base}/resource/{pid}/functions/unzip/{path}".format(
+        url = "{url_base}/resource/{pid}/functions/unzip/{path}/".format(
             url_base=self.hs.url_base,
             path=zip_with_rel_path,
             pid=self.pid)
