@@ -84,8 +84,11 @@ class FunctionsSubEndpoint(object):
         :return: (object)
             unzipped_path: string
         """
-        url = "{url_base}/resource/{pid}/functions/unzip/".format(
+        zip_with_rel_path = payload.pop('zip_with_rel_path')
+
+        url = "{url_base}/resource/{pid}/functions/unzip/{path}/".format(
             url_base=self.hs.url_base,
+            path=zip_with_rel_path,
             pid=self.pid)
         r = self.hs._request('POST', url, None, payload)
         return r
