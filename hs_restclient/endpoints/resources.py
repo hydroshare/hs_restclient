@@ -93,6 +93,21 @@ class FunctionsSubEndpoint(object):
         r = self.hs._request('POST', url, None, payload)
         return r
 
+    def rep_res_bag_to_irods_user_zone(self):
+        """Replicate data bag to iRODS user zone.
+
+        param payload:
+            zip_with_rel_path: string
+            remove_original_zip: boolean
+        :return: (object)
+            unzipped_path: string
+        """
+        url = "{url_base}/resource/{pid}/functions/rep-res-bag-to-irods-user-zone/".format(
+            url_base=self.hs.url_base,
+            pid=self.pid)
+        r = self.hs._request('POST', url, None, {})
+        return r
+
 
 class ResourceEndpoint(BaseEndpoint):
     def __init__(self, hs, pid):
