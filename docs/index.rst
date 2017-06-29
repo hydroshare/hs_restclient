@@ -356,10 +356,16 @@ To set resource flags:
     >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
     >>> hs = HydroShare(auth=auth)
     >>> options = {
-                     "t": "one of make_public, make_private, make_shareable,
+                     "flag": "one of make_public, make_private, make_shareable,
             make_not_shareable, make_discoverable, make_not_discoverable"
                   }
     >>> result = hs.resource('ID OF RESOURCE GOES HERE').flag(options)
+
+Alternatively, you can use the helper functions:
+
+    >>>  hs.resource('ID OF RESOURCE GOES HERE').public(True) # or False
+    >>>  hs.resource('ID OF RESOURCE GOES HERE').discoverable(True) # or False
+    >>>  hs.resource('ID OF RESOURCE GOES HERE').shareable(True) # or False
 
 To discover resources via subject or bounding box:
 
