@@ -117,8 +117,7 @@ class ResourceEndpoint(BaseEndpoint):
         self.functions = FunctionsSubEndpoint(hs, pid)
 
     def copy(self):
-        """
-        Creates a copy of a resource
+        """Creates a copy of a resource.
 
         :return: string resource id
         """
@@ -128,8 +127,7 @@ class ResourceEndpoint(BaseEndpoint):
         return r
 
     def flag(self, payload):
-        """
-        Sets a single flag on a resource
+        """Set a single flag on a resource.
 
         :param payload:
             t: can be one of make_public, make_private, make_shareable,
@@ -144,8 +142,7 @@ class ResourceEndpoint(BaseEndpoint):
         return r
 
     def files(self, payload):
-        """
-        Uploads a file to a hydroshare resource
+        """Upload a file to a hydroshare resource.
 
         :param payload:
             file: File object to upload to server
@@ -167,8 +164,7 @@ class ResourceEndpoint(BaseEndpoint):
         return r.text
 
     def version(self):
-        """
-        Creates a new version of a resource
+        """Create a new version of a resource.
 
         :return: resource id (string)
         """
@@ -176,6 +172,46 @@ class ResourceEndpoint(BaseEndpoint):
                                                           pid=self.pid)
         r = self.hs._request('POST', url)
         return r
+
+    def public(self, boolean):
+        """Pass through helper function for flag function."""
+        if(boolean):
+            r = self.flag({
+                "flag": "make_public"
+            })
+        else:
+            r = self.flag({
+                "flag": "make_private"
+            })
+
+        return r
+
+    def discoverable(self, boolean):
+        """Pass through helper function for flag function."""
+        if(boolean):
+            r = self.flag({
+                "flag": "make_discoverable"
+            })
+        else:
+            r = self.flag({
+                "flag": "make_not_discoverable"
+            })
+
+        return r
+
+    def shareable(self, boolean):
+        """Pass through helper function for flag function."""
+        if(boolean):
+            r = self.flag({
+                "flag": "make_shareable"
+            })
+        else:
+            r = self.flag({
+                "flag": "make_not_shareable"
+            })
+
+        return r
+
 
 
 class ResourceList(BaseEndpoint):
