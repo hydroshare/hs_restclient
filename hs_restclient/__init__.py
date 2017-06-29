@@ -1086,8 +1086,89 @@ class HydroShare(object):
 
         return r.json()
 
+    def getTicket(self, resource, pathname=None, mode='read'):
+        """Get a ticket for a specific *pathname* for a given resource
 
-class AbstractHydroShareAuth(object): pass
+        :param pid: The HydroShare ID of the resource for which folder is to be deleted
+        :param pathname: the path to the folder or file to be manipulated.
+        :param mode: 'read' or 'write'.
+        :return: A JSON object representing the ticket that was generated
+
+        :raises: HydroShareNotAuthorized if user is not authorized to perform action.
+        :raises: HydroShareNotFound if the resource or pathname was not found.
+        :raises: HydroShareHTTPException if an unexpected HTTP response code is encountered.
+
+        If pathname is None, ticket the bag for the resource instead of a local file.
+
+        """
+        if pathname is not None:
+            url = "{url_base}/resource/{pid}/ticket/{mode}/{pathname}/"\
+                .format(url_base=self.url_base, pid=pid, mode=mode, pathname=pathname)
+        else:
+            url = "{url_base}/resource/{pid}/ticket/bag/"\
+                .format(url_base=self.url_base, pid=pid)
+
+        r = self._request('GET', url)
+        if r.status_code != 201:
+            if r.status_code == 403:
+                raise HydroShareNotAuthorized(('GET', url))
+            elif r.status_code == 404:
+                raise HydroShareNotFound((pid,))
+            else:
+                raise HydroShareHTTPException((url, 'GET', r.status_code))
+
+    def listTicket(self, ticket):
+        """List and report upon an existing ticket
+
+        :param pid: resource identifier for the ticket
+        :param ticket: the string for the ticket
+        :return: A JSON object representing the meaning of the ticket.
+
+        :raises: HydroShareNotAuthorized if the ticket doesn't correspond to the resource.
+        :raises: HydroShareNotFound if the resource or ticket was not found.
+        :raises: HydroShareHTTPException if an unexpected HTTP response code is encountered.
+        """
+        url = "{url_base}/resource/{pid}/ticket/info/{ticket}/"\
+            .format(url_base=self.url_base, pid=pid, ticket=ticket)
+
+        r = self._request('GET', url)
+        if r.status_code != 200:
+            if r.status_code == 403:
+                raise HydroShareNotAuthorized(('GET', url))
+            elif r.status_code == 404:
+                raise HydroShareNotFound((pid,))
+            else:
+                raise HydroShareHTTPException((url, 'GET', r.status_code))
+        return r.json()
+
+    def deleteTicket(self, pid, ticket):
+        """Delete an existing ticket
+
+        :param pid: resource identifier for the ticket
+        :param ticket: the string for the ticket
+        :return: A JSON object representing the ticket that was deleted,
+            using the same format as listTicket.
+
+        :raises: HydroShareNotAuthorized if the ticket doesn't correspond to the resource.
+        :raises: HydroShareNotFound if the resource or ticket was not found.
+        :raises: HydroShareHTTPException if an unexpected HTTP response code is encountered.
+        """
+        url = "{url_base}/resource/{pid}/ticket/info/{ticket}/"\
+            .format(url_base=self.url_base, pid=pid, ticket=ticket)
+
+        r = self._request('DELETE', url)
+        if r.status_code != 200:
+            if r.status_code == 403:
+                raise HydroShareNotAuthorized(('DELETE', url))
+            elif r.status_code == 404:
+                raise HydroShareNotFound((pid,))
+            else:
+                raise HydroShareHTTPException((url, 'DELETE', r.status_code))
+        return r.json()
+
+
+class AbstractHydroShareAuth(object):
+    pass
 
 
 class HydroShareAuthBasic(AbstractHydroShareAuth):
