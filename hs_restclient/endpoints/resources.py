@@ -121,7 +121,7 @@ class FunctionsSubEndpoint(object):
         file_path = payload.pop('file_path')
         hs_file_type = payload.pop('hs_file_type')
 
-        url = "{url_base}/resource/{pid}/functions/set-file-type/{file_path}/{file_type}".format(
+        url = "{url_base}/resource/{pid}/functions/set-file-type/{file_path}/{file_type}/".format(
             url_base=self.hs.url_base,
             pid=self.pid,
             file_path=file_path,
