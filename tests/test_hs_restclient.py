@@ -240,6 +240,7 @@ class TestScimeta(unittest.TestCase):
         self.assertEqual(len(scimeta['relations']), 0)
         self.assertEqual(len(scimeta['subjects']), 2)
 
+
 class TestGetResourceMap(unittest.TestCase):
 
     @with_httmock(mocks.hydroshare.resourcemap_get)
@@ -329,6 +330,16 @@ class TestResourceVersion(unittest.TestCase):
         hs = HydroShare()
         response = hs.resource('511debf8858a4ea081f78d66870da76c').version()
         self.assertNotEqual('6dbb0dfb8f3a498881e4de428cb1587c', response)
+        self.assertEqual(response.status_code, 202)
+
+
+class TestResourceSetFileType(unittest.TestCase):
+    @with_httmock(mocks.hydroshare.resourceSetFileType_post)
+    def test_set_file_type(self):
+        hs = HydroShare()
+        response = hs.resource('511debf8858a4ea081f78d66870da76c').functions.set_file_type(
+            {"file_path": "file_path",
+             "hs_file_type": "NetCDF"})
         self.assertEqual(response.status_code, 202)
 
 

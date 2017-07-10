@@ -404,7 +404,19 @@ To discover resources via other parameters
 
     >>> # Discover via resource type
     >>> resources = hs.resources(type=None)
-		      
+
+To set a file to a file type (e.g., NetCDF) in a composite resource:
+Note: Allowed file type are: NetCDF, GeoRaster and GeoFeature
+
+    >>> from hs_restclient import HydroShare, HydroShareAuthBasic
+    >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
+    >>> hs = HydroShare(auth=auth)
+    >>> options = {
+                     "file_path": "file.nc",
+                     "hs_file_type": "NetCDF"
+			      }
+    >>> result = hs.resource('ID OF RESOURCE GOES HERE').functions.set_file_type(options)
+
 Index
 -----
 
