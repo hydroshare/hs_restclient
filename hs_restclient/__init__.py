@@ -1086,7 +1086,7 @@ class HydroShare(object):
 
         return r.json()
 
-    def getTicket(self, resource, pathname=None, mode='read'):
+    def getTicket(self, pid, pathname=None, mode='read'):
         """Get a ticket for a specific *pathname* for a given resource
 
         :param pid: The HydroShare ID of the resource for which folder is to be deleted
@@ -1116,12 +1116,13 @@ class HydroShare(object):
                 raise HydroShareNotFound((pid,))
             else:
                 raise HydroShareHTTPException((url, 'GET', r.status_code))
+        return r.json()
 
-    def listTicket(self, ticket):
+    def listTicket(self, pid, ticket_id):
         """List and report upon an existing ticket
 
         :param pid: resource identifier for the ticket
-        :param ticket: the string for the ticket
+        :param ticket_id: the string for the ticket
         :return: A JSON object representing the meaning of the ticket.
 
         :raises: HydroShareNotAuthorized if the ticket doesn't correspond to the resource.
@@ -1129,7 +1130,7 @@ class HydroShare(object):
         :raises: HydroShareHTTPException if an unexpected HTTP response code is encountered.
         """
         url = "{url_base}/resource/{pid}/ticket/info/{ticket}/"\
-            .format(url_base=self.url_base, pid=pid, ticket=ticket)
+            .format(url_base=self.url_base, pid=pid, ticket=ticket_id)
 
         r = self._request('GET', url)
         if r.status_code != 200:
@@ -1141,11 +1142,11 @@ class HydroShare(object):
                 raise HydroShareHTTPException((url, 'GET', r.status_code))
         return r.json()
 
-    def deleteTicket(self, pid, ticket):
+    def deleteTicket(self, pid, ticket_id):
         """Delete an existing ticket
 
         :param pid: resource identifier for the ticket
-        :param ticket: the string for the ticket
+        :param ticket_id: the string for the ticket
         :return: A JSON object representing the ticket that was deleted,
             using the same format as listTicket.
 
@@ -1154,7 +1155,7 @@ class HydroShare(object):
         :raises: HydroShareHTTPException if an unexpected HTTP response code is encountered.
         """
         url = "{url_base}/resource/{pid}/ticket/info/{ticket}/"\
-            .format(url_base=self.url_base, pid=pid, ticket=ticket)
+            .format(url_base=self.url_base, pid=pid, ticket=ticket_id)
 
         r = self._request('DELETE', url)
         if r.status_code != 200:
@@ -1164,6 +1165,7 @@ class HydroShare(object):
                 raise HydroShareNotFound((pid,))
             else:
                 raise HydroShareHTTPException((url, 'DELETE', r.status_code))
+
         return r.json()
 
 
