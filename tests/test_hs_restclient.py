@@ -459,5 +459,15 @@ class TestResourceListByBoundingBox(unittest.TestCase):
         for (i, r) in enumerate(res_list):
             self.assertEquals(True, True)
 
+class TestCreateTicket(unittest.TestCase): 
+    @with_httmock(mocks.hydroshare.resourceCreateTicket_get)
+    def test_resource_create_ticket(self):
+        hs= HydroShare()
+        resource_id = '28f87079ceaf440588e7866a0f4b6c57'
+        ticket_data =  hs.getTicket(resource_id) 
+        ticket_id = 'pwYwPanpnwdDZa9'
+        self.assertEquals(ticket_data['resource_id'], resource_id) 
+        self.assertEquals(ticket_data['ticket_id'], ticket_id) 
+
 if __name__ == '__main__':
     unittest.main()

@@ -432,3 +432,57 @@ def resourcesListByBoundingBox_get(url, request):
         # 404.
         return response(404, {}, HEADERS, None, 5, request)
     return response(200, content, HEADERS, None, 5, request)
+
+@urlmatch(netloc=NETLOC, method=GET)
+def resourceCreateTicket_get(url, request):
+    content = {
+        u'operation': u'read',
+        u'path': u'/hydroshareZone/home/cuahsi2DataProxy/bags/28f87079ceaf440588e7866a0f4b6c57.zip',
+        u'resource_id': u'28f87079ceaf440588e7866a0f4b6c57',
+        u'ticket_id': u'pwYwPanpnwdDZa9'
+    }
+    return response(201, content, HEADERS, None, 5, request) 
+
+@urlmatch(netloc=NETLOC, method=GET)
+def resourceListTicket_get(url, request):
+    content = {
+        u'expires': u'2017-07-26.00:17:00',
+        u'filename': u'28f87079ceaf440588e7866a0f4b6c57.zip',
+        u'full_path':
+         u'/hydroshareZone/home/hydroDataProxy/bags/28f87079ceaf440588e7866a0f4b6c57.zip',
+        u'id': u'457392',
+        u'obj type': u'data',
+        u'owner': u'hydroDataProxy',
+        u'ticket_id': u'pwYwPanpnwdDZa9',
+        u'type': u'read',
+        u'uses count': u'0',
+        u'uses limit': u'1',
+        u'write byte count': u'0',
+        u'write byte limit': u'0',
+        u'write file count': u'0',
+        u'write file limit': u'10',
+        u'zone': u'hydroshareZone'
+    }
+    return response(200, content, HEADERS, None, 5, request) 
+
+@urlmatch(netloc=NETLOC, method=DELETE)
+def resourceListTicket_delete(url, request):
+    content = {
+        u'expires': u'2017-07-26.00:17:00',
+        u'filename': u'28f87079ceaf440588e7866a0f4b6c57.zip',
+        u'full_path':
+         u'/hydroshareZone/home/hydroDataProxy/bags/28f87079ceaf440588e7866a0f4b6c57.zip',
+        u'id': u'457392',
+        u'obj type': u'data',
+        u'owner': u'hydroDataProxy',
+        u'ticket_id': u'pwYwPanpnwdDZa9',
+        u'type': u'read',
+        u'uses count': u'0',
+        u'uses limit': u'1',
+        u'write byte count': u'0',
+        u'write byte limit': u'0',
+        u'write file count': u'0',
+        u'write file limit': u'10',
+        u'zone': u'hydroshareZone'
+    }
+    return response(200, content, HEADERS, None, 5, request) 
