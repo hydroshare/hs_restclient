@@ -433,6 +433,19 @@ def resourcesListByBoundingBox_get(url, request):
         return response(404, {}, HEADERS, None, 5, request)
     return response(200, content, HEADERS, None, 5, request)
 
+
+@urlmatch(netloc=NETLOC, method=POST)
+def resourceSetFileType_post(url, request):
+    file_path = url.netloc + url.path + '/set-file-type-response'
+    try:
+        content = Resource(file_path).get()
+    except EnvironmentError:
+        # catch any environment errors (i.e. file does not exist) and return a
+        # 404.
+        return response(404, {}, HEADERS, None, 5, request)
+    return response(202, content, HEADERS, None, 5, request)
+
+
 @urlmatch(netloc=NETLOC, method=GET)
 def resourceCreateTicket_get(url, request):
     content = {
@@ -442,6 +455,7 @@ def resourceCreateTicket_get(url, request):
         u'ticket_id': u'pwYwPanpnwdDZa9'
     }
     return response(201, content, HEADERS, None, 5, request) 
+
 
 @urlmatch(netloc=NETLOC, method=GET)
 def resourceListTicket_get(url, request):
@@ -464,6 +478,7 @@ def resourceListTicket_get(url, request):
         u'zone': u'hydroshareZone'
     }
     return response(200, content, HEADERS, None, 5, request) 
+
 
 @urlmatch(netloc=NETLOC, method=DELETE)
 def resourceListTicket_delete(url, request):

@@ -336,7 +336,7 @@ class HydroShare(object):
 
     def getScienceMetadata(self, pid):
         """ Get science metadata for a resource in JSON format
-        Note: Only Dublin core metadata is retrieved.
+        Note: Dublin core metadata as well as any resource specific metadata is retrieved.
 
         :param pid: The HydroShare ID of the resource
         :raises: HydroShareNotAuthorized if the user is not authorized to view the metadata.
@@ -344,7 +344,7 @@ class HydroShare(object):
         :raises: HydroShareHTTPException to signal an HTTP error.
         :return: A string representing JSON serialization of science metadata.
 
-        Example of data JSON returned:
+        Example of data JSON returned (this example shows only Dublin core metadata):
 
         {
             "title":"Great Salt Lake Level and Volume",
@@ -375,7 +375,8 @@ class HydroShare(object):
             "language":"eng",
             "rights":"This resource is shared under the Creative Commons Attribution CC BY. http://creativecommons.org/licenses/by/4.0/",
             "type":"http://www.hydroshare.org/terms/GenericResource",
-            "publisher":null,"sources":[],
+            "publisher":null,
+            "sources":[],
             "subjects":[
                         {"value":"NSF"},
                         {"value":"Modeling"}
@@ -398,7 +399,7 @@ class HydroShare(object):
         return r.json()
 
     def updateScienceMetadata(self, pid, metadata):
-        """Update Dublin core metadata for a resource
+        """Update Dublin core metadata as well as resource specific metadata for a resource
 
         :param pid: The HydroShare ID of the resource for which science metadata needs to be updated
         :param  metadata: A dict containing data for each of the dublin core metadata elements that needs to be updated
@@ -407,7 +408,7 @@ class HydroShare(object):
         :raises: HydroShareHTTPException to signal an HTTP error.
         :return: A string representing the JSON serialization of resource science metadata.
 
-        Example of data JSON returned:
+        Example of data JSON returned (this example shows only Dublin core metadata):
 
         {
             "title":"Great Salt Lake Level and Volume",
@@ -416,7 +417,7 @@ class HydroShare(object):
                         {"name":"Lisa Miller","description":null,"organization":null,"email":null,"address":null,"phone":null,"homepage":null,"order":2}
                        ],
             "contributors":[
-                            {"name":"Jenny Parker","description":"","organization":"Univesity of Utah","email":"jenny_parker@hotmail.com","address":"","phone":"","homepage":""}
+                            {"name":"Jenny Parker","description":"","organization":"University of Utah","email":"jenny_parker@hotmail.com","address":"","phone":"","homepage":""}
                            ],
             "coverages":[
                             {"type":"period","value":{"start":"01/01/2000","end":"12/12/2010"}}
@@ -438,7 +439,8 @@ class HydroShare(object):
             "language":"eng",
             "rights":"This resource is shared under the Creative Commons Attribution CC BY. http://creativecommons.org/licenses/by/4.0/",
             "type":"http://www.hydroshare.org/terms/GenericResource",
-            "publisher":null,"sources":[],
+            "publisher":null,
+            "sources":[],
             "subjects":[
                         {"value":"NSF"},
                         {"value":"Modeling"}

@@ -108,6 +108,27 @@ class FunctionsSubEndpoint(object):
         r = self.hs._request('POST', url, None, {})
         return r
 
+    def set_file_type(self, payload):
+        """
+        Sets a file to a specific HydroShare file type (e.g. NetCDF, GeoRaster, GeoFeature etc)
+
+        :param payload:
+            file_path: string (relative path of the file to be set to a specific file type)
+            hs_file_type: string (one of the supported files types: NetCDF, GeoRaster and GeoFeature)
+        :return: (object)
+            message: string
+        """
+        file_path = payload.pop('file_path')
+        hs_file_type = payload.pop('hs_file_type')
+
+        url = "{url_base}/resource/{pid}/functions/set-file-type/{file_path}/{file_type}/".format(
+            url_base=self.hs.url_base,
+            pid=self.pid,
+            file_path=file_path,
+            file_type=hs_file_type)
+        r = self.hs._request('POST', url, None, payload)
+        return r
+
 
 class ResourceEndpoint(BaseEndpoint):
     def __init__(self, hs, pid):
@@ -117,8 +138,7 @@ class ResourceEndpoint(BaseEndpoint):
         self.functions = FunctionsSubEndpoint(hs, pid)
 
     def copy(self):
-        """
-        Creates a copy of a resource
+        """Creates a copy of a resource.
 
         :return: string resource id
         """
@@ -128,8 +148,7 @@ class ResourceEndpoint(BaseEndpoint):
         return r
 
     def flag(self, payload):
-        """
-        Sets a single flag on a resource
+        """Set a single flag on a resource.
 
         :param payload:
             t: can be one of make_public, make_private, make_shareable,
@@ -144,8 +163,7 @@ class ResourceEndpoint(BaseEndpoint):
         return r
 
     def files(self, payload):
-        """
-        Uploads a file to a hydroshare resource
+        """Upload a file to a hydroshare resource.
 
         :param payload:
             file: File object to upload to server
@@ -167,8 +185,7 @@ class ResourceEndpoint(BaseEndpoint):
         return r.text
 
     def version(self):
-        """
-        Creates a new version of a resource
+        """Create a new version of a resource.
 
         :return: resource id (string)
         """
@@ -176,6 +193,46 @@ class ResourceEndpoint(BaseEndpoint):
                                                           pid=self.pid)
         r = self.hs._request('POST', url)
         return r
+
+    def public(self, boolean):
+        """Pass through helper function for flag function."""
+        if(boolean):
+            r = self.flag({
+                "flag": "make_public"
+            })
+        else:
+            r = self.flag({
+                "flag": "make_private"
+            })
+
+        return r
+
+    def discoverable(self, boolean):
+        """Pass through helper function for flag function."""
+        if(boolean):
+            r = self.flag({
+                "flag": "make_discoverable"
+            })
+        else:
+            r = self.flag({
+                "flag": "make_not_discoverable"
+            })
+
+        return r
+
+    def shareable(self, boolean):
+        """Pass through helper function for flag function."""
+        if(boolean):
+            r = self.flag({
+                "flag": "make_shareable"
+            })
+        else:
+            r = self.flag({
+                "flag": "make_not_shareable"
+            })
+
+        return r
+
 
 
 class ResourceList(BaseEndpoint):
