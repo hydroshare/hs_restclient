@@ -64,6 +64,7 @@ def resourceList_get(url, request):
         return response(404, {}, HEADERS, None, 5, request)
     return response(200, content, HEADERS, None, 5, request)
 
+
 @urlmatch(netloc=NETLOC, method=GET)
 def resourceListFilterCreator_get(url, request):
     if url.query == 'creator=bmiles':
@@ -77,6 +78,7 @@ def resourceListFilterCreator_get(url, request):
         # 404.
         return response(404, {}, HEADERS, None, 5, request)
     return response(200, content, HEADERS, None, 5, request)
+
 
 @urlmatch(netloc=NETLOC, method=GET)
 def resourceListFilterDate_get(url, request):
@@ -97,6 +99,7 @@ def resourceListFilterDate_get(url, request):
 
     return response(200, content, HEADERS, None, 5, request)
 
+
 @urlmatch(netloc=NETLOC, method=GET)
 def resourceListFilterType_get(url, request):
     if url.query == 'type=RasterResource':
@@ -110,6 +113,7 @@ def resourceListFilterType_get(url, request):
         # 404.
         return response(404, {}, HEADERS, None, 5, request)
     return response(200, content, HEADERS, None, 5, request)
+
 
 @urlmatch(netloc=NETLOC)
 def createResourceCRUD(url, request):
@@ -150,6 +154,7 @@ def createResourceCRUD(url, request):
         return response(404, {}, HEADERS, None, 5, request)
     return response(response_status, content, HEADERS, None, 5, request)
 
+
 @urlmatch(netloc=NETLOC)
 def resourceFileCRUD(url, request):
     file_path = None
@@ -175,6 +180,7 @@ def resourceFileCRUD(url, request):
         return response(404, {}, HEADERS, None, 5, request)
     return response(response_status, content, HEADERS, None, 5, request)
 
+
 @urlmatch(netloc=NETLOC)
 def accessRules_put(url, request):
     if request.method == 'PUT':
@@ -196,6 +202,7 @@ def accessRules_put(url, request):
         # 404.
         return response(404, {}, HEADERS, None, 5, request)
     return response(200, content, HEADERS, None, 5, request)
+
 
 @urlmatch(netloc=NETLOC, method=GET)
 def userInfo_get(url, request):
@@ -260,6 +267,7 @@ def resourcemap_get(url, request):
         # 404.
         return response(404, {}, HEADERS, None, 5, request)
     return response(200, content, HEADERS, None, 5, request)
+
 
 @urlmatch(netloc=NETLOC, method=GET)
 def resourceFileList_get(url, request):
@@ -374,6 +382,7 @@ def resourceMoveFileOrFolder_post(url, request):
         return response(404, {}, HEADERS, None, 5, request)
     return response(200, content, HEADERS, None, 5, request)
 
+
 @urlmatch(netloc=NETLOC, method=POST)
 def resourceZipFolder_post(url, request):
     file_path = url.netloc + url.path + 'zip-folder-response'
@@ -450,18 +459,18 @@ def resourceSetFileType_post(url, request):
 def resourceCreateTicket_get(url, request):
     resource_id = '28f87079ceaf440588e7866a0f4b6c57'
     end_of_url = "resource/{}/ticket/bag/"\
-        .format(resource_id) 
+        .format(resource_id)
     content = {
         u'operation': u'read',
         u'path': u'/hydroshareZone/home/cuahsi2DataProxy/bags/28f87079ceaf440588e7866a0f4b6c57.zip',
         u'resource_id': u'28f87079ceaf440588e7866a0f4b6c57',
         u'ticket_id': u'pwYwPanpnwdDZa9'
     }
-    if url.path.endswith(end_of_url): 
-        return response(201, content, HEADERS, None, 5, request) 
-    else: 
-        return response(403, "Insufficient permission",  
-                        {'content-type': 'application/json'}, None, 5, request) 
+    if url.path.endswith(end_of_url):
+        return response(201, content, HEADERS, None, 5, request)
+    else:
+        return response(403, "Insufficient permission",
+                        {'content-type': 'application/json'}, None, 5, request)
 
 
 @urlmatch(netloc=NETLOC, method=GET)
@@ -469,12 +478,12 @@ def resourceListTicket_get(url, request):
     resource_id = '28f87079ceaf440588e7866a0f4b6c57'
     ticket_id = 'pwYwPanpnwdDZa9'
     end_of_url = "resource/{}/ticket/info/{}/"\
-        .format(resource_id, ticket_id) 
+        .format(resource_id, ticket_id)
     content = {
         u'expires': u'2017-07-26.00:17:00',
         u'filename': u'28f87079ceaf440588e7866a0f4b6c57.zip',
         u'full_path':
-         u'/hydroshareZone/home/hydroDataProxy/bags/28f87079ceaf440588e7866a0f4b6c57.zip',
+        u'/hydroshareZone/home/hydroDataProxy/bags/28f87079ceaf440588e7866a0f4b6c57.zip',
         u'id': u'457392',
         u'obj type': u'data',
         u'owner': u'hydroDataProxy',
@@ -488,12 +497,12 @@ def resourceListTicket_get(url, request):
         u'write file limit': u'10',
         u'zone': u'hydroshareZone'
     }
-    if url.path.endswith(end_of_url): 
-        return response(200, content, HEADERS, None, 5, request) 
-    else: 
+    if url.path.endswith(end_of_url):
+        return response(200, content, HEADERS, None, 5, request)
+    else:
         # mimic one kind of error
-        return response(403, "Insufficient permission",  
-                        {'content-type': 'application/json'}, None, 5, request) 
+        return response(403, "Insufficient permission",
+                        {'content-type': 'application/json'}, None, 5, request)
 
 
 @urlmatch(netloc=NETLOC, method=DELETE)
@@ -501,12 +510,12 @@ def resourceDeleteTicket_delete(url, request):
     resource_id = '28f87079ceaf440588e7866a0f4b6c57'
     ticket_id = 'pwYwPanpnwdDZa9'
     end_of_url = "resource/{}/ticket/info/{}/"\
-        .format(resource_id, ticket_id) 
+        .format(resource_id, ticket_id)
     content = {
         u'expires': u'2017-07-26.00:17:00',
         u'filename': u'28f87079ceaf440588e7866a0f4b6c57.zip',
         u'full_path':
-         u'/hydroshareZone/home/hydroDataProxy/bags/28f87079ceaf440588e7866a0f4b6c57.zip',
+        u'/hydroshareZone/home/hydroDataProxy/bags/28f87079ceaf440588e7866a0f4b6c57.zip',
         u'id': u'457392',
         u'obj type': u'data',
         u'owner': u'hydroDataProxy',
@@ -520,8 +529,8 @@ def resourceDeleteTicket_delete(url, request):
         u'write file limit': u'10',
         u'zone': u'hydroshareZone'
     }
-    if url.path.endswith(end_of_url): 
-        return response(200, content, HEADERS, None, 5, request) 
-    else: 
-        return response(403, "Insufficient permission",  
-                        {'content-type': 'text/plain'}, None, 5, request) 
+    if url.path.endswith(end_of_url):
+        return response(200, content, HEADERS, None, 5, request)
+    else:
+        return response(403, "Insufficient permission",
+                        {'content-type': 'text/plain'}, None, 5, request)

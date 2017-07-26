@@ -83,13 +83,13 @@ class TestGetResourceList(unittest.TestCase):
         for (i, r) in enumerate(res_list):
             self.assertTrue(datetime.strptime(r['date_created'], '%m-%d-%Y').date() >= from_date)
 
-        to_date = date(2015, 5, 21) # up to and including 5/21/2015
+        to_date = date(2015, 5, 21)  # up to and including 5/21/2015
         res_list = hs.getResourceList(to_date=to_date)
         for (i, r) in enumerate(res_list):
             self.assertTrue(datetime.strptime(r['date_created'], '%m-%d-%Y').date() < to_date)
 
         from_date = date(2015, 5, 19)
-        to_date = date(2015, 5, 22) # up to and including 5/21/2015
+        to_date = date(2015, 5, 22)  # up to and including 5/21/2015
         res_list = hs.getResourceList(from_date=from_date, to_date=to_date)
         # time.sleep(1)
         for (i, r) in enumerate(res_list):
@@ -353,7 +353,7 @@ class TestResourceFlags(unittest.TestCase):
         self.assertEqual(response.status_code, 202)
 
     @with_httmock(mocks.hydroshare.resourceFlags_post)
-    def test_resource_flag_make_public(self):
+    def test_resource_flag_make_private(self):
         hs = HydroShare()
         response = hs.resource('511debf8858a4ea081f78d66870da76c').flag({
             "t": "make_private"
@@ -439,7 +439,7 @@ class TestResourceZipUnzip(unittest.TestCase):
 class TestResourceUploadFileToFolder(unittest.TestCase):
     @with_httmock(mocks.hydroshare.resourceUploadFile_post)
     def test_resource_upload_file(self):
-        hs= HydroShare()
+        hs = HydroShare()
 
         response = hs.resource('511debf8858a4ea081f78d66870da76c').files({
             "file": 'mocks/data/another_resource_file.txt',
@@ -451,7 +451,7 @@ class TestResourceUploadFileToFolder(unittest.TestCase):
 class TestResourceListByKeyword(unittest.TestCase):
     @with_httmock(mocks.hydroshare.resourcesListByKeyword_get)
     def test_resource_list_by_keyword(self):
-        hs= HydroShare()
+        hs = HydroShare()
         res_list = hs.resources(subject="one,two,three")
         for (i, r) in enumerate(res_list):
             self.assertEquals(True, True)
@@ -460,7 +460,7 @@ class TestResourceListByKeyword(unittest.TestCase):
 class TestResourceListByBoundingBox(unittest.TestCase):
     @with_httmock(mocks.hydroshare.resourcesListByBoundingBox_get)
     def test_resource_list_by_bounding_box(self):
-        hs= HydroShare()
+        hs = HydroShare()
 
         res_list = hs.resources(coverage_type="box",
                                 north="50",
@@ -471,33 +471,35 @@ class TestResourceListByBoundingBox(unittest.TestCase):
             self.assertEquals(True, True)
 
 
-class TestCreateTicket(unittest.TestCase): 
+class TestCreateTicket(unittest.TestCase):
     @with_httmock(mocks.hydroshare.resourceCreateTicket_get)
     def test_resource_create_ticket(self):
         hs = HydroShare()
         resource_id = '28f87079ceaf440588e7866a0f4b6c57'
-        ticket_data =  hs.getTicket(resource_id) 
+        ticket_data = hs.getTicket(resource_id)
         ticket_id = 'pwYwPanpnwdDZa9'
-        self.assertEquals(ticket_data['resource_id'], resource_id) 
-        self.assertEquals(ticket_data['ticket_id'], ticket_id) 
+        self.assertEquals(ticket_data['resource_id'], resource_id)
+        self.assertEquals(ticket_data['ticket_id'], ticket_id)
 
-class TestListTicket(unittest.TestCase): 
+
+class TestListTicket(unittest.TestCase):
     @with_httmock(mocks.hydroshare.resourceListTicket_get)
     def test_resource_list_ticket(self):
         hs = HydroShare()
         resource_id = '28f87079ceaf440588e7866a0f4b6c57'
         ticket_id = 'pwYwPanpnwdDZa9'
-        ticket_data =  hs.listTicket(resource_id, ticket_id) 
-        self.assertEquals(ticket_data['ticket_id'], ticket_id) 
+        ticket_data = hs.listTicket(resource_id, ticket_id)
+        self.assertEquals(ticket_data['ticket_id'], ticket_id)
 
-class TestDeleteTicket(unittest.TestCase): 
+
+class TestDeleteTicket(unittest.TestCase):
     @with_httmock(mocks.hydroshare.resourceDeleteTicket_delete)
     def test_resource_delete_ticket(self):
         hs = HydroShare()
         resource_id = '28f87079ceaf440588e7866a0f4b6c57'
         ticket_id = 'pwYwPanpnwdDZa9'
-        ticket_data =  hs.deleteTicket(resource_id, ticket_id) 
-        self.assertEquals(ticket_data['ticket_id'], ticket_id) 
+        ticket_data = hs.deleteTicket(resource_id, ticket_id)
+        self.assertEquals(ticket_data['ticket_id'], ticket_id)
 
 
 if __name__ == '__main__':
