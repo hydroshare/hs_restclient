@@ -448,17 +448,28 @@ def resourceSetFileType_post(url, request):
 
 @urlmatch(netloc=NETLOC, method=GET)
 def resourceCreateTicket_get(url, request):
+    resource_id = '28f87079ceaf440588e7866a0f4b6c57'
+    end_of_url = "resource/{}/ticket/bag/"\
+        .format(resource_id) 
     content = {
         u'operation': u'read',
         u'path': u'/hydroshareZone/home/cuahsi2DataProxy/bags/28f87079ceaf440588e7866a0f4b6c57.zip',
         u'resource_id': u'28f87079ceaf440588e7866a0f4b6c57',
         u'ticket_id': u'pwYwPanpnwdDZa9'
     }
-    return response(201, content, HEADERS, None, 5, request) 
+    if url.path.endswith(end_of_url): 
+        return response(201, content, HEADERS, None, 5, request) 
+    else: 
+        return response(403, "Insufficient permission",  
+                        {'content-type': 'application/json'}, None, 5, request) 
 
 
 @urlmatch(netloc=NETLOC, method=GET)
 def resourceListTicket_get(url, request):
+    resource_id = '28f87079ceaf440588e7866a0f4b6c57'
+    ticket_id = 'pwYwPanpnwdDZa9'
+    end_of_url = "resource/{}/ticket/info/{}/"\
+        .format(resource_id, ticket_id) 
     content = {
         u'expires': u'2017-07-26.00:17:00',
         u'filename': u'28f87079ceaf440588e7866a0f4b6c57.zip',
@@ -477,11 +488,20 @@ def resourceListTicket_get(url, request):
         u'write file limit': u'10',
         u'zone': u'hydroshareZone'
     }
-    return response(200, content, HEADERS, None, 5, request) 
+    if url.path.endswith(end_of_url): 
+        return response(200, content, HEADERS, None, 5, request) 
+    else: 
+        # mimic one kind of error
+        return response(403, "Insufficient permission",  
+                        {'content-type': 'application/json'}, None, 5, request) 
 
 
 @urlmatch(netloc=NETLOC, method=DELETE)
-def resourceListTicket_delete(url, request):
+def resourceDeleteTicket_delete(url, request):
+    resource_id = '28f87079ceaf440588e7866a0f4b6c57'
+    ticket_id = 'pwYwPanpnwdDZa9'
+    end_of_url = "resource/{}/ticket/info/{}/"\
+        .format(resource_id, ticket_id) 
     content = {
         u'expires': u'2017-07-26.00:17:00',
         u'filename': u'28f87079ceaf440588e7866a0f4b6c57.zip',
@@ -500,4 +520,8 @@ def resourceListTicket_delete(url, request):
         u'write file limit': u'10',
         u'zone': u'hydroshareZone'
     }
-    return response(200, content, HEADERS, None, 5, request) 
+    if url.path.endswith(end_of_url): 
+        return response(200, content, HEADERS, None, 5, request) 
+    else: 
+        return response(403, "Insufficient permission",  
+                        {'content-type': 'text/plain'}, None, 5, request) 
