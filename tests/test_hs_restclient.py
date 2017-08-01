@@ -454,7 +454,7 @@ class TestResourceListByKeyword(unittest.TestCase):
         hs = HydroShare()
         res_list = hs.resources(subject="one,two,three")
         for (i, r) in enumerate(res_list):
-            self.assertEquals(True, True)
+            self.assertEqual(True, True)
 
 
 class TestResourceListByBoundingBox(unittest.TestCase):
@@ -468,7 +468,7 @@ class TestResourceListByBoundingBox(unittest.TestCase):
                                 east="40",
                                 west="20")
         for (i, r) in enumerate(res_list):
-            self.assertEquals(True, True)
+            self.assertEqual(True, True)
 
 
 class TestCreateTicket(unittest.TestCase):
@@ -478,8 +478,8 @@ class TestCreateTicket(unittest.TestCase):
         resource_id = '28f87079ceaf440588e7866a0f4b6c57'
         ticket_data = hs.getTicket(resource_id)
         ticket_id = 'pwYwPanpnwdDZa9'
-        self.assertEquals(ticket_data['resource_id'], resource_id)
-        self.assertEquals(ticket_data['ticket_id'], ticket_id)
+        self.assertEqual(ticket_data['resource_id'], resource_id)
+        self.assertEqual(ticket_data['ticket_id'], ticket_id)
 
 
 class TestListTicket(unittest.TestCase):
@@ -489,7 +489,7 @@ class TestListTicket(unittest.TestCase):
         resource_id = '28f87079ceaf440588e7866a0f4b6c57'
         ticket_id = 'pwYwPanpnwdDZa9'
         ticket_data = hs.listTicket(resource_id, ticket_id)
-        self.assertEquals(ticket_data['ticket_id'], ticket_id)
+        self.assertEqual(ticket_data['ticket_id'], ticket_id)
 
 
 class TestDeleteTicket(unittest.TestCase):
@@ -499,7 +499,7 @@ class TestDeleteTicket(unittest.TestCase):
         resource_id = '28f87079ceaf440588e7866a0f4b6c57'
         ticket_id = 'pwYwPanpnwdDZa9'
         ticket_data = hs.deleteTicket(resource_id, ticket_id)
-        self.assertEquals(ticket_data['ticket_id'], ticket_id)
+        self.assertEqual(ticket_data['ticket_id'], ticket_id)
 
 
 if __name__ == '__main__':

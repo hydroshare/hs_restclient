@@ -1131,9 +1131,10 @@ class HydroShare(object):
         :raises: HydroShareNotFound if the resource or ticket was not found.
         :raises: HydroShareHTTPException if an unexpected HTTP response code is encountered.
         """
-        url = "{url_base}/resource/{pid}/ticket/info/{ticket}/"\
+        url = "{url_base}/resource/{pid}/ticket/{ticket}/"\
             .format(url_base=self.url_base, pid=pid, ticket=ticket_id)
 
+        print(url)
         r = self._request('GET', url)
         if r.status_code != 200:
             if r.status_code == 403:
@@ -1156,7 +1157,7 @@ class HydroShare(object):
         :raises: HydroShareNotFound if the resource or ticket was not found.
         :raises: HydroShareHTTPException if an unexpected HTTP response code is encountered.
         """
-        url = "{url_base}/resource/{pid}/ticket/info/{ticket}/"\
+        url = "{url_base}/resource/{pid}/ticket/{ticket}/"\
             .format(url_base=self.url_base, pid=pid, ticket=ticket_id)
 
         r = self._request('DELETE', url)

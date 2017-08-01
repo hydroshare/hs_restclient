@@ -477,7 +477,7 @@ def resourceCreateTicket_get(url, request):
 def resourceListTicket_get(url, request):
     resource_id = '28f87079ceaf440588e7866a0f4b6c57'
     ticket_id = 'pwYwPanpnwdDZa9'
-    end_of_url = "resource/{}/ticket/info/{}/"\
+    end_of_url = "resource/{}/ticket/{}/"\
         .format(resource_id, ticket_id)
     content = {
         u'expires': u'2017-07-26.00:17:00',
@@ -509,7 +509,7 @@ def resourceListTicket_get(url, request):
 def resourceDeleteTicket_delete(url, request):
     resource_id = '28f87079ceaf440588e7866a0f4b6c57'
     ticket_id = 'pwYwPanpnwdDZa9'
-    end_of_url = "resource/{}/ticket/info/{}/"\
+    end_of_url = "resource/{}/ticket/{}/"\
         .format(resource_id, ticket_id)
     content = {
         u'expires': u'2017-07-26.00:17:00',
