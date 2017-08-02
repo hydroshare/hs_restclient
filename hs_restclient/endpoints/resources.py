@@ -108,6 +108,27 @@ class FunctionsSubEndpoint(object):
         r = self.hs._request('POST', url, None, {})
         return r
 
+    def set_file_type(self, payload):
+        """
+        Sets a file to a specific HydroShare file type (e.g. NetCDF, GeoRaster, GeoFeature etc)
+
+        :param payload:
+            file_path: string (relative path of the file to be set to a specific file type)
+            hs_file_type: string (one of the supported files types: NetCDF, GeoRaster and GeoFeature)
+        :return: (object)
+            message: string
+        """
+        file_path = payload.pop('file_path')
+        hs_file_type = payload.pop('hs_file_type')
+
+        url = "{url_base}/resource/{pid}/functions/set-file-type/{file_path}/{file_type}/".format(
+            url_base=self.hs.url_base,
+            pid=self.pid,
+            file_path=file_path,
+            file_type=hs_file_type)
+        r = self.hs._request('POST', url, None, payload)
+        return r
+
 
 class ResourceEndpoint(BaseEndpoint):
     def __init__(self, hs, pid):
