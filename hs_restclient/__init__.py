@@ -23,7 +23,6 @@ from requests_toolbelt import MultipartEncoder, MultipartEncoderMonitor
 from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2 import LegacyApplicationClient, TokenExpiredError
 
-from .compat import http_responses
 from .endpoints.resources import ResourceEndpoint, ResourceList
 from .exceptions import *
 from .generators import resultsListGenerator

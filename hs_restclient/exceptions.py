@@ -1,3 +1,5 @@
+from .compat import http_responses
+
 class HydroShareException(Exception):
     def __init__(self, args):
         super(HydroShareException, self).__init__(args)
