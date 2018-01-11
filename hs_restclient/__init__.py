@@ -137,11 +137,22 @@ class HydroShare(object):
         else:
             raise HydroShareAuthenticationException("Unsupported authentication type '{0}'.".format(str(type(self.auth))))
 
-    def _request(self, method, url, params=None, data=None, files=None, headers=None, stream=False):
+    def _request(self, method, url, params=None, data=None, json=None, files=None, headers=None, stream=False):
+        if(data and json):
+            raise Exception("Can't pass data and json at the same time")
+
+        if(json):
+            data = json
+
         r = None
+
         try:
-            r = self.session.request(method, url, params=params, data=data, files=files, headers=headers, stream=stream,
-                                     verify=self.verify)
+            if(json):
+                r = self.session.request(method, url, params=params, json=data, files=files, headers=headers, stream=stream,
+                                         verify=self.verify)
+            else:
+                r = self.session.request(method, url, params=params, data=data, files=files, headers=headers, stream=stream,
+                                         verify=self.verify)
         except requests.ConnectionError:
             # We might have gotten a connection error because the server we were talking to went down.
             #  Re-initialize the session and try again
@@ -450,7 +461,7 @@ class HydroShare(object):
 
         url = "{url_base}/resource/{pid}/scimeta/elements/".format(url_base=self.url_base, pid=pid)
 
-        r = self._request('PUT', url, data=metadata)
+        r = self._request('PUT', url, json=metadata)
         if r.status_code != 202:
             if r.status_code == 403:
                 raise HydroShareNotAuthorized(('PUT', url))
