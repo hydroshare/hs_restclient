@@ -1,13 +1,6 @@
 hs\_restclient package
 ======================
 
-Subpackages
------------
-
-.. toctree::
-
-    hs_restclient.endpoints
-
 Submodules
 ----------
 
