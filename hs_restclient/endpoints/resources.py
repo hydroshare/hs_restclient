@@ -1,3 +1,4 @@
+import json
 import os
 
 from requests_toolbelt import MultipartEncoder, MultipartEncoderMonitor
@@ -33,6 +34,48 @@ class ScimetaSubEndpoint(object):
         r = self.hs._request('POST', url)
         return r
 
+
+class FilesSubEndpoint(object):
+    def __init__(self, hs, pid):
+        self.hs = hs
+        self.pid = pid
+
+    def all(self):
+        """
+        :return:
+            array of file objects (200 status code)
+        """
+        url = "{url_base}/resource/{pid}/files/".format(url_base=self.hs.url_base,
+                                                                 pid=self.pid)
+        r = self.hs._request('GET', url)
+        return r
+
+    def metadata(self, file_id, params=None):
+        """
+        :params:
+            title: string
+            keywords: array
+            extra_metadata: array
+            temporal_coverage: coverage object
+            spatial_coverage: coverage object
+
+        :return:
+            file metadata object (200 status code)
+        """
+
+        url_base = self.hs.url_base
+        url = "{url_base}/resource/{pid}/files/{file_id}/metadata/".format(url_base=url_base,
+                                                                           pid=self.pid,
+                                                                           file_id=file_id)
+
+        if params is None:
+            r = self.hs._request('GET', url)
+        else:
+            headers = {}
+            headers["Content-Type"] = "application/json"
+            r = self.hs._request("PUT", url, data=json.dumps(params), headers=headers)
+
+        return r
 
 class FunctionsSubEndpoint(object):
     def __init__(self, hs, pid):
@@ -136,6 +179,7 @@ class ResourceEndpoint(BaseEndpoint):
         self.pid = pid
         self.scimeta = ScimetaSubEndpoint(hs, pid)
         self.functions = FunctionsSubEndpoint(hs, pid)
+        self.files = FilesSubEndpoint(hs, pid)
 
     def copy(self):
         """Creates a copy of a resource.
