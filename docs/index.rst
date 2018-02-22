@@ -385,24 +385,32 @@ To discover resources via other parameters
     >>> from hs_restclient import HydroShare, HydroShareAuthBasic
     >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
     >>> hs = HydroShare(auth=auth)
-    
+
     >>> # Discover via creator, group, user, owner
-    >>> resources = hs.resources(creator="email or name")
-    >>> resources = hs.resources(user="email or name")
-    >>> resources = hs.resources(owner="email or name")
-    >>> resources = hs.resources(author="email or name")
+    >>> resources = hs.resources(creator="username")
+    >>> resources = hs.resources(user="username")
+    >>> resources = hs.resources(owner="username")
+    >>> resources = hs.resources(author="username")
     >>> resources = hs.resources(group="id or name")
+
+**from_date** allows you to specify the earliest creation date to query for
+
+**to_date** allows you to specify the latest creation date to query for
 
     >>> # Discover via date range (datetime objects)
     >>> resources = hs.resources(from_date=datetime, to_date=datetime)
 
+**start** allows you to specify the index of the resource to start querying from
+
+**count** allows you to specify how many resources to include in the query results
+
     >>> # Discover via start or count (integers)
     >>> resources = hs.resources(start=4)
     >>> resources = hs.resources(count=4)
-    
+
     >>> # Discover via full text search
     >>> resources = hs.resources(full_text_search="any text here")
-    
+
     >>> # Discover via flags (boolean)
     >>> resources = hs.resources(published=False)
     >>> resources = hs.resources(edit_permission=False)
