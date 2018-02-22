@@ -394,12 +394,14 @@ To discover resources via other parameters
     >>> resources = hs.resources(group="id or name")
 
 **from_date** allows you to specify the earliest creation date to query for
+
 **to_date** allows you to specify the latest creation date to query for
 
     >>> # Discover via date range (datetime objects)
     >>> resources = hs.resources(from_date=datetime, to_date=datetime)
 
 **start** allows you to specify the index of the resource to start querying from
+
 **count** allows you to specify how many resources to include in the query results
 
     >>> # Discover via start or count (integers)
