@@ -387,10 +387,10 @@ To discover resources via other parameters
     >>> hs = HydroShare(auth=auth)
 
     >>> # Discover via creator, group, user, owner
-    >>> resources = hs.resources(creator="email or name")
-    >>> resources = hs.resources(user="email or name")
-    >>> resources = hs.resources(owner="email or name")
-    >>> resources = hs.resources(author="email or name")
+    >>> resources = hs.resources(creator="username")
+    >>> resources = hs.resources(user="username")
+    >>> resources = hs.resources(owner="username")
+    >>> resources = hs.resources(author="username")
     >>> resources = hs.resources(group="id or name")
 
 **from_date** allows you to specify the earliest creation date to query for
