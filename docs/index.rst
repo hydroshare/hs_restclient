@@ -419,6 +419,33 @@ To discover resources via other parameters
     >>> # Discover via resource type
     >>> resources = hs.resources(type=None)
 
+To get a list of all resource files
+
+    >>> # List all resource files
+    >>> hs.resource('ID OF RESOURCE GOES HERE').files.all()
+
+To get file metadata
+
+    >>> # Get FILE_ID from above call to files.all()
+    >>> hs.resource('ID OF RESOURCE GOES HERE').files.metadata(FILE_ID)
+
+To set file metadata
+
+    >>> # This is a PUT request so the entire object, all parameters are overwritten
+    >>> params = {}
+    >>> params['keywords'] = ["keyword1","keyword2"]
+    >>> params['spatial_coverage'] = {
+            "units":"Decimal degrees",
+            "east":-90.0465,
+            "north":48.6791,
+            "name":"12232",
+            "projection":"WGS 84 EPSG:4326"
+        }
+    >>> params['temporal_coverage'] = {"start":"2018-02-23","end":"2018-02-29"}
+    >>> params['extra_metadata'] = {"extended1":"one"}
+    >>> params['title'] = "New Metadata Title"
+    >>> hs.resource('ID OF RESOURCE GOES HERE').files.metadata(FILE_ID, params)
+
 To set a file to a file type (e.g., NetCDF) in a composite resource:
 Note: Allowed file type are: NetCDF, GeoRaster and GeoFeature
 
@@ -435,5 +462,3 @@ Index
 -----
 
 * :ref:`genindex`
-
-
