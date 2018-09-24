@@ -1,7 +1,7 @@
 Python-based client library for HydroShare REST API
 ===================================================
 
-Questions? support@unc.edu
+Questions? support@cuahsi.org
 
 To run tests
 ------------
