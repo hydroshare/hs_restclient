@@ -393,9 +393,9 @@ To discover resources via other parameters
     >>> resources = hs.resources(author="email or username")
     >>> resources = hs.resources(group="id or name")
 
-**from_date** allows you to specify the earliest creation date to query for
+**from_date** allows you to specify the earliest creation date to query for. Use any python datetime object i.e. datetime.datetime(2018, 09, 07)
 
-**to_date** allows you to specify the latest creation date to query for
+**to_date** allows you to specify the latest creation date to query for Use any python datetime object i.e. datetime.datetime(2018, 09, 07)
 
     >>> # Discover via date range (datetime objects)
     >>> resources = hs.resources(from_date=datetime, to_date=datetime)
