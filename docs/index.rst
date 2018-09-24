@@ -385,24 +385,32 @@ To discover resources via other parameters
     >>> from hs_restclient import HydroShare, HydroShareAuthBasic
     >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
     >>> hs = HydroShare(auth=auth)
-    
+
     >>> # Discover via creator, group, user, owner
-    >>> resources = hs.resources(creator="email or name")
-    >>> resources = hs.resources(user="email or name")
-    >>> resources = hs.resources(owner="email or name")
-    >>> resources = hs.resources(author="email or name")
+    >>> resources = hs.resources(creator="email or username")
+    >>> resources = hs.resources(user="email or username")
+    >>> resources = hs.resources(owner="email or username")
+    >>> resources = hs.resources(author="email or username")
     >>> resources = hs.resources(group="id or name")
+
+**from_date** allows you to specify the earliest creation date to query for. Use any python datetime object i.e. datetime.datetime(2018, 09, 07)
+
+**to_date** allows you to specify the latest creation date to query for Use any python datetime object i.e. datetime.datetime(2018, 09, 07)
 
     >>> # Discover via date range (datetime objects)
     >>> resources = hs.resources(from_date=datetime, to_date=datetime)
 
+**start** allows you to specify the index of the resource to start querying from
+
+**count** allows you to specify how many resources to include in the query results
+
     >>> # Discover via start or count (integers)
     >>> resources = hs.resources(start=4)
     >>> resources = hs.resources(count=4)
-    
+
     >>> # Discover via full text search
     >>> resources = hs.resources(full_text_search="any text here")
-    
+
     >>> # Discover via flags (boolean)
     >>> resources = hs.resources(published=False)
     >>> resources = hs.resources(edit_permission=False)
@@ -410,6 +418,33 @@ To discover resources via other parameters
 
     >>> # Discover via resource type
     >>> resources = hs.resources(type=None)
+
+To get a list of all resource files
+
+    >>> # List all resource files
+    >>> hs.resource('ID OF RESOURCE GOES HERE').files.all()
+
+To get file metadata
+
+    >>> # Get FILE_ID from above call to files.all()
+    >>> hs.resource('ID OF RESOURCE GOES HERE').files.metadata(FILE_ID)
+
+To set file metadata
+
+    >>> # This is a PUT request so the entire object, all parameters are overwritten
+    >>> params = {}
+    >>> params['keywords'] = ["keyword1","keyword2"]
+    >>> params['spatial_coverage'] = {
+            "units":"Decimal degrees",
+            "east":-90.0465,
+            "north":48.6791,
+            "name":"12232",
+            "projection":"WGS 84 EPSG:4326"
+        }
+    >>> params['temporal_coverage'] = {"start":"2018-02-23","end":"2018-02-29"}
+    >>> params['extra_metadata'] = {"extended1":"one"}
+    >>> params['title'] = "New Metadata Title"
+    >>> hs.resource('ID OF RESOURCE GOES HERE').files.metadata(FILE_ID, params)
 
 To set a file to a file type (e.g., NetCDF) in a composite resource:
 Note: Allowed file type are: NetCDF, GeoRaster and GeoFeature
@@ -427,5 +462,3 @@ Index
 -----
 
 * :ref:`genindex`
-
-
