@@ -67,6 +67,12 @@ class HydroShare(object):
         self.auth = None
         if auth:
             self.auth = auth
+        else:
+            import getpass
+            username = input("Username: ").strip()
+            password = getpass.getpass("Password for {}: ".format(username))
+            auth = HydroShareAuthBasic(username=username, password=password)
+            self.auth = auth
 
         if use_https:
             self.scheme = 'https'
