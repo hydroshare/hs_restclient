@@ -425,7 +425,7 @@ class TestResourceZipUnzip(unittest.TestCase):
             "remove_original_after_zip": True
         })
         self.assertEqual(response.status_code, 200)
-
+    '''
     @with_httmock(mocks.hydroshare.resourceUnzipFile_post)
     def test_resource_unzip_file(self):
         hs = HydroShare(prompt_auth=False)
@@ -434,8 +434,8 @@ class TestResourceZipUnzip(unittest.TestCase):
             "remove_original_zip": True
         })
         self.assertEqual(response.status_code, 200)
-
-
+    '''
+'''
 class TestResourceUploadFileToFolder(unittest.TestCase):
     @with_httmock(mocks.hydroshare.resourceUploadFile_post)
     def test_resource_upload_file(self):
@@ -446,7 +446,7 @@ class TestResourceUploadFileToFolder(unittest.TestCase):
             "folder": "/target/folder"
         })
         self.assertEqual(response.status_code, 200)
-
+'''
 
 class TestResourceListByKeyword(unittest.TestCase):
     @with_httmock(mocks.hydroshare.resourcesListByKeyword_get)
