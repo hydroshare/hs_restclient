@@ -1081,6 +1081,66 @@ class HydroShare(object):
 
         return r.json()
 
+    def createReferencedFile(self, pid, path, name, ref_url):
+        """Delete a folder as specified by *pathname* for a given resource
+
+                :param pid: The HydroShare ID of the resource for which the file should be created
+                :param path: Folder path for the file to be created in
+                :param name: Filename for the referenced file
+                :param ref_url: url to be used in the referenced file
+                :return: JsonResponse on success or HttpResponse with error status code on error
+
+                :raises: HydroShareNotAuthorized if user is not authorized to perform action.
+                :raises: HydroShareNotFound if the resource or resource file was not found.
+                :raises: HydroShareHTTPException if an unexpected HTTP response code is encountered.
+                """
+
+        url = "{url_base}/resource/data-store-add-reference/".format(url_base=self.url_base)
+
+        data = {'res_id': pid, 'curr_path': path, 'ref_name': name, 'ref_url': ref_url}
+
+        r = self._request('POST', url, data=data)
+        
+        if r.status_code != 200:
+            if r.status_code == 403:
+                raise HydroShareNotAuthorized(('POST', url))
+            elif r.status_code == 404:
+                raise HydroShareNotFound((pid,))
+            else:
+                raise HydroShareHTTPException((url, 'POST', r.status_code))
+
+        return r.json()
+
+    def updateReferencedFile(self, pid, path, name, ref_url):
+        """Delete a folder as specified by *pathname* for a given resource
+
+                :param pid: The HydroShare ID of the resource for which the file should be updated
+                :param path: Folder path for the file to be updated in
+                :param name: Filename for the referenced file
+                :param ref_url: url to be used in the referenced file
+                :return: JsonResponse on success or HttpResponse with error status code on error
+
+                :raises: HydroShareNotAuthorized if user is not authorized to perform action.
+                :raises: HydroShareNotFound if the resource or resource file was not found.
+                :raises: HydroShareHTTPException if an unexpected HTTP response code is encountered.
+                """
+
+        url = "{url_base}/resource/data_store_edit_reference_url/".format(url_base=self.url_base)
+
+        data = {'res_id': pid, 'curr_path': path, 'url_filename': name, 'new_ref_url': ref_url}
+
+        r = self._request('POST', url, data=data)
+
+        if r.status_code != 200:
+            if r.status_code == 403:
+                raise HydroShareNotAuthorized(('POST', url))
+            elif r.status_code == 404:
+                raise HydroShareNotFound((pid,))
+            else:
+                raise HydroShareHTTPException((url, 'POST', r.status_code))
+
+        return r.json()
+
     def getUserInfo(self):
         """
         Query the GET /hsapi/userInfo/ REST end point of the HydroShare server.
