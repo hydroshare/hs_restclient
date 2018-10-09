@@ -48,6 +48,7 @@ class HydroShare(object):
         :param use_https: Boolean, if True, HTTPS will be used (HTTP cannot be used when auth is specified)
         :param verify: Boolean, if True, security certificates will be verified
         :param auth: Concrete instance of AbstractHydroShareAuth (e.g. HydroShareAuthBasic)
+        :param prompt_auth: Boolean, default True, prompts user/pass if no auth is given
 
         :raises: HydroShareAuthenticationException if auth is not a known authentication type.
         :raises: HydroShareAuthenticationException if auth is specified by use_https is False.
@@ -59,7 +60,7 @@ class HydroShare(object):
 
 
     def __init__(self, hostname=DEFAULT_HOSTNAME, port=None, use_https=True, verify=True,
-                 auth=None):
+                 auth=None, prompt_auth=True):
         self.hostname = hostname
         self.verify = verify
 
@@ -67,7 +68,7 @@ class HydroShare(object):
         self.auth = None
         if auth:
             self.auth = auth
-        else:
+        elif prompt_auth:
             import getpass
             username = input("Username: ").strip()
             password = getpass.getpass("Password for {}: ".format(username))

@@ -157,7 +157,8 @@ class FunctionsSubEndpoint(object):
 
         :param payload:
             file_path: string (relative path of the file to be set to a specific file type)
-            hs_file_type: string (one of the supported files types: NetCDF, GeoRaster and GeoFeature)
+            hs_file_type: string (one of the supported files types: SingleFile, NetCDF, GeoRaster,
+            RefTimeseries, TimeSeries and GeoFeature)
         :return: (object)
             message: string
         """
@@ -286,7 +287,8 @@ class ResourceList(BaseEndpoint):
         """
         Query the GET /hsapi/resource/ REST end point of the HydroShare server.
 
-        :param creator: Filter results by the HydroShare user name of resource creators
+        :param creator: DEPRECATED - use author 
+        :param author: Filter results by the HydroShare user name of resource authors
         :param owner: Filter results by the HydroShare user name of resource owners
         :param user: Filter results by the HydroShare user name of resource users (i.e. owner, editor, viewer, public
             resource)
@@ -319,7 +321,7 @@ class ResourceList(BaseEndpoint):
         >>> for resource in hs.getResourceList():
         >>>>    print resource
          {u'bag_url': u'http://www.hydroshare.org/static/media/bags/e62a438bec384087b6c00ddcd1b6475a.zip',
-          u'creator': u'B Miles',
+          u'author': u'B Miles',
           u'date_created': u'05-05-2015',
           u'date_last_updated': u'05-05-2015',
           u'resource_id': u'e62a438bec384087b6c00ddcd1b6475a',
@@ -334,7 +336,7 @@ class ResourceList(BaseEndpoint):
           u'science_metadata_url': u'http://www.hydroshare.org/hsapi/scimeta/e62a438bec384087b6c00ddcd1b6475a/',
           u'public': True}
          {u'bag_url': u'http://www.hydroshare.org/static/media/bags/hr3hy35y5ht4y54hhthrtg43w.zip',
-          u'creator': u'B Miles',
+          u'author': u'B Miles',
           u'date_created': u'01-02-2015',
           u'date_last_updated': u'05-13-2015',
           u'resource_id': u'hr3hy35y5ht4y54hhthrtg43w',
@@ -355,7 +357,7 @@ class ResourceList(BaseEndpoint):
           /hsapi/resourceList/?from_date=2015-05-03&to_date=2015-05-06
           /hsapi/resourceList/?user=admin
           /hsapi/resourceList/?owner=admin
-          /hsapi/resourceList/?creator=admin
+          /hsapi/resourceList/?author=admin
           /hsapi/resourceList/?group=groupname
           /hsapi/resourceList/?types=GenericResource&types=RasterResource
 
