@@ -70,7 +70,7 @@ class HydroShare(object):
             self.auth = auth
         elif prompt_auth:
             import getpass
-            username = input("Username: ").strip()
+            username = raw_input("Username: ").strip()
             password = getpass.getpass("Password for {}: ".format(username))
             auth = HydroShareAuthBasic(username=username, password=password)
             self.auth = auth
