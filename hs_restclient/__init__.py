@@ -1083,7 +1083,7 @@ class HydroShare(object):
         return r.json()
 
     def createReferencedFile(self, pid, path, name, ref_url):
-        """Delete a folder as specified by *pathname* for a given resource
+        """Create a Referenced Content File (.url)
 
                 :param pid: The HydroShare ID of the resource for which the file should be created
                 :param path: Folder path for the file to be created in
@@ -1113,12 +1113,12 @@ class HydroShare(object):
         return r.json()
 
     def updateReferencedFile(self, pid, path, name, ref_url):
-        """Delete a folder as specified by *pathname* for a given resource
+        """Update a Referenced Content File (.url)
 
                 :param pid: The HydroShare ID of the resource for which the file should be updated
                 :param path: Folder path for the file to be updated in
                 :param name: Filename for the referenced file
-                :param ref_url: url to be used in the referenced file
+                :param ref_url: url to be updated in the referenced file
                 :return: JsonResponse on success or HttpResponse with error status code on error
 
                 :raises: HydroShareNotAuthorized if user is not authorized to perform action.

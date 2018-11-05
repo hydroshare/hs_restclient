@@ -486,7 +486,7 @@ class TestReferencedFile(unittest.TestCase):
         hs = HydroShare(prompt_auth=False)
 
         response = hs.updateReferencedFile(pid='511debf8858a4ea081f78d66870da76c', path='data/contents', name='file.url',
-                                           ref_url='https://www.hydroshare.org')
+                                           ref_url='https://www.cuahsi.org')
 
         self.assertEqual(response['status'], 'success')
 
