@@ -63,6 +63,7 @@ class HydroShareHTTPException(HydroShareException):
         self.url = args[0]
         self.method = args[1]
         self.status_code = args[2]
+        self.status_msg = args[3]
         if len(args) >= 4:
             self.params = args[3]
         else:
@@ -72,7 +73,7 @@ class HydroShareHTTPException(HydroShareException):
         msg = "Received status {status_code} {status_msg} when accessing {url} " + \
               "with method {method} and params {params}."
         return msg.format(status_code=self.status_code,
-                          status_msg=http_responses[self.status_code],
+                          status_msg=http_responses[self.status_msg],
                           url=self.url,
                           method=self.method,
                           params=self.params)
