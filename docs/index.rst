@@ -41,6 +41,13 @@ To authenticate using HTTP Basic authentication, and then get system metadata fo
     >>> for resource in hs.resources():
     >>>     print(resource)
 
+To authenticate using HTTP Basic authentication, with input prompt for username and password:
+
+    >>> from hs_restclient import HydroShare
+    >>> hs = HydroShare()
+    >>> for resource in hs.resources():
+    >>>     print(resource)
+
 To authenticate using OAuth2 authentication (using a user and password supplied by the user), and then get a list of
 resources you have access to:
 
@@ -320,7 +327,8 @@ To unzip a resource file or folder:
     >>> hs = HydroShare(auth=auth)
     >>> options = {
                      "zip_with_rel_path": "/source/path/file.zip",
-                     "remove_original_zip": True
+                     "remove_original_zip": True,
+                     "overwrite": False
 			      }
     >>> result = hs.resource('ID OF RESOURCE GOES HERE').functions.unzip(options)
 
@@ -349,6 +357,26 @@ To upload files to a specific resource folder:
                      "files": "local/path/to/file.txt"
                   }
     >>> result = hs.resource('ID OF RESOURCE GOES HERE').files(options)
+
+To create a referenced content file:
+
+    >>> from hs_restclient import HydroShare, HydroShareAuthBasic
+    >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
+    >>> hs = HydroShare(auth=auth)
+    >>> path = "data/contents"
+    >>> name = "file_name"
+    >>> ref_url = "https://www.hydroshare.org"
+    >>> response_json = hs.createReferencedFile('ID OF RESOURCE GOES HERE', path, name, ref_url)
+
+To update a referenced content file:
+
+    >>> from hs_restclient import HydroShare, HydroShareAuthBasic
+    >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
+    >>> hs = HydroShare(auth=auth)
+    >>> path = "data/contents"
+    >>> name = "file_name"
+    >>> ref_url = "https://www.cuahsi.org"
+    >>> response_json = hs.updateReferencedFile('ID OF RESOURCE GOES HERE', path, name, ref_url)
 
 To set resource flags:
 

@@ -444,3 +444,13 @@ def resourceSetFileType_post(url, request):
         # 404.
         return response(404, {}, HEADERS, None, 5, request)
     return response(202, content, HEADERS, None, 5, request)
+
+
+@urlmatch(netloc=NETLOC, method=POST)
+def resourceUpdateReferenceURL_post(url, request):
+    return response(200, '{"status": "success"}', HEADERS, None, 5, request)
+
+
+@urlmatch(netloc=NETLOC, method=POST)
+def resourceCreateReferenceURL_post(url, request):
+    return response(200, '{"status": "success"}', HEADERS, None, 5, request)

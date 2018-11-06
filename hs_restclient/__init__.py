@@ -48,6 +48,7 @@ class HydroShare(object):
         :param use_https: Boolean, if True, HTTPS will be used (HTTP cannot be used when auth is specified)
         :param verify: Boolean, if True, security certificates will be verified
         :param auth: Concrete instance of AbstractHydroShareAuth (e.g. HydroShareAuthBasic)
+        :param prompt_auth: Boolean, default True, prompts user/pass if no auth is given
 
         :raises: HydroShareAuthenticationException if auth is not a known authentication type.
         :raises: HydroShareAuthenticationException if auth is specified by use_https is False.
@@ -59,13 +60,19 @@ class HydroShare(object):
 
 
     def __init__(self, hostname=DEFAULT_HOSTNAME, port=None, use_https=True, verify=True,
-                 auth=None):
+                 auth=None, prompt_auth=True):
         self.hostname = hostname
         self.verify = verify
 
         self.session = None
         self.auth = None
         if auth:
+            self.auth = auth
+        elif prompt_auth:
+            import getpass
+            username = raw_input("Username: ").strip()
+            password = getpass.getpass("Password for {}: ".format(username))
+            auth = HydroShareAuthBasic(username=username, password=password)
             self.auth = auth
 
         if use_https:
@@ -1072,6 +1079,66 @@ class HydroShare(object):
                 raise HydroShareNotFound((pid,))
             else:
                 raise HydroShareHTTPException((url, 'DELETE', r.status_code))
+
+        return r.json()
+
+    def createReferencedFile(self, pid, path, name, ref_url):
+        """Create a Referenced Content File (.url)
+
+                :param pid: The HydroShare ID of the resource for which the file should be created
+                :param path: Folder path for the file to be created in
+                :param name: Filename for the referenced file
+                :param ref_url: url to be used in the referenced file
+                :return: JsonResponse on success or HttpResponse with error status code on error
+
+                :raises: HydroShareNotAuthorized if user is not authorized to perform action.
+                :raises: HydroShareNotFound if the resource or resource file was not found.
+                :raises: HydroShareHTTPException if an unexpected HTTP response code is encountered.
+                """
+
+        url = "{url_base}/resource/data-store-add-reference/".format(url_base=self.url_base)
+
+        data = {'res_id': pid, 'curr_path': path, 'ref_name': name, 'ref_url': ref_url}
+
+        r = self._request('POST', url, data=data)
+        
+        if r.status_code != 200:
+            if r.status_code == 403:
+                raise HydroShareNotAuthorized(('POST', url))
+            elif r.status_code == 404:
+                raise HydroShareNotFound((pid,))
+            else:
+                raise HydroShareHTTPException((url, 'POST', r.status_code))
+
+        return r.json()
+
+    def updateReferencedFile(self, pid, path, name, ref_url):
+        """Update a Referenced Content File (.url)
+
+                :param pid: The HydroShare ID of the resource for which the file should be updated
+                :param path: Folder path for the file to be updated in
+                :param name: Filename for the referenced file
+                :param ref_url: url to be updated in the referenced file
+                :return: JsonResponse on success or HttpResponse with error status code on error
+
+                :raises: HydroShareNotAuthorized if user is not authorized to perform action.
+                :raises: HydroShareNotFound if the resource or resource file was not found.
+                :raises: HydroShareHTTPException if an unexpected HTTP response code is encountered.
+                """
+
+        url = "{url_base}/resource/data_store_edit_reference_url/".format(url_base=self.url_base)
+
+        data = {'res_id': pid, 'curr_path': path, 'url_filename': name, 'new_ref_url': ref_url}
+
+        r = self._request('POST', url, data=data)
+
+        if r.status_code != 200:
+            if r.status_code == 403:
+                raise HydroShareNotAuthorized(('POST', url))
+            elif r.status_code == 404:
+                raise HydroShareNotFound((pid,))
+            else:
+                raise HydroShareHTTPException((url, 'POST', r.status_code))
 
         return r.json()
 
