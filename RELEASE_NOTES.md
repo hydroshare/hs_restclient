@@ -1,3 +1,9 @@
+# 1.3.0 - 11/6/2018
+  - Add createReferencedFile (/hsapi/scimeta/\<pid\>/)
+  - Add updateReferencedFile (/hsapi/resource/\<pid\>/scimeta/elements)
+  - Prompt user for input when authencitcation is not provided.
+  - Update documentation for overwrite on unzip.
+
 # 1.2.6 - 1/20/2017
   - Add getScienceMetadataRDF (/hsapi/scimeta/\<pid\>/)
   - Add getScienceMetadata (/hsapi/resource/\<pid\>/scimeta/elements)
