@@ -1,3 +1,6 @@
+# 1.3.1 - 11/12/2018
+  - input compatible with python3
+
 # 1.3.0 - 11/6/2018
   - Add createReferencedFile (/hsapi/scimeta/\<pid\>/)
   - Add updateReferencedFile (/hsapi/resource/\<pid\>/scimeta/elements)

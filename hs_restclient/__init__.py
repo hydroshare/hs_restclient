@@ -5,7 +5,7 @@ Client library for HydroShare REST API
 """
 
 __title__ = 'hs_restclient'
-__version__ = '1.3.0'
+__version__ = '1.3.1'
 
 
 import os
@@ -34,6 +34,12 @@ DEFAULT_HOSTNAME = 'www.hydroshare.org'
 
 EXPIRES_AT_ROUNDDOWN_SEC = 15
 
+
+# bind raw_input to input for Python 2 and 3 compatibility
+try:
+    input = raw_input
+except NameError:
+    pass
 
 def default_progress_callback(monitor):
     pass
@@ -70,7 +76,7 @@ class HydroShare(object):
             self.auth = auth
         elif prompt_auth:
             import getpass
-            username = raw_input("Username: ").strip()
+            username = input("Username: ").strip()
             password = getpass.getpass("Password for {}: ".format(username))
             auth = HydroShareAuthBasic(username=username, password=password)
             self.auth = auth
@@ -861,7 +867,7 @@ class HydroShare(object):
         response = r.json()
         assert(response['resource_id'] == pid)
 
-        return response['resource_id']
+        return response
 
     def getResourceFile(self, pid, filename, destination=None):
         """ Get a file within a resource.
