@@ -867,7 +867,7 @@ class HydroShare(object):
         response = r.json()
         assert(response['resource_id'] == pid)
 
-        return response['resource_id']
+        return response
 
     def getResourceFile(self, pid, filename, destination=None):
         """ Get a file within a resource.
