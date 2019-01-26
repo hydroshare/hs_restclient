@@ -50,7 +50,7 @@ class FilesSubEndpoint(object):
         r = self.hs._request('GET', url)
         return r
 
-    def metadata(self, file_id, params=None):
+    def metadata(self, file_path, params=None):
         """
         :params:
             title: string
@@ -64,9 +64,9 @@ class FilesSubEndpoint(object):
         """
 
         url_base = self.hs.url_base
-        url = "{url_base}/resource/{pid}/files/{file_id}/metadata/".format(url_base=url_base,
-                                                                           pid=self.pid,
-                                                                           file_id=file_id)
+        url = "{url_base}/resource/{pid}/files/metadata/{file_path}/".format(url_base=url_base,
+                                                                            pid=self.pid,
+                                                                            file_path=file_path)
 
         if params is None:
             r = self.hs._request('GET', url)
