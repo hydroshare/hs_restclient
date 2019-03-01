@@ -460,7 +460,7 @@ class HydroShare(object):
                             {"name":"hydroShareIdentifier","url":"http://www.hydroshare.org/resource/87ffb608900e407ab4b67d30c93b329e"}
                         ],
             "language":"eng",
-            "rights":"This resource is shared under the Creative Commons Attribution CC BY. http://creativecommons.org/licenses/by/4.0/",
+            "rights": {"statement": "This resource is shared under the Creative Commons Attribution CC BY." "url": "http://creativecommons.org/licenses/by/4.0/"},
             "type":"http://www.hydroshare.org/terms/GenericResource",
             "publisher":null,
             "sources":[],
@@ -865,7 +865,7 @@ class HydroShare(object):
                 raise HydroShareHTTPException((url, 'POST', r.status_code))
 
         response = r.json()
-        assert(response['resource_id'] == pid)
+        # assert(response['resource_id'] == pid)
 
         return response
 
@@ -1087,6 +1087,9 @@ class HydroShare(object):
                 raise HydroShareHTTPException((url, 'DELETE', r.status_code))
 
         return r.json()
+
+    def createReferencedFile(self, pid, name, ref_url):
+        return self.createReferencedFile("", pid, name, ref_url)
 
     def createReferencedFile(self, pid, path, name, ref_url):
         """Create a Referenced Content File (.url)
