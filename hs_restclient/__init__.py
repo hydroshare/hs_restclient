@@ -1088,11 +1088,22 @@ class HydroShare(object):
 
         return r.json()
 
-    def createReferencedFile(self, pid, name, ref_url):
-        return self.createReferencedFile("", pid, name, ref_url)
+    def createReferenceURL(self, pid, name, ref_url, path=""):
+        """Create a Referenced Content File (.url)
+                        :param pid: The HydroShare ID of the resource for which the file should be created
+                        :param name: Filename for the referenced file
+                        :param ref_url: url to be used in the referenced file
+                        :param path: Optional, defaults to contents directory if not provided.  Folder path for the file to be created in
+                        :return: JsonResponse on success or HttpResponse with error status code on error
+
+                        :raises: HydroShareNotAuthorized if user is not authorized to perform action.
+                        :raises: HydroShareNotFound if the resource or resource file was not found.
+                        :raises: HydroShareHTTPException if an unexpected HTTP response code is encountered.
+                        """
+        return self.createReferencedFile(pid, path, name, ref_url)
 
     def createReferencedFile(self, pid, path, name, ref_url):
-        """Create a Referenced Content File (.url)
+        """Deprecated, use createReferenceURL. Create a Referenced Content File (.url)
 
                 :param pid: The HydroShare ID of the resource for which the file should be created
                 :param path: Folder path for the file to be created in
@@ -1121,8 +1132,23 @@ class HydroShare(object):
 
         return r.json()
 
-    def updateReferencedFile(self, pid, path, name, ref_url):
+    def updateReferenceURL(self, pid, name, ref_url, path=""):
         """Update a Referenced Content File (.url)
+
+                        :param pid: The HydroShare ID of the resource for which the file should be updated
+                        :param name: Filename for the referenced file
+                        :param ref_url: url to be updated in the referenced file
+                        :param path: Optional, defaults to contents directory if not provided.  Folder path for the file to be updated in
+                        :return: JsonResponse on success or HttpResponse with error status code on error
+
+                        :raises: HydroShareNotAuthorized if user is not authorized to perform action.
+                        :raises: HydroShareNotFound if the resource or resource file was not found.
+                        :raises: HydroShareHTTPException if an unexpected HTTP response code is encountered.
+                        """
+        return self.updateReferencedFile(pid, path, name, ref_url)
+
+    def updateReferencedFile(self, pid, path, name, ref_url):
+        """Deprecated, use updateReferenceURL. Update a Referenced Content File (.url)
 
                 :param pid: The HydroShare ID of the resource for which the file should be updated
                 :param path: Folder path for the file to be updated in

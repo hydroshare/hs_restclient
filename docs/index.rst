@@ -363,10 +363,10 @@ To create a referenced content file:
     >>> from hs_restclient import HydroShare, HydroShareAuthBasic
     >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
     >>> hs = HydroShare(auth=auth)
-    >>> path = "data/contents"
     >>> name = "file_name"
     >>> ref_url = "https://www.hydroshare.org"
-    >>> response_json = hs.createReferencedFile('ID OF RESOURCE GOES HERE', path, name, ref_url)
+    >>> path = "data/contents"
+    >>> response_json = hs.createReferenceURL('ID OF RESOURCE GOES HERE', name, ref_url, path)
 
 To update a referenced content file:
 
