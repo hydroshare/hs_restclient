@@ -31,7 +31,7 @@ class ScimetaSubEndpoint(object):
         """
         url = "{url_base}/resource/{pid}/scimeta/custom/".format(url_base=self.hs.url_base,
                                                                  pid=self.pid)
-        r = self.hs._request('POST', url)
+        r = self.hs._request('POST', url, data=payload)
         return r
 
 
