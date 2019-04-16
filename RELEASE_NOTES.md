@@ -1,3 +1,7 @@
+# 1.3.3 - 04/16/2019
+  - Add validation parameter to referencedFile
+  - Use new metadata with file_path parameter
+
 # 1.3.1 - 11/12/2018
   - input compatible with python3
 
