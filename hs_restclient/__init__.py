@@ -1088,7 +1088,7 @@ class HydroShare(object):
 
         return r.json()
 
-    def createReferenceURL(self, pid, name, ref_url, path=""):
+    def createReferenceURL(self, pid, name, ref_url, path="", validate=True):
         """Create a Referenced Content File (.url)
                         :param pid: The HydroShare ID of the resource for which the file should be created
                         :param name: Filename for the referenced file
@@ -1100,9 +1100,9 @@ class HydroShare(object):
                         :raises: HydroShareNotFound if the resource or resource file was not found.
                         :raises: HydroShareHTTPException if an unexpected HTTP response code is encountered.
                         """
-        return self.createReferencedFile(pid, path, name, ref_url)
+        return self.createReferencedFile(pid, path, name, ref_url, validate)
 
-    def createReferencedFile(self, pid, path, name, ref_url):
+    def createReferencedFile(self, pid, path, name, ref_url, validate):
         """Deprecated, use createReferenceURL. Create a Referenced Content File (.url)
 
                 :param pid: The HydroShare ID of the resource for which the file should be created
@@ -1118,7 +1118,7 @@ class HydroShare(object):
 
         url = "{url_base}/resource/data-store-add-reference/".format(url_base=self.url_base)
 
-        data = {'res_id': pid, 'curr_path': path, 'ref_name': name, 'ref_url': ref_url}
+        data = {'res_id': pid, 'curr_path': path, 'ref_name': name, 'ref_url': ref_url, "validate_url_flag": validate}
 
         r = self._request('POST', url, data=data)
         

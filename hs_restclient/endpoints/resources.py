@@ -34,6 +34,19 @@ class ScimetaSubEndpoint(object):
         r = self.hs._request('POST', url, data=payload)
         return r
 
+    def get(self):
+        """
+
+        :param payload:
+            a key/value object containing the scimeta you want to store
+            e.g. {"weather": "sunny", "temperature": "80C" }
+        :return:
+            empty (200 status code)
+        """
+        url = "{url_base}/resource/{pid}/scimeta/custom/".format(url_base=self.hs.url_base,
+                                                                 pid=self.pid)
+        r = self.hs._request('GET', url)
+        return json.loads(r.text)
 
 class FilesSubEndpoint(object):
     def __init__(self, hs, pid):
