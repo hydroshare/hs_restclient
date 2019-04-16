@@ -363,10 +363,10 @@ To create a referenced content file:
     >>> from hs_restclient import HydroShare, HydroShareAuthBasic
     >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
     >>> hs = HydroShare(auth=auth)
-    >>> path = "data/contents"
     >>> name = "file_name"
     >>> ref_url = "https://www.hydroshare.org"
-    >>> response_json = hs.createReferencedFile('ID OF RESOURCE GOES HERE', path, name, ref_url)
+    >>> path = "data/contents"
+    >>> response_json = hs.createReferenceURL('ID OF RESOURCE GOES HERE', name, ref_url, path)
 
 To update a referenced content file:
 
@@ -450,12 +450,11 @@ To discover resources via other parameters
 To get a list of all resource files
 
     >>> # List all resource files
-    >>> hs.resource('ID OF RESOURCE GOES HERE').files.all()
+    >>> hs.resource('ID OF RESOURCE GOES HERE').files.all().content
 
 To get file metadata
 
-    >>> # Get FILE_ID from above call to files.all()
-    >>> hs.resource('ID OF RESOURCE GOES HERE').files.metadata(FILE_ID)
+    >>> hs.resource('ID OF RESOURCE GOES HERE').files.metadata(pathname).content
 
 To set file metadata
 
@@ -472,7 +471,7 @@ To set file metadata
     >>> params['temporal_coverage'] = {"start":"2018-02-23","end":"2018-02-29"}
     >>> params['extra_metadata'] = {"extended1":"one"}
     >>> params['title'] = "New Metadata Title"
-    >>> hs.resource('ID OF RESOURCE GOES HERE').files.metadata(FILE_ID, params)
+    >>> hs.resource('ID OF RESOURCE GOES HERE').files.metadata(pathname, params)
 
 To set a file to a file type (e.g., NetCDF) in a composite resource:
 Note: Allowed file type are: NetCDF, GeoRaster and GeoFeature
