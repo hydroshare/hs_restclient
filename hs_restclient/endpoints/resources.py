@@ -61,7 +61,8 @@ class FilesSubEndpoint(object):
         url = "{url_base}/resource/{pid}/files/".format(url_base=self.hs.url_base,
                                                                  pid=self.pid)
         r = self.hs._request('GET', url)
-        return r
+
+        return json.loads(r.text)
 
     def metadata(self, file_path, params=None):
         """
@@ -88,7 +89,7 @@ class FilesSubEndpoint(object):
             headers["Content-Type"] = "application/json"
             r = self.hs._request("PUT", url, data=json.dumps(params), headers=headers)
 
-        return r
+        return json.loads(r.text)
 
 class FunctionsSubEndpoint(object):
     def __init__(self, hs, pid):

@@ -355,7 +355,7 @@ class HydroShare(object):
             else:
                 raise HydroShareHTTPException((url, 'GET', r.status_code))
 
-        return str(r.content)
+        return r.content.decode('utf-8')
 
     def getScienceMetadata(self, pid):
         """ Get science metadata for a resource in JSON format
