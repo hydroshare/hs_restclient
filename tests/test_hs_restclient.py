@@ -148,8 +148,7 @@ class TestGetResourceList(unittest.TestCase):
             shutil.rmtree(tmpdir)
 
             # Delete
-            delres = hs.deleteResource(newres)
-            self.assertEqual(delres, newres)
+            hs.deleteResource(newres)
 
     @with_httmock(mocks.hydroshare.resourceFileCRUD)
     def test_create_get_delete_resource_file(self):

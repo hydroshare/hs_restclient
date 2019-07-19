@@ -782,17 +782,13 @@ class HydroShare(object):
                                                   pid=pid)
 
         r = self._request('DELETE', url)
-        if r.status_code != 200:
+        if r.status_code != 204:
             if r.status_code == 403:
                 raise HydroShareNotAuthorized(('DELETE', url))
             elif r.status_code == 404:
                 raise HydroShareNotFound((pid,))
             else:
                 raise HydroShareHTTPException((url, 'DELETE', r.status_code))
-
-        resource = r.json()
-        assert(resource['resource_id'] == pid)
-        return resource['resource_id']
 
     def setAccessRules(self, pid, public=False):
         """
