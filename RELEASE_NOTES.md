@@ -1,3 +1,6 @@
+# 1.3.4 - 07/19/2019
+  - Update deleteResource to expect 204 NO CONTENT
+
 # 1.3.3 - 04/16/2019
   - Add validation parameter to referencedFile
   - Use new metadata with file_path parameter
