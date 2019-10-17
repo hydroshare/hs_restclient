@@ -201,6 +201,7 @@ class HydroShare(object):
         else:
             mime_type = mime_type[0]
         request_params['file'] = (fname, fd, mime_type)
+        request_params['folder'] = os.path.dirname(fname)
         return close_fd
 
     def getResourceList(self, **kwargs):
