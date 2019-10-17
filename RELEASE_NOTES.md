@@ -1,3 +1,6 @@
+# 1.3.5 - 10/17/2019
+  - Update addResourceFile to specify upload folder
+
 # 1.3.4 - 07/19/2019
   - Update deleteResource to expect 204 NO CONTENT
 
