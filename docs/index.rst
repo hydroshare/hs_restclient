@@ -352,11 +352,9 @@ To upload files to a specific resource folder:
     >>> from hs_restclient import HydroShare, HydroShareAuthBasic
     >>> auth = HydroShareAuthBasic(username='myusername', password='mypassword')
     >>> hs = HydroShare(auth=auth)
-    >>> options = {
-                     "folder": "/path/to/folder",
-                     "files": "local/path/to/file.txt"
-                  }
-    >>> result = hs.resource('ID OF RESOURCE GOES HERE').files(options)
+    >>> local_file = "file_name.txt"
+    >>> resource_filename = "folder_name/file_name.txt"
+    >>> result = hs.addResourceFile('ID OF RESOURCE GOES HERE', local_file, resource_filename)
 
 To create a referenced content file:
 
