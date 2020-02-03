@@ -663,7 +663,7 @@ class HydroShare(object):
         task_status_url = "{url_base}/taskstatus/{task_id}/"
         task_status_url = task_status_url.format(url_base=self.url_base, task_id=task_id)
         r = self._request('GET', task_status_url)
-        if not r.content:
+        if r.content is None:
             return False
         response_data = json.loads(r.content.decode('utf-8'))
         return response_data['status']
