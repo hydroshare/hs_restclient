@@ -26,7 +26,7 @@ class HydroShareNotAuthorized(HydroShareException):
         return msg.format(method=self.method, url=self.url)
 
     def __unicode__(self):
-        return unicode(str(self))
+        return str(self)
 
 
 class HydroShareNotFound(HydroShareException):
@@ -48,7 +48,7 @@ class HydroShareNotFound(HydroShareException):
         return msg
 
     def __unicode__(self):
-        return unicode(str(self))
+        return str(self)
 
 
 class HydroShareHTTPException(HydroShareException):
@@ -58,28 +58,23 @@ class HydroShareHTTPException(HydroShareException):
         url and status_code are of type string, while the optional params argument
         should be a dict.
     """
-    def __init__(self, args):
-        super(HydroShareHTTPException, self).__init__(args)
-        self.url = args[0]
-        self.method = args[1]
-        self.status_code = args[2]
-        self.status_msg = args[3]
-        if len(args) >= 4:
-            self.params = args[3]
-        else:
-            self.params = None
+    def __init__(self, response):
+        super(HydroShareHTTPException, self).__init__(response)
+        self.url = response.request.url
+        self.method = response.request.method
+        self.status_code = response.status_code
+        self.status_msg = response.text if response.text else "No status message"
 
     def __str__(self):
         msg = "Received status {status_code} {status_msg} when accessing {url} " + \
-              "with method {method} and params {params}."
+              "with method {method}."
         return msg.format(status_code=self.status_code,
                           status_msg=http_responses[self.status_msg],
                           url=self.url,
-                          method=self.method,
-                          params=self.params)
+                          method=self.method)
 
     def __unicode__(self):
-        return unicode(str(self))
+        return str(self)
 
 
 class HydroShareAuthenticationException(HydroShareException):
