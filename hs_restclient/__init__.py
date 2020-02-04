@@ -665,7 +665,7 @@ class HydroShare(object):
         r = self._request('GET', task_status_url)
         if r.content is None:
             return False
-        response_data = json.loads(r.content.decode('utf-8'))
+        response_data = r.json()
         return response_data['status']
 
     def getResourceTypes(self):
