@@ -1,5 +1,3 @@
-from .compat import http_responses
-
 class HydroShareException(Exception):
     def __init__(self, args):
         super(HydroShareException, self).__init__(args)
@@ -69,7 +67,7 @@ class HydroShareHTTPException(HydroShareException):
         msg = "Received status {status_code} {status_msg} when accessing {url} " + \
               "with method {method}."
         return msg.format(status_code=self.status_code,
-                          status_msg=http_responses[self.status_msg],
+                          status_msg=self.status_msg,
                           url=self.url,
                           method=self.method)
 
