@@ -18,7 +18,7 @@ To get a listing of public resources::
 
     from hs_restclient import HydroShare
     hs = HydroShare()
-    for resource in hs.getResourceList():
+    for resource in hs.resources():
         print(resource)
 
 To authenticate using HTTP Basic authentication, and then get a list of resources you have access to::
@@ -26,7 +26,7 @@ To authenticate using HTTP Basic authentication, and then get a list of resource
     from hs_restclient import HydroShare, HydroShareAuthBasic
     auth = HydroShareAuthBasic(username='myusername', password='mypassword')
     hs = HydroShare(auth=auth)
-    for resource in hs.getResourceList():
+    for resource in hs.resources():
         print(resource)
 
 To authenticate using OAuth2 authentication (using a user and password supplied by the user), and then get a list of
@@ -47,11 +47,11 @@ resources you have access to::
     hs = HydroShare(auth=auth)
 
     try:
-        for resource in hs.getResourceList():
+        for resource in hs.resources():
             print(resource)
     except TokenExpiredError as e:
         hs = HydroShare(auth=auth)
-        for resource in hs.getResourceList():
+        for resource in hs.resources():
             print(resource)
 
 Note that currently the client does not handle token renewal, hence the need to catch TokenExpiredError.
@@ -84,13 +84,13 @@ access to::
                                 token=token)
     try:
         hs = HydroShare(auth=auth)
-        for resource in hs.getResourceList():
+        for resource in hs.resources():
             print(resource)
     except:
         # get_token() is a stand in for how you get a new token on your system.
         token = get_token()
         hs = HydroShare(auth=auth)
-        for resource in hs.getResourceList():
+        for resource in hs.resources():
             print(resource)
 
 Note that currently the client does not handle token renewal, hence the need to catch TokenExpiredError.
@@ -99,14 +99,14 @@ To connect to a development HydroShare server that uses a self-sign security cer
 
     from hs_restclient import HydroShare
     hs = HydroShare(hostname='mydev.mydomain.net', verify=False)
-    for resource in hs.getResourceList():
+    for resource in hs.resources():
         print(resource)
 
 To connect to a development HydroShare server that is not running HTTPS::
 
     from hs_restclient import HydroShare
     hs = HydroShare(hostname='mydev.mydomain.net', port=8000, use_https=False)
-    for resource in hs.getResourceList():
+    for resource in hs.resources():
         print(resource)
 
 Note that authenticated connections **must** use HTTPS.
@@ -117,7 +117,3 @@ Documentation
 -------------
 
 Complete installation and usage documentation is available at http://hs-restclient.readthedocs.org/en/latest/
-
-
-
-
