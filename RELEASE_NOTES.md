@@ -1,3 +1,7 @@
+# 1.3.6 - 3/25/2020
+  - Fix exception handling across module
+  - Update documentation for resource listing
+
 # 1.3.5 - 10/17/2019
   - Update addResourceFile to specify upload folder
 
