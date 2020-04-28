@@ -9,7 +9,7 @@ def resultsListGenerator(hs, url, params=None):
         elif r.status_code == 404:
             raise HydroShareNotFound((url,))
         else:
-            raise HydroShareHTTPException((url, 'GET', r.status_code, params))
+            raise HydroShareHTTPException(r)
     res = r.json()
     results = res['results']
     for item in results:
@@ -28,7 +28,7 @@ def resultsListGenerator(hs, url, params=None):
             elif r.status_code == 404:
                 raise HydroShareNotFound((next_url,))
             else:
-                raise HydroShareHTTPException((next_url, 'GET', r.status_code, params))
+                raise HydroShareHTTPException(r)
         res = r.json()
         results = res['results']
         for item in results:
