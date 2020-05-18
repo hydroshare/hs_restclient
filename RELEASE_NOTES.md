@@ -1,3 +1,6 @@
+# 1.3.7 - 5/18/2020
+  - Fix remaining uses of HydroShareHTTPException
+
 # 1.3.6 - 3/25/2020
   - Fix exception handling across module
   - Update documentation for resource listing
