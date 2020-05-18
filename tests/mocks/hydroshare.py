@@ -5,7 +5,7 @@ Adapted from: http://www.appneta.com/blog/python-unit-test-mock/
 
 """
 import os
-from urlparse import parse_qs
+from urllib.parse import parse_qs
 
 from httmock import response, urlmatch
 
